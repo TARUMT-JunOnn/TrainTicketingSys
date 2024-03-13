@@ -2,5 +2,5 @@
 #pragma warning(disable:4996)
 
 int main(void) {
-
+	printf("hello,world");
 }
