@@ -1,0 +1,11 @@
+on:
+  pull_request:
+jobs:
+  job:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npx --yes prettier --write .
+      - uses: actions4git/add-commit-push@v1
