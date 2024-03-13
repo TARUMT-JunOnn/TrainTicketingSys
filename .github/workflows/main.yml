@@ -1,8 +1,8 @@
-            name: Add & Commit
+name: Add & Commit
   # You may pin to the exact commit or the version.
-  # uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d5
-  uses: EndBug/add-and-commit@v9.1.4
-  with:
+  # uses: EndBug/add-and-commit@a94899bca583c204427a224a7af87c02f9b325d
+uses: EndBug/add-and-commit@v9.1.4
+ with:
     # Arguments for the git add command
     add: # optional, default is .
     # The name of the user that will be displayed as the author of the commit
