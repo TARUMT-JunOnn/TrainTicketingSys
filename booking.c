@@ -10,5 +10,5 @@ void showTime(void) {
 }
 
 int main(void) {
-	showTime();
+	showTime(NULL);
 }
