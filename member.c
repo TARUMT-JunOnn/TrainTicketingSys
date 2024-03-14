@@ -4,5 +4,6 @@
 
 main() {
 	printf("Hellow World\n");
+	print("nihao\n");
 
 }
