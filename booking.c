@@ -15,7 +15,6 @@ int main(void) {
 	fptr = fopen("res\\booking.txt", "w+");
 	if (fptr == NULL) {
 		printf("error");
-		fdadsf
 	}
 	fprintf(fptr, "Hello,world");
 	fclose(fptr);
