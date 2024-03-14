@@ -20,6 +20,7 @@ struct date {
 typedef struct {
 	char destination[20];
 	int pax;
+	double price;
 	struct date prefer;
 }Info;
 
@@ -72,28 +73,28 @@ void createDate(Info userChoice[MAX_BOOKING]) {
 }
 
 int calcFare(Info userChoice[MAX_BOOKING]) {
+	double totalPrice[10];
 	title(NULL);
-	for (int i = 0; i < 70; i++) {
+	for (int i = 0; i < 100; i++) {
 		printf("_");
 	}
 	printf("\n");
-	printf("| %-10s| %-13s| %-16s| %-14s| %-5s|\n", "Date", "Destination", "Departure Time", "Arrival Time", "Pax");
+	printf("| %-10s| %-13s| %-16s| %-14s| %-5s| %-15s| %-13s|\n", "Date", "Destination", "Departure Time", "Arrival Time", "Pax", "Price per Pax", "Total Price");
 	for (int j = 0; j < 10; j++) {
-		if ((int)userChoice[j].pax != -52) {
-			printf("| %-10s| %-13s| %-16d| %-14d| %-5d|\n", date[j], userChoice[j].destination, userChoice[j].prefer.time.depart, userChoice[j].prefer.time.arrive, userChoice[j].pax);
+		if (userChoice[j].pax != NULL) {
+			totalPrice[j] = userChoice[j].price * (double)userChoice[j].pax;
+			printf("| %-10s| %-13s| %-16d| %-14d| %-5d| %-15.2f| %-13.2f|\n", date[j], userChoice[j].destination, userChoice[j].prefer.time.depart, userChoice[j].prefer.time.arrive, userChoice[j].pax, userChoice[j].price, totalPrice[j]);
 		}
 	}
-	for (int i = 0; i < 70; i++) {
+	for (int i = 0; i < 100; i++) {
 	printf("-");
 	}
 }
 
 int main(void) {
-	Info userChoice[MAX_BOOKING];
+	Info userChoice[MAX_BOOKING] = { "Kampar", 1, 1, 4, 2024, 8, 11 };
 	reset(userChoice);
-	userChoice[0].prefer.day = 1;
-	userChoice[0].prefer.month = 4;
-	userChoice[0].prefer.year = 2024;
+	userChoice[0] = (Info) { "Kampar", 1, 50, { 1, 4, 2024,{ 8, 11} } };
 	title(NULL);
 	createDate(userChoice);
 	calcFare(userChoice);
