@@ -12,7 +12,11 @@ void showTime(void) {
 int main(void) {
 	showTime(NULL);
 	FILE* fptr;
-	fptr = fopen("res/booking.txt", "w+");
+	fptr = fopen("res\\booking.txt", "w+");
+	if (fptr == NULL) {
+		printf("error");
+		fdadsf
+	}
 	fprintf(fptr, "Hello,world");
 	fclose(fptr);
 }
