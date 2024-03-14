@@ -11,4 +11,8 @@ void showTime(void) {
 
 int main(void) {
 	showTime(NULL);
+	FILE* fptr;
+	fptr = fopen("res/booking.txt", "w+");
+	fprintf(fptr, "Hello,world");
+	fclose(fptr);
 }
