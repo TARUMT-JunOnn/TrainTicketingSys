@@ -51,7 +51,7 @@ void DisplayTrainSchedule()
 	}
 
 	// Weekday Schedule
-	printf("\nWeekday Schedule: \n");
+	printf("\nWeekday (Mon-Fri) Schedule: \n");
 	printf("--------------------------------------------------------------------------------\n");
 	printf("From\t To\t TrainID\t Depart From\t Destination\t Seats Available\n");
 	printf("--------------------------------------------------------------------------------\n");
@@ -66,7 +66,7 @@ void DisplayTrainSchedule()
 
 	// Weekend Schedule
 	fp = fopen("../TrainTicketingSys/res/shcedule.txt", "r");
-	printf("\n\nWeekend Schedule: \n");
+	printf("\n\nWeekend (Sat-Sun) Schedule: \n");
 	printf("--------------------------------------------------------------------------------\n");
 	printf("From\t To\t TrainID\t Depart From\t Destination\t Seats Available\n");
 	printf("--------------------------------------------------------------------------------\n");
@@ -78,6 +78,11 @@ void DisplayTrainSchedule()
 		}
 	}
 	fclose(fp);
+}
+
+void ModifyTrainSchedule()
+{
+
 }
 
 main() 
