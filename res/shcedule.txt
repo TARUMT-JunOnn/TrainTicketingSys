@@ -1,0 +1,6 @@
+Weekday 09.00 13.00 T1001 KL Sentral:Kampar#500
+Weekday 16.00 20.00 T1003 KL Sentral:Kampar#500
+Weekday 09.00 13.00 T1002 Kampar:KL Sentral#500
+Weekday 16.00 20.00 T1004 Kampar:KL Sentral#500
+Weekend 15.00 19.00 T1001 KL Sentral:Kampar#500
+Weekend 15.00 19.00 T1002 Kampar:KL Sentral#500
