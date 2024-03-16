@@ -36,7 +36,7 @@ void DisplayCurrentTime()
 	}
 }
 
-void DisplayTrainSchedule()
+void DisplayTrainSchedule(char (*s)[100])
 {
 	FILE* fp;
 	char day[8], trainID[6], depart[20], destination[20];
@@ -51,48 +51,53 @@ void DisplayTrainSchedule()
 	}
 
 	// Weekday Schedule
-	printf("\nWeekday (Mon-Fri) Schedule: \n");
-	printf("--------------------------------------------------------------------------------\n");
-	printf("From\t To\t TrainID\t Depart From\t Destination\t Seats Available\n");
-	printf("--------------------------------------------------------------------------------\n");
-	while (fscanf(fp, "%s %f %f %s %[^\:]:%[^\#]#%d", &day, &timeFrom, &timeTo, trainID, depart, destination, &seats) != EOF)
-	{
-		if (strcmp(day, "Weekday") == 0)
+	if (strcmp((*s), "NULL") == 0 || strcmp((*s), "Monday") == 0 || strcmp((*s), "Tuesday") == 0 || strcmp((*s), "Wednesday") == 0 || strcmp((*s), "Thursday") == 0 || strcmp((*s), "Friday") == 0) {
+		printf("\nWeekday (Mon-Fri) Schedule: \n");
+		printf("--------------------------------------------------------------------------------\n");
+		printf("From\t To\t TrainID\t Depart From\t Destination\t Seats Available\n");
+		printf("--------------------------------------------------------------------------------\n");
+		while (fscanf(fp, "%s %f %f %s %[^\:]:%[^\#]#%d", &day, &timeFrom, &timeTo, trainID, depart, destination, &seats) != EOF)
 		{
-			printf("%.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", timeFrom, timeTo, trainID, depart, destination, seats);
+			if (strcmp(day, "Weekday") == 0)
+			{
+				printf("%.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", timeFrom, timeTo, trainID, depart, destination, seats);
+			}
 		}
+		fclose(fp);
 	}
-	fclose(fp);
-
 	// Weekend Schedule
-	fp = fopen("../TrainTicketingSys/res/shcedule.txt", "r");
-	printf("\n\nWeekend (Sat-Sun) Schedule: \n");
-	printf("--------------------------------------------------------------------------------\n");
-	printf("From\t To\t TrainID\t Depart From\t Destination\t Seats Available\n");
-	printf("--------------------------------------------------------------------------------\n");
-	while (fscanf(fp, "%s %f %f %s %[^\:]:%[^\#]#%d", &day, &timeFrom, &timeTo, trainID, depart, destination, &seats) != EOF)
-	{
-		if (strcmp(day, "Weekend") == 0)
+	if (strcmp((*s), "NULL") == 0 || strcmp((*s), "Saturday") == 0 || strcmp((*s), "Sunday") == 0) {
+		fp = fopen("../TrainTicketingSys/res/shcedule.txt", "r");
+		printf("\n\nWeekend (Sat-Sun) Schedule: \n");
+		printf("--------------------------------------------------------------------------------\n");
+		printf("From\t To\t TrainID\t Depart From\t Destination\t Seats Available\n");
+		printf("--------------------------------------------------------------------------------\n");
+		while (fscanf(fp, "%s %f %f %s %[^\:]:%[^\#]#%d", &day, &timeFrom, &timeTo, trainID, depart, destination, &seats) != EOF)
 		{
-			printf("%.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", timeFrom, timeTo, trainID, depart, destination, seats);
+			if (strcmp(day, "Weekend") == 0)
+			{
+				printf("%.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", timeFrom, timeTo, trainID, depart, destination, seats);
+			}
 		}
+		fclose(fp);
 	}
-	fclose(fp);
 }
 
-void SearchTrainSchedule()
-{
+time_t defaultTimeSchedule(char(*s)[100]) {
 	time_t now;
 	struct tm* cur_time;
-	char s[100];
 	char dayOfWeek[8];
 
 	time(&now);
 	cur_time = localtime(&now);
-	strftime(s, 100, "%A", cur_time);
+	strftime((*s), 100, "%A", cur_time);
 	printf("\nToday's date: %d-%02d-%02d\n", cur_time->tm_year + 1900, cur_time->tm_mon + 1, cur_time->tm_mday);
-	printf("%s\n\n", s);
+	printf("%s\n\n", (*s));
+	return now;
+}
 
+ SearchTrainSchedule(time_t now)
+{
 	// Begin searching
 	struct tm future_date = {0};
 
@@ -133,8 +138,12 @@ void ModifyTrainSchedule()
 
 main() 
 {
+	char s[100];
+	strcpy(s, "NULL");
 	DisplayCurrentTime();
-	DisplayTrainSchedule();
-	SearchTrainSchedule();
+	DisplayTrainSchedule(s);
+	time_t now =  defaultTimeSchedule(s);
+	DisplayTrainSchedule(s);
+	SearchTrainSchedule(now);
 	system("pause");
 }
