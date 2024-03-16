@@ -4,11 +4,8 @@
 #include<string.h>
 #include<math.h>
 #pragma warning(disable:4996)
-#define MAX_BOOKING 10
-
-//Function Declaration
-float calcFare();
-addBooking();
+#define MAX_PAX 10
+#define MAX_TRIP 2
 
 //Global Structure Declaration
 struct train {
@@ -23,27 +20,30 @@ struct date {
 
 typedef struct {
 	char destination[20];
-	int pax;
 	float price;
 	struct date prefer;
 }Info;
 
 //Global Variable
 
-void reset(Info userChoice[MAX_BOOKING]) {
-	for (int i = 0; i < MAX_BOOKING; ++i) {
-		userChoice[i].pax = NULL;
-		userChoice[i].prefer.day = NULL;
-		userChoice[i].prefer.month = NULL;
-		userChoice[i].prefer.year = NULL;
-		userChoice[i].prefer.time.depart = NULL;
-		userChoice[i].prefer.time.arrive = NULL;
-		for (int j = 0; j < 20; j++) {
-			userChoice[i].destination[j] = NULL;
+//Function Declaration
+void createDate(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*date)[MAX_PAX][11]);
+void calcPax(Info (*userChoice)[MAX_TRIP][MAX_PAX], int (*pax)[2]);
+float calcFare(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*)[MAX_PAX][11], int (*pax)[2]);
+addBooking();
+
+void reset(Info (*userChoice)[MAX_TRIP][MAX_PAX]) {
+	for (int j = 0; j < MAX_TRIP; ++j) {
+		for (int i = 0; i < MAX_PAX; ++i) {
+			(*userChoice)[j][i].prefer.day = NULL;
+			(*userChoice)[j][i].prefer.month = NULL;
+			(*userChoice)[j][i].prefer.year = NULL;
+			(*userChoice)[j][i].prefer.time.depart = NULL;
+			(*userChoice)[j][i].prefer.time.arrive = NULL;
+			strcpy((*userChoice)[j][i].destination, "NULL");
 		}
 	}
 }
-
 
 void title(void) {
 	system("cls");
@@ -57,25 +57,56 @@ void title(void) {
 	printf("\n\n");
 }
 
-void createDate(Info userChoice[MAX_BOOKING], char *date[MAX_BOOKING][9]) {
-	void* add = &date;
+int main(void) {
+	char dateAdd[MAX_TRIP][MAX_PAX][11];
+	int pax[2];
+	Info userChoice[MAX_TRIP][MAX_PAX];
+	reset(userChoice);
+	userChoice[0][0] = (Info) { "Kampar", 50, { 1, 4, 2024,{ 8, 11} } };
+	userChoice[1][0] = (Info){ "KL Sentral", 25, { 2, 4, 2024,{ 5, 8} } };
+	createDate(userChoice, dateAdd);
+	calcPax(userChoice, pax);
+	calcFare(userChoice, dateAdd, pax);
+}
+
+void createDate(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*date)[MAX_TRIP][MAX_PAX][11]) {
 	char takeDay[2][3];
 	char takeYear[5];
-	for (int i = 0; i < MAX_BOOKING; ++i) {
-		if (userChoice[i].prefer.day != NULL && userChoice[i].prefer.month != NULL && userChoice[i].prefer.year != NULL) {
-			itoa(userChoice[i].prefer.day, takeDay[0], 10);
-			itoa(userChoice[i].prefer.month, takeDay[1], 10);
-			itoa(userChoice[i].prefer.year, takeYear, 10);
-			strcpy(date[i], takeDay[0]);
-			strcat(date[i], "/");
-			strcat(date[i], takeDay[1]);
-			strcat(date[i], "/");
-			strcat(date[i], takeYear);
+	for (int j = 0; j < MAX_TRIP; ++j) {
+		for (int i = 0; i < MAX_PAX; ++i) {
+			if ((*userChoice)[j][i].prefer.day != NULL && (*userChoice)[j][i].prefer.month != NULL && (*userChoice)[j][i].prefer.year != NULL) {
+				itoa((*userChoice)[j][i].prefer.day, takeDay[0], 10);
+				itoa((*userChoice)[j][i].prefer.month, takeDay[1], 10);
+				itoa((*userChoice)[j][i].prefer.year, takeYear, 10);
+				strcpy((*date)[j][i], takeDay[0]);
+				if ((*userChoice)[j][i].prefer.day >= 1 && (*userChoice)[j][i].prefer.day <= 9) {
+					(*date)[j][i][0] = '0';
+					strcat((*date)[j][i], takeDay[0]);
+				}
+				strcat((*date)[j][i], "/");
+				strcat((*date)[j][i], takeDay[1]);
+				if ((*userChoice)[j][i].prefer.month >= 1 && (*userChoice)[j][i].prefer.month <= 9) {
+					(*date)[j][i][3] = '0';
+					strcat((*date)[j][i], takeDay[1]);
+				}
+				strcat((*date)[j][i], "/");
+				strcat((*date)[j][i], takeYear);
+			}
 		}
 	}
 }
 
-float calcFare(Info userChoice[MAX_BOOKING], char date[MAX_BOOKING][9]) {
+void calcPax(Info (*userChoice)[MAX_TRIP][MAX_PAX], int (*pax)[2]){
+	for (int j = 0; j < MAX_TRIP; ++j) {
+		(*pax)[j] = 0;
+		for (int i = 0; i < MAX_PAX; ++i) {
+			if (strcmp((*userChoice)[j][i].destination, "NULL") != 0)
+				++(*pax)[j];
+		}
+	}
+}
+
+float calcFare(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*date)[MAX_TRIP][MAX_PAX][11], int (*pax)[2]) {
 	float totalPrice[10], sumPrice = 0, adj = 0, negative;
 	int sumPriceint;
 	//print price list
@@ -85,11 +116,11 @@ float calcFare(Info userChoice[MAX_BOOKING], char date[MAX_BOOKING][9]) {
 	}
 	printf("\n");
 	printf("| %-10s| %-13s| %-16s| %-14s| %-5s| %-20s| %-18s|\n", "Date", "Destination", "Departure Time", "Arrival Time", "Pax", "Price per Pax (RM)", "Total Price (RM)");
-	for (int j = 0; j < 10; j++) {
-		if (userChoice[j].pax != NULL) {
-			totalPrice[j] = userChoice[j].price * (float)userChoice[j].pax;
-		printf("| %-10s| %-13s| %-16d| %-14d| %-5d| %-20.02f| %-18.02f|\n", date[j], userChoice[j].destination, userChoice[j].prefer.time.depart, userChoice[j].prefer.time.arrive, userChoice[j].pax, userChoice[j].price, totalPrice[j]);
-			sumPrice += totalPrice[j];
+	for (int i = 0; i < MAX_TRIP; ++i) {
+		if ((*pax)[i] != 0 && (*date)[i][0][2] == '/') {
+			totalPrice[0] = (*userChoice)[i][0].price * (float)(*pax)[i];
+			printf("| %-10s| %-13s| %-16d| %-14d| %-5d| %-20.02f| %-18.02f|\n", (*date)[i][0], (*userChoice)[i][0].destination, (*userChoice)[i][0].prefer.time.depart, (*userChoice)[i][0].prefer.time.arrive, (*pax)[i], (*userChoice)[i][0].price, totalPrice[0]);
+			sumPrice += totalPrice[0];
 		}
 	}
 	for (int i = 0; i < 110; i++) {
@@ -128,15 +159,6 @@ float calcFare(Info userChoice[MAX_BOOKING], char date[MAX_BOOKING][9]) {
 	sumPrice += adj;
 	printf("%97s : RM %.02f\n", "Total Price should payment", sumPrice);
 	return sumPrice;
-}
-
-int main(void) {
-	char dateAdd[MAX_BOOKING][9];
-	Info userChoice[MAX_BOOKING] = { "Kampar", 1, 1, 4, 2024, 8, 11 };
-	reset(userChoice);
-	userChoice[0] = (Info) { "Kampar", 1, 50, { 1, 4, 2024,{ 8, 11} } };
-	createDate(userChoice, dateAdd);
-	calcFare(userChoice, dateAdd);
 }
 
 addBooking() {
