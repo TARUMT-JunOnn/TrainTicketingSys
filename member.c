@@ -37,6 +37,32 @@ main() {
 
 }
 
+int tryAgain(int again) {
+	int choice, invalidChoice = 0;
+
+	do {
+		again = 0;
+		invalidChoice = 0;
+		printf("Do you want to try again?\n");
+		printf("1. Yes\n");
+		printf("2. No\n");
+		printf("Please Enter Your Choice: ");
+		scanf("%d", &choice);
+
+		if (choice == 1) {
+			again = 1;
+			return again;
+		}
+		else if (choice == 2)
+			return 0;
+		else {
+			printf("Invalid Choice\n");
+			printf("Please Enter A Valid Choice\n");
+			invalidChoice++;
+		}
+	} while (invalidChoice == 1);
+}
+
 void memberMenu(struct Member* member) {
 	char *menu[] = {"Login", "Registration", "Forgot Password", "Exit Program"};
 	int choice;
@@ -69,7 +95,7 @@ void memberMenu(struct Member* member) {
 
 void memberLogin(struct Member* member) {
 	char name[MEMBER_NAME], password[MEMBER_PASS];
-	int loginSuccess = 0,choice, again = 0, invalidChoice = 0;
+	int loginSuccess = 0, choice, again = 0;
 	
 	do {
 		again = 0;
@@ -90,26 +116,8 @@ void memberLogin(struct Member* member) {
 
 		if (loginSuccess == 0) {
 
-			do {
-				invalidChoice = 0;
 				printf("Invalid ID or Password\n");
-				printf("Do you want to try again?\n");
-				printf("1. Yes\n");
-				printf("2. No\n");
-				printf("Please Enter Your Choice: ");
-				scanf("%d", &choice);
-
-				if (choice == 1)
-					again++;
-				else if (choice == 2)
-					return 0;
-				else {
-					printf("Invalid Choice\n");
-					printf("Please Enter A Valid Choice\n");
-					invalidChoice++;
-				}
-			} while (invalidChoice == 1);
-			
+				again = tryAgain(again);			
 		}
 	} while (again == 1);
 	
@@ -157,7 +165,7 @@ void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MA
 void memberRegister(struct Member* member) {
 
 	char memberID[MEMBER_NAME], password[MEMBER_PASS];
-	int choice, again, invalidChoice;
+	int choice, again;
 	int questionSelection[MAX_NUM_QUESTION], success;
 	char question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
 	do {
@@ -171,25 +179,11 @@ void memberRegister(struct Member* member) {
 
 		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
 			if (strcmp(member[i].id, memberID) == 0) {
-				do {
-					invalidChoice = 0;
 					printf("The username %s already exits.\n", memberID);
 					printf("Please choose a different username.\n");
-					printf("Do you want to try again?\n");
-					printf("1. Yes\n");
-					printf("2. No\n");
-					printf("Please Enter Your Choice: ");
-					scanf("%d", &choice);
-					if (choice == 1)
-						again++;
-					else if (choice == 2)
-						return 0;
-					else {
-						printf("Invalid Choice\n");
-						printf("Please Enter A Valid Choice\n");
-						invalidChoice++;
-					}
-				} while (invalidChoice == 1);
+					again = tryAgain(again);
+
+					//again got bug
 			}
 		}
 	} while (again == 1);
@@ -237,7 +231,7 @@ void memberRegister(struct Member* member) {
 
 
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < MAX_NUM_QUESTION; i++) {
 		printf("%s ?\n", question[i]);
 		printf("Answer: ");
 		scanf(" %[^\n]", answer[i]);
@@ -250,16 +244,25 @@ void memberRegister(struct Member* member) {
 }
 
 void forgotPass(struct Member* member) {
-	char id[MEMBER_NAME], question[MAX_NUM_QUESTION][100];
-	int questionSelection[MAX_NUMBER_MEMBER];
-	int again = 0;
-	system("cls");
-	printf("ID: ");
-	scanf(" %[^\n]", id);
+	char id[MEMBER_NAME], question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
+	int num, questionSelection[MAX_NUMBER_MEMBER], newPassword[100];
+	int idExist = 0, again = 0, securityPass = 0, choice, invalidChoice = 0;
 
-	for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
-		if (strcmp(member[i].id, id) == 0) {
+	do {
+		system("cls");
+		printf("ID: ");
+		scanf(" %[^\n]", id);
+		
+		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
+			if (strcmp(member[i].id, id) == 0) {
+				num = i;
+				idExist++;
+			}
+			
+		}
 
+		
+		if (idExist == 1) {
 			do {
 				again = 0;
 				securityQuestion();
@@ -274,13 +277,46 @@ void forgotPass(struct Member* member) {
 						again = 1;
 						break;
 					}
-					
+
 				}
 			} while (again == 1);
 
 			questionTitle(questionSelection, question);
+
+			for (int i = 0; i < MAX_NUM_QUESTION; i++) {
+				printf("%s ?\n", question[i]);
+				printf("Answer: ");
+				scanf(" %[^\n]", answer[i]);
+			}
+
+			for (int i = 0; i < MAX_NUM_QUESTION; i++) {
+				for (int x = 0; x < MAX_NUM_QUESTION; x++) {
+					if (member[num].security[i].questionNum == questionSelection[x] && strcmp(member[num].security[i].answer, answer[x]) == 0)
+						securityPass++;
+
+				}
+			}
+			if (securityPass == 3) {
+				printf("Please Enter New Password: ");
+				scanf(" %[^\n]", newPassword);
+				strcpy(member[num].pass, newPassword);
+				printf("\nYour Password Has Been Updated Successfully\n");
+				return 0;
+			}
+			else {
+				printf("\nInvalid Security Questions Or Answer!\n");
+				again = tryAgain(again);
+			}
 		}
-	}
+		else {
+			printf("Invalid ID!\n");
+				
+			again = tryAgain(again);
+
+		}
+
+		
+	} while (again == 1);
 
 
 }
