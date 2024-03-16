@@ -30,6 +30,8 @@ typedef struct {
 void createDate(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*date)[MAX_PAX][11]);
 void calcPax(Info (*userChoice)[MAX_TRIP][MAX_PAX], int (*pax)[2]);
 float calcFare(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*)[MAX_PAX][11], int (*pax)[2]);
+char userAction();
+editPax(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*)[MAX_PAX][11], int(*pax)[2]);
 addBooking();
 
 void reset(Info (*userChoice)[MAX_TRIP][MAX_PAX]) {
@@ -58,15 +60,32 @@ void title(void) {
 }
 
 int main(void) {
-	char dateAdd[MAX_TRIP][MAX_PAX][11];
-	int pax[2];
+	char dateAdd[MAX_TRIP][MAX_PAX][11], action = ' ';
+	int pax[2], status;
 	Info userChoice[MAX_TRIP][MAX_PAX];
 	reset(userChoice);
 	userChoice[0][0] = (Info) { "Kampar", 50, { 1, 4, 2024,{ 8, 11} } };
 	userChoice[1][0] = (Info){ "KL Sentral", 25, { 2, 4, 2024,{ 5, 8} } };
-	createDate(userChoice, dateAdd);
-	calcPax(userChoice, pax);
-	calcFare(userChoice, dateAdd, pax);
+	do {
+		createDate(userChoice, dateAdd);
+		if (action == '2') {
+			editPax(userChoice, dateAdd, pax);
+		}
+		calcPax(userChoice, pax);
+		float fare = calcFare(userChoice, dateAdd, pax);
+		action = userAction();
+	} while (action == '2');
+	switch (action)
+	{
+		case '1':
+			return 1; //Back to Schedules
+			break;
+		case '3':
+			//status = payment();
+			break;
+		case '0':
+			return 0;
+	}
 }
 
 void createDate(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*date)[MAX_TRIP][MAX_PAX][11]) {
@@ -158,7 +177,62 @@ float calcFare(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*date)[MAX_TRIP][MAX
 	}
 	sumPrice += adj;
 	printf("%97s : RM %.02f\n", "Total Price should payment", sumPrice);
+	printf("\n\n");
 	return sumPrice;
+}
+
+char userAction() {
+	char action;
+	printf("What action you would like to perform ?\n");
+	printf("\t1. Edit trip\n\t2. Edit Number of Pax\n\t3. Payment & Booking\n\t0. Return\n\n");
+	printf("Enter the number : ");
+	rewind(stdin);
+	scanf("%c", &action);
+	return action;
+}
+
+editPax(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_TRIP][MAX_PAX][11], int(*pax)[2]) {
+	char paxInC[3];
+	int paxInD = 0, j = 0;
+	do{
+		title(NULL);
+		for (int i = 0; i < 110; i++) {
+			printf("_");
+		}
+		printf("\n");
+		printf("| %-10s| %-13s| %-16s| %-14s| %-12s|\n", "Date", "Destination", "Departure Time", "Arrival Time", "Pax (1-10)");
+		while (j < MAX_TRIP)	{
+			if ((*date)[j][0][2] == '/') {
+				printf("| %-10s| %-13s| %-16d| %-14d| ", (*date)[j][0], (*userChoice)[j][0].destination, (*userChoice)[j][0].prefer.time.depart, (*userChoice)[j][0].prefer.time.arrive);
+				rewind(stdin);
+				scanf("%s", &paxInC);
+				paxInD = atoi(&paxInC);
+			}
+			if (paxInD < 1 || paxInD > 10) {
+				break;
+			}
+			else if (paxInD > (*pax)[j]) {
+				for (int k = 0; k < paxInD; ++k) {
+					if (strcmp((*userChoice)[j][k].destination, "NULL") == 0){
+						(*userChoice)[j][k] = (*userChoice)[j][0];
+					}
+				}
+			}
+			else if (paxInD < (*pax)[j]) {
+				for (int k = 9; k >= paxInD; --k) {
+					if (strcmp((*userChoice)[j][k].destination, "NULL") != 0) {
+						(*userChoice)[j][k].prefer.day = NULL;
+						(*userChoice)[j][k].prefer.month = NULL;
+						(*userChoice)[j][k].prefer.year = NULL;
+						(*userChoice)[j][k].prefer.time.depart = NULL;
+						(*userChoice)[j][k].prefer.time.arrive = NULL;
+						strcpy((*userChoice)[j][k].destination, "NULL");
+					}
+				}
+			}
+			++j;
+		}
+	} while (paxInD < 1 || paxInD > 10);
 }
 
 addBooking() {
