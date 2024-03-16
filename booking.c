@@ -196,11 +196,11 @@ editPax(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_TRIP][MAX_PAX][11]
 	int paxInD = 0, j = 0;
 	do{
 		title(NULL);
-		for (int i = 0; i < 110; i++) {
+		for (int i = 0; i < 75; i++) {
 			printf("_");
 		}
 		printf("\n");
-		printf("| %-10s| %-13s| %-16s| %-14s| %-12s|\n", "Date", "Destination", "Departure Time", "Arrival Time", "Pax (1-10)");
+		printf("| %-10s| %-13s| %-16s| %-14s| %-12s\n", "Date", "Destination", "Departure Time", "Arrival Time", "Pax (1-10)");
 		while (j < MAX_TRIP)	{
 			if ((*date)[j][0][2] == '/') {
 				printf("| %-10s| %-13s| %-16d| %-14d| ", (*date)[j][0], (*userChoice)[j][0].destination, (*userChoice)[j][0].prefer.time.depart, (*userChoice)[j][0].prefer.time.arrive);
