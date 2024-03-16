@@ -6,8 +6,11 @@
 #pragma warning(disable:4996)
 #define MAX_BOOKING 10
 
-char date[MAX_BOOKING][9];
+//Function Declaration
+float calcFare();
+addBooking();
 
+//Global Structure Declaration
 struct train {
 	int depart;
 	int arrive;
@@ -21,12 +24,11 @@ struct date {
 typedef struct {
 	char destination[20];
 	int pax;
-	double price;
+	float price;
 	struct date prefer;
 }Info;
 
-
-addBooking();
+//Global Variable
 
 void reset(Info userChoice[MAX_BOOKING]) {
 	for (int i = 0; i < MAX_BOOKING; ++i) {
@@ -55,7 +57,8 @@ void title(void) {
 	printf("\n\n");
 }
 
-void createDate(Info userChoice[MAX_BOOKING]) {
+void createDate(Info userChoice[MAX_BOOKING], char *date[MAX_BOOKING][9]) {
+	void* add = &date;
 	char takeDay[2][3];
 	char takeYear[5];
 	for (int i = 0; i < MAX_BOOKING; ++i) {
@@ -70,12 +73,12 @@ void createDate(Info userChoice[MAX_BOOKING]) {
 			strcat(date[i], takeYear);
 		}
 	}
-	printf("%s", date[0]);
 }
 
-int calcFare(Info userChoice[MAX_BOOKING]) {
-	double totalPrice[10], sumPrice = 0, adj = 0, negative;
+float calcFare(Info userChoice[MAX_BOOKING], char date[MAX_BOOKING][9]) {
+	float totalPrice[10], sumPrice = 0, adj = 0, negative;
 	int sumPriceint;
+	//print price list
 	title(NULL);
 	for (int i = 0; i < 110; i++) {
 		printf("_");
@@ -84,8 +87,8 @@ int calcFare(Info userChoice[MAX_BOOKING]) {
 	printf("| %-10s| %-13s| %-16s| %-14s| %-5s| %-20s| %-18s|\n", "Date", "Destination", "Departure Time", "Arrival Time", "Pax", "Price per Pax (RM)", "Total Price (RM)");
 	for (int j = 0; j < 10; j++) {
 		if (userChoice[j].pax != NULL) {
-			totalPrice[j] = userChoice[j].price * (double)userChoice[j].pax;
-			printf("| %-10s| %-13s| %-16d| %-14d| %-5d| %-20.02f| %-18.02f|\n", date[j], userChoice[j].destination, userChoice[j].prefer.time.depart, userChoice[j].prefer.time.arrive, userChoice[j].pax, userChoice[j].price, totalPrice[j]);
+			totalPrice[j] = userChoice[j].price * (float)userChoice[j].pax;
+		printf("| %-10s| %-13s| %-16d| %-14d| %-5d| %-20.02f| %-18.02f|\n", date[j], userChoice[j].destination, userChoice[j].prefer.time.depart, userChoice[j].prefer.time.arrive, userChoice[j].pax, userChoice[j].price, totalPrice[j]);
 			sumPrice += totalPrice[j];
 		}
 	}
@@ -94,27 +97,26 @@ int calcFare(Info userChoice[MAX_BOOKING]) {
 	}
 	printf("\n");
 	printf("%97s : RM %.02f\n", "Total", sumPrice);
-	if (ceil(sumPrice) != floor(sumPrice)) {
-		sumPriceint = sumPrice * 100;
-		sumPriceint %= 10;
-		switch (sumPriceint) {
-		case 1:
-		case 2:
-			adj = -((double)sumPriceint / 100);
-			break;
-		case 3:
-		case 4:
-			adj = 0.05 - ((double)sumPriceint / 100);
-			break;
-		case 6:
-		case 7:
-			adj = -(((double)sumPriceint / 100) - 0.05);
-			break;
-		case 8:
-		case 9:
-			adj = 0.1 - ((double)sumPriceint / 100);
-			break;
-		}
+	//count Rounding
+	sumPriceint = sumPrice * 100;
+	sumPriceint %= 10;
+	switch (sumPriceint) {
+	case 1:
+	case 2:
+		adj = -((float)sumPriceint / 100);
+		break;
+	case 3:
+	case 4:
+		adj = 0.05 - ((float)sumPriceint / 100);
+		break;
+	case 6:
+	case 7:
+		adj = -(((float)sumPriceint / 100) - 0.05);
+		break;
+	case 8:
+	case 9:
+		adj = 0.1 - ((float)sumPriceint / 100);
+		break;
 	}
 	if (adj < 0) {
 		negative = adj * -1;
@@ -125,19 +127,20 @@ int calcFare(Info userChoice[MAX_BOOKING]) {
 	}
 	sumPrice += adj;
 	printf("%97s : RM %.02f\n", "Total Price should payment", sumPrice);
+	return sumPrice;
 }
 
 int main(void) {
+	char dateAdd[MAX_BOOKING][9];
 	Info userChoice[MAX_BOOKING] = { "Kampar", 1, 1, 4, 2024, 8, 11 };
 	reset(userChoice);
-	userChoice[0] = (Info) { "Kampar", 1, 50.26, { 1, 4, 2024,{ 8, 11} } };
-	title(NULL);
-	createDate(userChoice);
-	calcFare(userChoice);
+	userChoice[0] = (Info) { "Kampar", 1, 50, { 1, 4, 2024,{ 8, 11} } };
+	createDate(userChoice, dateAdd);
+	calcFare(userChoice, dateAdd);
 }
 
 addBooking() {
-	title(NULL);
+	title();
 	printf("Schedules: \n"); //Integerate with schedule module
 }
 
