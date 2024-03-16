@@ -2,7 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#pragma warning ( disable : 4996 )
+#pragma warning (disable : 4996)
+
+typedef struct {
+	int emp_id;
+	int manager_id;
+}Difference;
 
 typedef struct {
 	int staff_id;
@@ -11,14 +16,9 @@ typedef struct {
 	char staff_email[20];
 	char staff_password[20];
 	char manager_password[20];
-	 Difference dffid;
+	Difference dffid;
 	char staff_position[30];
-	} Staff;
-
-typedef struct {
-	int emp_id;
-	int manager_id;
-}Difference;
+} Staff;
 
 void staffLogin(FILE *fptr);
 void staffCreateAcc();
@@ -29,9 +29,8 @@ void update_StaffInformation();
 
 
 main() {
-
 	FILE* fptr;
-	fptr = fopen("\TrainTicketingSys\res\satff.bin", "ab+");
+	fptr = fopen("../TrainTicketingSys/res/staff.bin", "ab+");
 
 	if (fptr == NULL) {
 		printf("Can't Open File.\n");
@@ -71,15 +70,13 @@ main() {
 
 
 void staffCreateAcc() {
-
 	Staff staff;
-
 	printf("Enter your name: ");
-	scanf("% [^\n]", staff.staff_name);
+	scanf("%[^\n]", staff.staff_name);
 	printf("Enter your email:");
-	scanf("% [^\n]", staff.staff_email);
+	scanf("%[^\n]", staff.staff_email);
 	printf("\nCreate a password:");
-	scanf("% [^\n]", staff.staff_password);
+	scanf("%[^\n]", staff.staff_password);
 
 	printf("Enter your position: ");
 	scanf("%s", &staff.staff_position);
@@ -140,14 +137,13 @@ void update_StaffInformation() {
 	char name[40];
 	char confirm;
 
-	Staff staff;
+
 	Difference dffid;
 
 	printf("Enter Staff Name:");
 	scanf("% [^\n]", name);
 
 	if (strcmp(name, staff.staff_name) == 0) {
-
 
 		printf("---------BEFOR EDIT-----------");
 		printf("\nName : %s\n", staff.staff_name);
@@ -172,8 +168,7 @@ void update_StaffInformation() {
 		printf("\nEmployee ID : %s\n", dffid.emp_id);
 		printf("\nEmail: %s", staff.staff_email);
 		printf("Phone No :%d\n", staff.staff_phoneNo);
-
-
+		
 	}
 
 
