@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include<time.h>
 #pragma warning (disable : 4996)
 
 typedef struct {
@@ -29,6 +30,13 @@ void update_StaffInformation();
 
 
 main() {
+	struct tm* hour;
+	char buffer[50];
+	time_t t;
+	time(&t);
+	
+	hour = localtime(&t);
+	strftime(buffer, 50, "%X", hour);
 	FILE* fptr;
 	fptr = fopen("../TrainTicketingSys/res/staff.bin", "ab+");
 
@@ -37,7 +45,7 @@ main() {
 		exit(-1);
 	}
 
-	int choice;
+	int choice = 3;
 
 	do {
 		printf("------ STAFF MENU ------\n");
@@ -45,7 +53,8 @@ main() {
 		printf("1. Log In\n");
 		printf("2. Sign In Acc\n");
 		printf("3. Exit\n");
-		printf("Please select again:");
+		if (choice != 3)
+			printf("Please select again:");
 		scanf("%d", &choice);
 
 		switch (choice) {
@@ -56,7 +65,7 @@ main() {
 			staffCreateAcc();
 			break;
 		case 3:
-			printf("You are Log Out (What Time) Right Now\n");
+			printf("You are Log Out %s Right Now\n",buffer);
 			break;
 		default:
 			printf("Invalid Select\n");
@@ -133,46 +142,46 @@ void search_Staff_information() {
 }
 
 
-void update_StaffInformation() {
-	char name[40];
-	char confirm;
-
-
-	Difference dffid;
-
-	printf("Enter Staff Name:");
-	scanf("% [^\n]", name);
-
-	if (strcmp(name, staff.staff_name) == 0) {
-
-		printf("---------BEFOR EDIT-----------");
-		printf("\nName : %s\n", staff.staff_name);
-		printf("\nEmployee ID : %s\n", dffid.emp_id);
-		printf("\nEmail: %s", staff.staff_email);
-
-		printf("------------ADD---------------");
-		printf("Do you want to add phone_No ?");
-		printf("\nEnter Phone_No: ");
-		scanf("%d", &staff.staff_phoneNo);
-
-		printf("Confirm? ");
-		scanf("%c", &confirm);
-		rewind(stdin);
-		if (confirm == 'Y' || confirm == 'y') {
-			printf("\n");
-			printf("Edit was successfully!\n");
-		}
-		
-		printf("--------After edit---------------\n");
-		printf("\nName : %s\n", staff.staff_name);
-		printf("\nEmployee ID : %s\n", dffid.emp_id);
-		printf("\nEmail: %s", staff.staff_email);
-		printf("Phone No :%d\n", staff.staff_phoneNo);
-		
-	}
-
-
-}
+//void update_StaffInformation() {
+//	char name[40];
+//	char confirm;
+//
+//
+//	Difference dffid;
+//
+//	printf("Enter Staff Name:");
+//	scanf("% [^\n]", name);
+//
+//	if (strcmp(name, staff.staff_name) == 0) {
+//
+//		printf("---------BEFOR EDIT-----------");
+//		printf("\nName : %s\n", staff.staff_name);
+//		printf("\nEmployee ID : %s\n", dffid.emp_id);
+//		printf("\nEmail: %s", staff.staff_email);
+//
+//		printf("------------ADD---------------");
+//		printf("Do you want to add phone_No ?");
+//		printf("\nEnter Phone_No: ");
+//		scanf("%d", &staff.staff_phoneNo);
+//
+//		printf("Confirm? ");
+//		scanf("%c", &confirm);
+//		rewind(stdin);
+//		if (confirm == 'Y' || confirm == 'y') {
+//			printf("\n");
+//			printf("Edit was successfully!\n");
+//		}
+//		
+//		printf("--------After edit---------------\n");
+//		printf("\nName : %s\n", staff.staff_name);
+//		printf("\nEmployee ID : %s\n", dffid.emp_id);
+//		printf("\nEmail: %s", staff.staff_email);
+//		printf("Phone No :%d\n", staff.staff_phoneNo);
+//		
+//	}
+//
+//
+//}
 
 
 
