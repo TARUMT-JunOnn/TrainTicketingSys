@@ -80,6 +80,52 @@ void DisplayTrainSchedule()
 	fclose(fp);
 }
 
+void SearchTrainSchedule()
+{
+	time_t now;
+	struct tm* cur_time;
+	char s[100];
+	char dayOfWeek[8];
+
+	time(&now);
+	cur_time = localtime(&now);
+	strftime(s, 100, "%A", cur_time);
+	printf("\nToday's date: %d-%02d-%02d\n", cur_time->tm_year + 1900, cur_time->tm_mon + 1, cur_time->tm_mday);
+	printf("%s\n\n", s);
+
+	// Begin searching
+	struct tm future_date = {0};
+
+	rewind(stdin);
+	printf("Enter the date you want to search by following sequence.\n");
+	printf("1. Year : ");
+	scanf("%d", &future_date.tm_year);
+	printf("2. Month: ");
+	rewind(stdin);
+	scanf("%d", &future_date.tm_mon);
+	printf("3. Day  : ");
+	rewind(stdin);
+	scanf("%d", &future_date.tm_mday);
+
+	// for checking purpose (remember delete lol)
+	printf("%d/%d/%d", future_date.tm_year, future_date.tm_mon, future_date.tm_mday);
+	future_date.tm_year -= 1900;
+	future_date.tm_mon -= 1;
+	future_date.tm_mday += 1;
+
+	// Convert to time_t;
+	time_t future_time = mktime(&future_date);
+
+	// Calculate the differences (in seconds)
+	double difference_seconds = difftime(future_time, now);
+
+	// Convert it
+	int difference_days = difference_seconds / (60 * 60 * 24);
+
+	// Output the difference
+	printf("\nDifference between today and future date: %d days\n", difference_days);
+}
+
 void ModifyTrainSchedule()
 {
 
@@ -89,5 +135,6 @@ main()
 {
 	DisplayCurrentTime();
 	DisplayTrainSchedule();
+	SearchTrainSchedule();
 	system("pause");
 }
