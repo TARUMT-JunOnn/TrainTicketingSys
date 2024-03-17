@@ -8,13 +8,14 @@
 #define MAX_NUMBER_MEMBER 100 
 #define MAX_NUM_QUESTION 3
 
-
-void memberMenu();
-void menuLogin();
-void memberLogin();
-void memberRegister();
-void forgotPass();
-void memberMainPage();
+int tryAgain(int again);
+void memberMenu(struct Member* member);
+void memberLogin(struct Member* member);
+void securityQuestion();
+void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]);
+void memberRegister(struct Member* member);
+void forgotPass(struct Member* member);
+void memberMainPage(struct Member* member);
 
 struct SecurityQuestion {
 	int questionNum;
@@ -50,7 +51,7 @@ int tryAgain(int again) {
 		scanf("%d", &choice);
 
 		if (choice == 1) {
-			again = 1;
+			again++;
 			return again;
 		}
 		else if (choice == 2)
@@ -182,8 +183,8 @@ void memberRegister(struct Member* member) {
 					printf("The username %s already exits.\n", memberID);
 					printf("Please choose a different username.\n");
 					again = tryAgain(again);
-
-					//again got bug
+					if (again == 0)
+						return 0;
 			}
 		}
 	} while (again == 1);
