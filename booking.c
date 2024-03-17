@@ -385,112 +385,144 @@ int payment(float price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_P
 }
 
 int card() {
-	char num[17], input = 'N', month[3], year[3];
+	char num[17], input = 'N', month[3], year[3], cvv[4];
 	int loop, bigLoop = 0;
 	strcpy(num, "NULL");
+	strcpy(month, "NO");
 	do {
 		do {
 			do {
-				input = 'N';
-				title(NULL);
-				printf("\tPlease provide your card details (Press 0 to return): \n");
-				printf("\t\tCard number : ");
-				if (strcmp(num, "NULL") == 0) {
-					rewind(stdin);
-					scanf("%s", num);
-				}
-				else {
-					printf("%s\n", num);
-				}
-				switch (num[0]) {
-				case '3':
-					printf("\t\tCard issuer : ");
-					printf("AMERICAN EXPRESS\n");
-					if (num[15] != '\0') {
-						printf("Please type 15 number\n");
-						input = '1';
-					}
-					break;
-				case '4':
-					printf("\t\tCard issuer : ");
-					printf("VISA\n");
-					break;
-				case '5':
-					printf("\t\tCard issuer : ");
-					printf("MASTERCARD\n");
-					break;
-				case '0':
-					if (num[1] == '\0') {
-						strcpy(num, "NULL");
-						return 0;
+				do {
+					input = 'N';
+					title(NULL);
+					printf("\tPlease provide your card details (Press 0 to return): \n");
+					printf("\t\t%-13s : ", "Card Number");
+					if (strcmp(num, "NULL") == 0) {
+						rewind(stdin);
+						scanf("%s", num);
 					}
 					else {
-						input = '1';
+						printf("%s\n", num);
 					}
-					break;
-				default:
-					printf("We are only accepted AMERICAN EXPRESS, VISA, MASTERCARD debit/credit card, Please use an alternative payment card/methods.\n");
-					printf("Do you want to continue ?\n\t1. Yes\n\t0. No(Return)\n\n");
-					printf("Enter the number : ");
-					rewind(stdin);
-					scanf("%c", &input);
-					break;
+					switch (num[0]) {
+					case '3':
+						printf("\t\t%-13s : ", "Card Issuer");
+						printf("AMERICAN EXPRESS\n");
+						if (num[15] != '\0') {
+							printf("Please type 15 number\n");
+							input = '1';
+						}
+						break;
+					case '4':
+						printf("\t\t%-13s : ", "Card Issuer");
+						printf("VISA\n");
+						break;
+					case '5':
+						printf("\t\t%-13s : ", "Card Issuer");
+						printf("MASTERCARD\n");
+						break;
+					case '0':
+						if (num[1] == '\0') {
+							strcpy(num, "NULL");
+							return -1;
+						}
+						else {
+							input = '1';
+						}
+						break;
+					default:
+						printf("We are only accepted AMERICAN EXPRESS, VISA, MASTERCARD debit/credit card, Please use an alternative payment card/methods.\n");
+						printf("Do you want to continue ?\n\t1. Yes\n\t0. No(Return)\n\n");
+						printf("Enter the number : ");
+						rewind(stdin);
+						scanf("%c", &input);
+						break;
+					}
+					for (int i = 0; i < 16; ++i) {
+						if ((int)num[i] < 48 || (int)num[i]>57 || num[16] != '\0') {
+							if (i = 15 && num[15] == '\0') {
+								break;
+							}
+							else {
+								input = '1';
+								break;
+							}
+						}
+					}
+					if (input != '0' && input != 'N')
+						strcpy(num, "NULL");
+				} while (input != '0' && input != 'N');
+				if (input == '0') {
+					strcpy(num, "NULL");
+					return -1;
 				}
-				for (int i = 0; i < 16; ++i) {
-					if ((int)num[i] < 48 || (int)num[i]>57 || num[16] != '\0') {
-						input = '1';
+				printf("\t\t%-13s : \n", "Month/Year");
+				do {
+				printf("\t\t\t%-15s : ", "Month");
+					if (strcmp(month, "NO") == 0) {
+						rewind(stdin);
+						scanf("%2s", month);
+					}
+					else
+						printf("%s\n", month);
+					loop = 0;
+					bigLoop = 0;
+					if (month[0] == '0') {
+						if ((int)month[1] < 49 || (int)month[1] > 57) {
+							loop = 1;
+							if (month[1] == '\0') {
+								strcpy(num, "NULL");
+								strcpy(month, "NO");
+								bigLoop = 1;
+								break;
+							}
+						}
+					}
+					else if (month[0] == '1') {
+						if ((int)month[1] < 48 || (int)month[1] > 50)
+							loop = 1;
+					}
+					else
+						loop = 1;
+				} while (loop == 1);
+			} while (bigLoop == 1);
+			do {
+				printf("\t\t\t%-15s : ", "Year (2 digits)");
+				rewind(stdin);
+				scanf("%2s", year);
+				loop = 0;
+				bigLoop = 0;
+				for (int i = 0; i < 2; ++i) {
+					if ((int)year[i] < 48 || (int)year[i]>57)
+						loop = 1;
+					else if (strcmp(year, "0") == 0) {
+						bigLoop = 2;
+						strcpy(month, "NO");
 						break;
 					}
 				}
-				if (input != '0' && input != 'N')
-					strcpy(num, "NULL");
-			} while (input != '0' && input != 'N');
-			if (input == '0') {
-				strcpy(num, "NULL");
-				return 0;
-			}
-			printf("\t\tMonth/Year :\n");
-			do {
-				printf("\t\t\tMonth (01 - 12): ");
-				rewind(stdin);
-				scanf("%2s", month);
-				loop = 0;
-				bigLoop = 0;
-				if (month[0] == '0') {
-					if ((int)month[1] < 49 || (int)month[1] > 57) {
-						loop = 1;
-						if (month[1] == '\0') {
-							strcpy(num, "NULL");
-							bigLoop = 1;
-							break;
-						}
-					}
-				}
-				else if (month[0] == '1') {
-					if ((int)month[1] < 48 || (int)month[1] > 50)
-						loop = 1;
-				}
-				else
-					loop = 1;
 			} while (loop == 1);
-		} while (bigLoop == 1);
+		} while (bigLoop == 2);
+		printf("\t\t%-13s : %s/%s\n", "Month/Year", month, year);
 		do {
-			printf("\t\t\tYear (2 digits): ");
-			scanf("%2s", year);
+			printf("\t\t%-13s : ", "CVV/CVV2");
+			rewind(stdin);
+			scanf("%3s", cvv);
 			loop = 0;
 			bigLoop = 0;
-			for (int i = 0; i < 2; ++i) {
-				if ((int)year[i] < 48 || (int)year[i]>57)
+			for (int i = 0; i < 3; ++i) {
+				if (strcmp(cvv, "0") == 0) {
+					bigLoop = 3;
+					break;
+				}
+				else if ((int)cvv[i] < 49 || (int)month[i] > 57) {
 					loop = 1;
-				else if (strcmp(year, "0") == 0) {
-					bigLoop = 2;
 					break;
 				}
 			}
 		} while (loop == 1);
-	} while (bigLoop == 2);
-	printf("\t\tMonth/Year : %s/%s", month, year);
-	scanf("%d", &input);
+	}while (bigLoop == 3);
+	return 1;
 }
 
 addBooking() {
