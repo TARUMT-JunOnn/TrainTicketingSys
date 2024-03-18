@@ -51,7 +51,7 @@ int tryAgain(int again) {
 		scanf("%d", &choice);
 
 		if (choice == 1) {
-			again = 1;
+			again++;
 			return again;
 		}
 		else if (choice == 2)
