@@ -94,6 +94,8 @@ void memberMenu(struct Member* member) {
 	} while (choice !=4);
 }
 
+
+
 void memberLogin(struct Member* member) {
 	char name[MEMBER_NAME], password[MEMBER_PASS];
 	int loginSuccess = 0, choice, again = 0;
