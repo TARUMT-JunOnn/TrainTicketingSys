@@ -34,7 +34,7 @@ int numMember = 0;
 main() {
 	struct Member member[MAX_NUMBER_MEMBER];
 	system("cls");
-	memberMenu(member, numMember);
+	memberMenu(member);
 
 }
 
