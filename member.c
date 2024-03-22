@@ -26,6 +26,7 @@ struct Member {
 	char id[MEMBER_NAME];
 	char pass[MEMBER_PASS];
 	struct SecurityQuestion security[MAX_NUM_QUESTION];
+	int number;
 	
 };
 
@@ -93,8 +94,6 @@ void memberMenu(struct Member* member) {
 		}
 	} while (choice !=4);
 }
-
-
 
 void memberLogin(struct Member* member) {
 	char name[MEMBER_NAME], password[MEMBER_PASS];
@@ -166,11 +165,20 @@ void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MA
 }
 
 void memberRegister(struct Member* member) {
-
+	
 	char memberID[MEMBER_NAME], password[MEMBER_PASS];
 	int choice, again;
 	int questionSelection[MAX_NUM_QUESTION], success;
 	char question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
+	FILE* fptr;
+	fptr = fopen("../../TrainTicketingSys/res/member.bin", "wb+");
+
+	if (fptr == NULL) {
+		printf("Unable to open the file\n");
+		exit(-1);
+	}
+
+
 	do {
 		again = 0;
 		system("cls");
@@ -243,7 +251,27 @@ void memberRegister(struct Member* member) {
 
 	printf("\nRegistration successfully\n\n");
 
+	member[numMember].number = numMember + 1;
+
+	fwrite(&member[numMember], sizeof(member[0]), 1, fptr);
+
+	fseek(fptr, 0, SEEK_SET);
 	numMember++;
+
+	fread(&member[numMember], sizeof(member[0]), 1, fptr);
+
+	printf("\n\nID: %s\n", member[numMember-1].id);
+	printf("Password: %s\n", member[numMember-1].pass);
+	printf("Number: %d\n", member[numMember-1].number);
+	printf("QuestionNumber: %d\n", member[numMember-1].security[1].questionNum);
+
+	printf("\n\nID: %s\n", member[numMember].id);
+	printf("Password: %s\n", member[numMember].pass);
+	printf("Number: %d\n", member[numMember].number);
+	printf("QuestionNumber: %d\n", member[numMember].security[1].questionNum);
+
+	fclose(fptr);
+
 }
 
 void forgotPass(struct Member* member) {
