@@ -37,8 +37,8 @@ float calcTax(int, float);
 char userAction();
 void editPax(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*)[MAX_PAX][11], int(*pax)[2]);
 int payment(float, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*)[MAX_PAX][11], int(*pax)[2]);
-int card();
-int bank();
+int card(float*, char *name[20]);
+int bank(float*);
 int eWallet();
 addBooking();
 
@@ -75,33 +75,35 @@ int main(void) {
 	float fare;
 	Info userChoice[MAX_TRIP][MAX_PAX];
 	reset(userChoice);
-	userChoice[0][0] = (Info) {"T1001", "KL Sentral",  "Kampar", 50, { 1, 4, 2024,{ 9, 13} } };
+	userChoice[0][0] = (Info){ "T1001", "KL Sentral",  "Kampar", 50, { 1, 4, 2024,{ 9, 13} } };
 	userChoice[1][0] = (Info){ "T1004", "Kampar", "KL Sentral", 25, { 2, 4, 2024,{ 5, 8} } };
-	do {
-		createDate(userChoice, dateAdd);
-		if (action == '2') {
-			editPax(userChoice, dateAdd, pax);
-		}
-		calcPax(userChoice, pax);
+	do{
 		do {
-			fare = calcFare(userChoice, dateAdd, pax, status);
-			if (fare == 0)
-				title(NULL);
-			action = userAction();
-		} while (action == 'N');
-	} while (action == '2');
-	switch (action)
-	{
-		case '1':
-			return 1; //Back to Schedules
-			break;
-		case '3':
-			fare = calcFare(userChoice, dateAdd, pax, status);
-			status = payment(fare, userChoice, dateAdd, pax);
-			break;
-		case '0':
-			return 0;
-	}
+			createDate(userChoice, dateAdd);
+			if (action == '2') {
+				editPax(userChoice, dateAdd, pax);
+			}
+			calcPax(userChoice, pax);
+			do {
+				fare = calcFare(userChoice, dateAdd, pax, status);
+				if (fare == 0)
+					title(NULL);
+				action = userAction();
+			} while (action == 'N');
+		} while (action == '2');
+		switch (action)
+		{
+			case '1':
+				return 1; //Back to Schedules
+				break;
+			case '3':
+				fare = calcFare(userChoice, dateAdd, pax, status);
+				status = payment(fare, userChoice, dateAdd, pax);
+				break;
+			case '0':
+				return 0;
+		}
+	} while (status != 1);
 }
 
 void createDate(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*date)[MAX_TRIP][MAX_PAX][11]) {
@@ -343,10 +345,10 @@ int payment(float price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_P
 	scanf("%c", &input);
 	switch (input) {
 	case '1':
-		status = card();
+		status = card(&price, memName);
 		break;
 	case '2':
-		//status = bank();
+		status = bank(&price);
 		break;
 	case '3':
 		//status = eWallet();
@@ -371,21 +373,25 @@ int payment(float price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_P
 	switch (status) {
 		case 1:
 			printf("Payment Sucessfully !\n");
+			Sleep(2000);
 			return status;
 		case 0:
 			printf("Payment Unsucessful.\n");
+			Sleep(2000);
 			return status;
 		case -1:
 			printf("Payment Denied.\n");
+			Sleep(2000);
 			return status;
 		default:
 			printf("Error, Please contact IT adminstrator.");
+			Sleep(2000);
 			return 404;
 	}
 }
 
-int card() {
-	char num[17], input = 'N', month[3], year[3], cvv[4];
+int card(float* price, char name[20]) {
+	char num[17], issuer[19], input = 'N', month[3], year[3], cvv[4];
 	int loop, bigLoop = 0;
 	strcpy(num, "NULL");
 	strcpy(month, "NO");
@@ -394,6 +400,7 @@ int card() {
 			do {
 				do {
 					input = 'N';
+					strcpy(issuer, "NULL");
 					title(NULL);
 					printf("\tPlease provide your card details (Press 0 to return): \n");
 					printf("\t\t%-13s : ", "Card Number");
@@ -407,6 +414,7 @@ int card() {
 					switch (num[0]) {
 					case '3':
 						printf("\t\t%-13s : ", "Card Issuer");
+						strcpy(issuer, "AMERICAN EXPRESS");
 						printf("AMERICAN EXPRESS\n");
 						if (num[15] != '\0') {
 							printf("Please type 15 number\n");
@@ -415,10 +423,12 @@ int card() {
 						break;
 					case '4':
 						printf("\t\t%-13s : ", "Card Issuer");
+						strcpy(issuer, "VISA");
 						printf("VISA\n");
 						break;
 					case '5':
 						printf("\t\t%-13s : ", "Card Issuer");
+						strcpy(issuer, "MASTERCARD");
 						printf("MASTERCARD\n");
 						break;
 					case '0':
@@ -479,11 +489,15 @@ int card() {
 						}
 					}
 					else if (month[0] == '1') {
-						if ((int)month[1] < 48 || (int)month[1] > 50)
+						if ((int)month[1] < 48 || (int)month[1] > 50) {
+							strcpy(month, "NO");
 							loop = 1;
+						}
 					}
-					else
+					else {
+						strcpy(month, "NO");
 						loop = 1;
+					}
 				} while (loop == 1);
 			} while (bigLoop == 1);
 			do {
@@ -522,7 +536,101 @@ int card() {
 			}
 		} while (loop == 1);
 	}while (bigLoop == 3);
-	return 1;
+	do {
+		title();
+		printf("%51s : RM%6.02f\n\n", "Total Price should payment", *price);
+		printf("%51s : %s\n", "Card Holder", name);
+		printf("%51s : ", "Card Number");
+		int i;
+		for (i = 17; num[i] != '\0'; --i);
+		for (int j = 0; j < i; ++j) {
+			if (j < i - 4) {
+				printf("X");
+			}
+			else {
+				printf("%c", num[j]);
+			}
+		}
+		printf("\n");
+		printf("%51s : %s\n", "Card Issuer", issuer);
+		printf("\n");
+		printf("Do you want to make payment with this card ?\n");
+		printf("\t1. Yes, make payment with this card. (-RM%6.02f)\n\t0. No, Return to main page\n\n", *price);
+		printf("Enter the number : ");
+		rewind(stdin);
+		scanf("%c", &input);
+		switch (input) {
+		case '1':
+			for (int j = 3; j >= 0; --j) {
+				title();
+				printf("Amount of RM%6.02f has been deducted from the card ", *price);
+				int i;
+				for (i = 17; num[i] != '\0'; --i);
+				for (int j = 0; j < i; ++j) {
+					if (j < i - 4) {
+						printf("X");
+					}
+					else {
+						printf("%c", num[j]);
+					}
+				}
+				printf("\n\nYou will be redirected to the payment status in %d second(s)", j);
+				Sleep(1000);
+			}
+			return 1;
+			break;
+		case '0':
+			return 0;
+			break;
+		}
+	} while (input != '1' && input != '0');
+}
+
+int bank(float* price) {
+	title();
+	char input;
+	struct{
+		char name[27];
+	}bank[33] = {"AFFIN BANK", 
+			"AFFIN ISLAMIC", 
+			"ARGO BANK", 
+			"ALLIANCE BANK", 
+			"ALLIANCE ISLAMIC BANK", 
+			"AMBANK", 
+			"AMBANK ISLAMIC", 
+			"BANK ISLAM", 
+			"BANK OF CHINA", 
+			"BANK MUAMALAT", 
+			"BANK RAKYAT", 
+			"BSN", 
+			"BNP PARIBAS", 
+			"CIMB BANK", 
+			"CIMB ISLAMIC", 
+			"CITIBANK", 
+			"DEUTCHE BANK", 
+			"HONG LEONG BANK", 
+			"HONG LEONG ISLAMIC BANK", 
+			"HSBC", 
+			"HSBC AMANAH", 
+			"KUWAIT FINANCE HOUSE", 
+			"MAYBANK", 
+			"MAYBANK ISLAMIC", 
+			"OCBC", 
+			"OCBC AL-AMIN", 
+			"PUBLIC BANK", 
+			"PUBLIC ISLAMIC BANK",
+			"RHB BANK", 
+			"RHB ISLAMIC BANK", 
+			"STANDARD CHARTERED", 
+			"STANDARD CHARTERED SAADIQ", 
+			"UOB" };
+printf("%51s : RM%6.02f\n\n", "Total Price should payment", *price);
+	for (int i = 0; i < 33; ++i) {
+		printf("%d. %s\n", i, bank[i]);
+	}
+	printf("Enter the number : ");
+	rewind(stdin);
+	scanf("%c", &input);
 }
 
 addBooking() {
