@@ -1,9 +1,10 @@
-#include<stdio.h>
+﻿#include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
 #include<string.h>
 #include<math.h>
 #include<windows.h>
+#include<conio.h>
 #pragma warning(disable:4996)
 #define MAX_PAX 10
 #define MAX_TRIP 2
@@ -39,7 +40,7 @@ void editPax(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*)[MAX_PAX][11], int(*pa
 int payment(float, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*)[MAX_PAX][11], int(*pax)[2]);
 int card(float*, char *name[20]);
 int bank(float*);
-int eWallet();
+int eWallet(float*, char* name[20]);
 addBooking();
 
 void reset(Info (*userChoice)[MAX_TRIP][MAX_PAX]) {
@@ -103,6 +104,8 @@ int main(void) {
 			case '0':
 				return 0;
 		}
+		if (status == 1)
+			addBooking();
 	} while (status != 1);
 }
 
@@ -351,7 +354,7 @@ int payment(float price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_P
 		status = bank(&price);
 		break;
 	case '3':
-		//status = eWallet();
+		status = eWallet(&price, memName);
 		break;
 	case '0':
 		return 0;
@@ -574,7 +577,7 @@ int card(float* price, char name[20]) {
 						printf("%c", num[j]);
 					}
 				}
-				printf("\n\nYou will be redirected to the payment status in %d second(s)", j);
+				printf("\n\nYou will be redirected to the merchant page in %d second(s)", j);
 				Sleep(1000);
 			}
 			return 1;
@@ -587,53 +590,189 @@ int card(float* price, char name[20]) {
 }
 
 int bank(float* price) {
-	title();
-	char input;
-	struct{
+	char input[3], name[50], pin[100], input1;
+	int num;
+	struct {
 		char name[27];
-	}bank[33] = {"AFFIN BANK", 
-			"AFFIN ISLAMIC", 
-			"ARGO BANK", 
-			"ALLIANCE BANK", 
-			"ALLIANCE ISLAMIC BANK", 
-			"AMBANK", 
-			"AMBANK ISLAMIC", 
-			"BANK ISLAM", 
-			"BANK OF CHINA", 
-			"BANK MUAMALAT", 
-			"BANK RAKYAT", 
-			"BSN", 
-			"BNP PARIBAS", 
-			"CIMB BANK", 
-			"CIMB ISLAMIC", 
-			"CITIBANK", 
-			"DEUTCHE BANK", 
-			"HONG LEONG BANK", 
-			"HONG LEONG ISLAMIC BANK", 
-			"HSBC", 
-			"HSBC AMANAH", 
-			"KUWAIT FINANCE HOUSE", 
-			"MAYBANK", 
-			"MAYBANK ISLAMIC", 
-			"OCBC", 
-			"OCBC AL-AMIN", 
-			"PUBLIC BANK", 
+	}bank[33] = { "AFFIN BANK",
+			"AFFIN ISLAMIC",
+			"ARGO BANK",
+			"ALLIANCE BANK",
+			"ALLIANCE ISLAMIC BANK",
+			"AMBANK",
+			"AMBANK ISLAMIC",
+			"BANK ISLAM",
+			"BANK OF CHINA",
+			"BANK MUAMALAT",
+			"BANK RAKYAT",
+			"BSN",
+			"BNP PARIBAS",
+			"CIMB BANK",
+			"CIMB ISLAMIC",
+			"CITIBANK",
+			"DEUTCHE BANK",
+			"HONG LEONG BANK",
+			"HONG LEONG ISLAMIC BANK",
+			"HSBC",
+			"HSBC AMANAH",
+			"KUWAIT FINANCE HOUSE",
+			"MAYBANK",
+			"MAYBANK ISLAMIC",
+			"OCBC",
+			"OCBC AL-AMIN",
+			"PUBLIC BANK",
 			"PUBLIC ISLAMIC BANK",
-			"RHB BANK", 
-			"RHB ISLAMIC BANK", 
-			"STANDARD CHARTERED", 
-			"STANDARD CHARTERED SAADIQ", 
+			"RHB BANK",
+			"RHB ISLAMIC BANK",
+			"STANDARD CHARTERED",
+			"STANDARD CHARTERED SAADIQ",
 			"UOB" };
-printf("%51s : RM%6.02f\n\n", "Total Price should payment", *price);
-	for (int i = 0; i < 33; ++i) {
-		printf("%d. %s\n", i, bank[i]);
-	}
+	do {
+		do {
+			do {
+				title();
+				printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
+				printf("Type 0 to return\n");
+				printf("Please choose the bank you prefered :\n\n");
+				printf("Page (1/2)\n");
+				for (int i = 0; i < 17; ++i) {
+					printf("%d. %s\n", i + 1, bank[i].name);
+				}
+				printf(".\n.\n.\n");
+				printf("Enter the number (Press Enter for next page) : ");
+				rewind(stdin);
+				if ((int)input[0] < 48 || (int)input[0] >57 || (int)input[1] < 48 && input[1] != '\0' || (int)input[1] >57) {
+					if (scanf("%[^\n]", input) == 0) {
+						title();
+						printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
+						printf("Please choose the bank you prefered :\n\n");
+						printf("Page (2/2)\n");
+						for (int i = 17; i < 33; ++i) {
+							printf("%d. %s\n", i + 1, bank[i].name);
+						}
+						printf("Enter the number (Press Enter for previous page) : ");
+						rewind(stdin);
+						if (scanf("%[^\n]", input) == 0) {
+							input[1] = 'A';
+						}
+					}
+					else if (input[0] == '3' && (int)input[1] > 51) {
+						input[1] == 'A';
+					}
+					else if (strcmp(input, "0") == 0) {
+						return -1;
+					}
+				}
+			} while ((int)input[0] < 48 || (int)input[0] >57 || (int)input[1] < 48 && input[1] != '\0' || (int)input[1] >57);
+			num = atoi(input) - 1;
+			title();
+			printf("%s\n\n", bank[num].name);
+			printf("Type 0 to return\n");
+			printf("Type your username : ");
+			rewind(stdin);
+			scanf("%s", name);
+			if (strcmp(name, "0") == 0)
+				input[1] = 'A';
+		} while (strcmp(name, "0") == 0);
+		printf("Type your password : ");
+		int j = 0;
+		do {
+			++j;
+			pin[j] = getch();
+		} while (pin[j] != '\r');
+	} while (pin[1] == '0' && pin[2] == '\r');
+	title();
+	printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
+	printf("%s\n", bank[num].name);
+	srand(time(NULL));
+	printf("Username : %s\n", name);
+	int acc = rand() % (9999999999 - 1000000000 + 1) + 1000000000;
+	printf("Account Number : %d\n", acc);
+	float balance = ((100000 - 1000) * ((float)rand() / RAND_MAX)) + 1000;
+	printf("Remaining Balance : RM%.02f\n\n", balance);
+	printf("Do you want to make payment with this account number ?\n");
+	printf("\t1. Yes, make payment with this account number. (-RM%6.02f)\n\t0. No, Return to main page\n\n", *price);
 	printf("Enter the number : ");
 	rewind(stdin);
-	scanf("%c", &input);
+	scanf("%c", &input1);
+	switch (input1) {
+	case '1':
+		for (int j = 3; j >= 0; --j) {
+			title();
+			printf("Amount of RM%6.02f has been deducted from the account ", *price);
+			int i;
+			printf("\n\nYou will be redirected to the merchant page in %d second(s)", j);
+			Sleep(1000);
+		}
+		return 1;
+		break;
+	case '0':
+		return 0;
+		break;
+	}
+}
+
+int eWallet(float *price, char* name[20]) {
+	char phone[15], pin[6];
+	char input;
+	int loop = 0;
+	do {
+		do {
+			title(NULL);
+			loop = 0;
+			printf("Touch N Go E Wallet\n");
+			printf("Type 0 to return\n\n");
+			printf("Enter your phone number : +60 ");
+			rewind(stdin);
+			scanf("%s", phone);
+			if (strcmp(phone, "0") == 0)
+				return -1;
+		} while (strlen(phone) < 9 || strlen(phone) > 11);
+		printf("Type your 6 Number PIN : ");
+		for (int i = 0; i < 6; ++i) {
+			pin[i] = getch();
+			if ((int)pin[i] >= 48 && (int)pin[i] <= 57) {
+				printf("%c", 250);
+			}
+			else if (i = 1 && pin[i] == '\r' && pin[i - 1] == '0') {
+				loop = 1;
+				break;
+			}
+			else {
+				--i;
+			}
+		}
+	} while (loop == 1);
+	do{
+		title();
+		printf("Touch N Go E Wallet\n\n");
+		printf("Account username : %s\n", name);
+		printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
+		printf("Do you want to pay ?\n");
+		printf("\t1. Yes, make payment with this e-Wallet account. (-RM%6.02f)\n\t0. No, Return to main page\n\n", *price);
+		printf("Enter the number : ");
+		rewind(stdin);
+		scanf("%c", &input);
+		switch (input) {
+		case '1':
+			for (int j = 3; j >= 0; --j) {
+				title();
+				printf("Amount of RM%6.02f has been deducted from the TnG E-Wallet account ", *price);
+				printf("\n\nYou will be redirected to the merchant page in %d second(s)", j);
+				Sleep(1000);
+			}
+			return 1;
+			break;
+		case '0':
+			return 0;
+			break;
+		}
+	} while (input != '1' && input != '0');
 }
 
 addBooking() {
+	FILE* fptr;
+	fopen("../TrainTicketingSys/res/booking.txt", "a+");
 	title();
-	printf("Schedules: \n"); //Integerate with schedule module
+	
 }
