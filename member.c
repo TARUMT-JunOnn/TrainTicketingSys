@@ -26,9 +26,6 @@ void bookingHistory();
 void cancelBooking();
 void rewardPoint();
 
-
-
-
 struct SecurityQuestion {
 	int questionNum;
 	char answer[100];
