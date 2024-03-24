@@ -7,6 +7,8 @@
 #define MEMBER_PASS 100
 #define MAX_NUMBER_MEMBER 100 
 #define MAX_NUM_QUESTION 3
+#define MAX_PHONE_NUM 15
+#define MAX_LENGTH_EMAIL 50
 
 int tryAgain(int again);
 void memberMenu(struct Member* member);
@@ -25,9 +27,9 @@ struct SecurityQuestion {
 struct Member {
 	char id[MEMBER_NAME];
 	char pass[MEMBER_PASS];
+	char phoneNo[MAX_PHONE_NUM];
+	char email[MAX_LENGTH_EMAIL];
 	struct SecurityQuestion security[MAX_NUM_QUESTION];
-	int number;
-	
 };
 
 int numMember = 0;
@@ -97,6 +99,7 @@ void memberMenu(struct Member* member) {
 
 void memberLogin(struct Member* member) {
 	char name[MEMBER_NAME], password[MEMBER_PASS];
+	int memberNUM;
 	int loginSuccess = 0, choice, again = 0;
 	
 	do {
@@ -111,7 +114,8 @@ void memberLogin(struct Member* member) {
 		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
 			if (strcmp(member[i].id, name) == 0 && strcmp(member[i].pass, password) == 0) {
 				printf("Login successful...\n");
-				memberMainPage(member);
+				memberNUM = i;
+				memberMainPage(member, memberNUM);
 				loginSuccess++;
 			}
 		}
@@ -166,17 +170,10 @@ void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MA
 
 void memberRegister(struct Member* member) {
 	
-	char memberID[MEMBER_NAME], password[MEMBER_PASS];
+	char memberID[MEMBER_NAME], password[MEMBER_PASS], phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
 	int choice, again;
 	int questionSelection[MAX_NUM_QUESTION], success;
 	char question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
-	FILE* fptr;
-	fptr = fopen("../../TrainTicketingSys/res/member.bin", "wb+");
-
-	if (fptr == NULL) {
-		printf("Unable to open the file\n");
-		exit(-1);
-	}
 
 
 	do {
@@ -251,26 +248,17 @@ void memberRegister(struct Member* member) {
 
 	printf("\nRegistration successfully\n\n");
 
-	member[numMember].number = numMember + 1;
+	printf("Phone number(011-XXXXXXX): ");
+	scanf(" %[^\n]", phone);
+	printf("Email: ");
+	scanf(" %[^\n]", email);
 
-	fwrite(&member[numMember], sizeof(member[0]), 1, fptr);
+	strcpy(member[numMember].phoneNo, phone);
+	strcpy(member[numMember].email, email);
 
-	fseek(fptr, 0, SEEK_SET);
+	printf("Phone and email are added\n");
+
 	numMember++;
-
-	fread(&member[numMember], sizeof(member[0]), 1, fptr);
-
-	printf("\n\nID: %s\n", member[numMember-1].id);
-	printf("Password: %s\n", member[numMember-1].pass);
-	printf("Number: %d\n", member[numMember-1].number);
-	printf("QuestionNumber: %d\n", member[numMember-1].security[1].questionNum);
-
-	printf("\n\nID: %s\n", member[numMember].id);
-	printf("Password: %s\n", member[numMember].pass);
-	printf("Number: %d\n", member[numMember].number);
-	printf("QuestionNumber: %d\n", member[numMember].security[1].questionNum);
-
-	fclose(fptr);
 
 }
 
@@ -352,6 +340,50 @@ void forgotPass(struct Member* member) {
 
 }
 
-void memberMainPage(struct Member* member) {
-	printf("Test");
+void memberMainPage(struct Member* member, int memberNUM) {
+	int choice, choice2, modify, modifyNum;
+	char* menu[] = { "Display Profile", "View Schedule", "Add Booking",
+					"Display Booking History", "Cancel Booking", "Reward Points", "Exit"};
+
+	do
+	{
+		system("cls");
+		printf("Member Menu\n");
+		printf("-----------\n");
+		for (int i = 0; i < sizeof(menu) / sizeof(menu[0]); i++) {
+			printf("-----\n");
+			printf("| %d | %s\n", i + 1, menu[i]);
+			printf("-----\n");
+		}
+
+		printf("Enter Your Choice: ");
+		scanf("%d", &choice);
+
+		switch (choice) {
+		case 1:
+			printf("Profile Information\n");
+			printf("--------------------\n");
+			printf("ID: %s\n", member[memberNUM].id);
+			printf("Contact Number: %s\n", member[memberNUM].phoneNo);
+			printf("Email: %s\n", member[memberNUM].email);
+			printf("\nEnter 1 to MODIFY PROFILE (0 EXIT)\n");
+			scanf("%d", &choice2);
+
+			if (choice2 == 1) {
+				printf("----------------------\t ----------------------\t ----------------------\n");
+				printf("| 1 | Password       |\t | 2 | Contact Number |\t | 3 | Email          |\n");
+				printf("----------------------\t ----------------------\t ----------------------\n");
+
+				printf("\nEnter your choice: ");
+				scanf("%d", &modifyNum);
+
+				if()
+			}
+			
+		case 2: 
+
+		
+		}
+	} while (true);
+	
 }
