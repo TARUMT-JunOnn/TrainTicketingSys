@@ -17,7 +17,16 @@ void securityQuestion();
 void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]);
 void memberRegister(struct Member* member);
 void forgotPass(struct Member* member);
-void memberMainPage(struct Member* member);
+void memberMainPage(struct Member* member, int memberNUM);
+void viewProfile(struct Member* member, int memberNUM);
+void viewSchedule();
+void addBooking();
+void bookingHistory();
+void cancelBooking();
+void rewardPoint();
+
+
+
 
 struct SecurityQuestion {
 	int questionNum;
@@ -71,6 +80,8 @@ void memberMenu(struct Member* member) {
 	char *menu[] = {"Login", "Registration", "Forgot Password", "Exit Program"};
 	int choice;
 	do {
+
+	system("cls");
 	printf("Member Menu\n");
 	printf("-----------\n");
 	for (int i = 0; i < sizeof(menu)/sizeof(menu[0]); i++) {
@@ -90,6 +101,9 @@ void memberMenu(struct Member* member) {
 		case 3: 
 			forgotPass(member, numMember);
 			break;
+		case 4:
+			printf("EXITING PROGRAM.....\n");
+			break;
 		default:
 			printf("Invalid Choice!\n");
 			printf("Please Try Again\n");
@@ -100,7 +114,7 @@ void memberMenu(struct Member* member) {
 void memberLogin(struct Member* member) {
 	char name[MEMBER_NAME], password[MEMBER_PASS];
 	int memberNUM;
-	int loginSuccess = 0, choice, again = 0;
+	int loginSuccess = 0, again = 0;
 	
 	do {
 		again = 0;
@@ -171,7 +185,7 @@ void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MA
 void memberRegister(struct Member* member) {
 	
 	char memberID[MEMBER_NAME], password[MEMBER_PASS], phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
-	int choice, again;
+	int again;
 	int questionSelection[MAX_NUM_QUESTION], success;
 	char question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
 
@@ -341,13 +355,16 @@ void forgotPass(struct Member* member) {
 }
 
 void memberMainPage(struct Member* member, int memberNUM) {
-	int choice, choice2, modify, modifyNum;
+	int choice;
 	char* menu[] = { "Display Profile", "View Schedule", "Add Booking",
-					"Display Booking History", "Cancel Booking", "Reward Points", "Exit"};
+					"Display Booking History", "Cancel Booking", "Reward Points", "Exit" };
 
 	do
 	{
 		system("cls");
+		printf("Welcome %s\n", member[memberNUM].id);
+		//remove id and pass
+		printf("Pass: %s", member[memberNUM].pass);
 		printf("Member Menu\n");
 		printf("-----------\n");
 		for (int i = 0; i < sizeof(menu) / sizeof(menu[0]); i++) {
@@ -361,29 +378,125 @@ void memberMainPage(struct Member* member, int memberNUM) {
 
 		switch (choice) {
 		case 1:
-			printf("Profile Information\n");
-			printf("--------------------\n");
-			printf("ID: %s\n", member[memberNUM].id);
-			printf("Contact Number: %s\n", member[memberNUM].phoneNo);
-			printf("Email: %s\n", member[memberNUM].email);
-			printf("\nEnter 1 to MODIFY PROFILE (0 EXIT)\n");
-			scanf("%d", &choice2);
-
-			if (choice2 == 1) {
-				printf("----------------------\t ----------------------\t ----------------------\n");
-				printf("| 1 | Password       |\t | 2 | Contact Number |\t | 3 | Email          |\n");
-				printf("----------------------\t ----------------------\t ----------------------\n");
-
-				printf("\nEnter your choice: ");
-				scanf("%d", &modifyNum);
-
-				if()
-			}
-			
-		case 2: 
-
-		
+			viewProfile(member, memberNUM);
+			break;
+		case 2:
+			viewSchedule();
+			break;
+		case 3: 
+			addBooking();
+			break;
+		case 4:
+			bookingHistory();
+			break;
+		case 5:
+			cancelBooking();
+			break;
+		case 6:
+			rewardPoint();
+			break;
+		case 7:
+			printf("EXITING MEMBER MENU\n");
+			break;
+		default:
+			printf("Invalid Choice\n");
 		}
-	} while (true);
-	
+	} while (choice != 7);
+
+}
+
+void viewProfile(struct Member* member, int memberNUM) {
+	int choice, modify, again = 0;
+	char oldPassword[MEMBER_PASS], newPassword[MEMBER_PASS], passConfirm[MEMBER_PASS];
+
+	do {
+		system("cls");
+		again = 0;
+		printf("Profile Information\n");
+		printf("--------------------\n");
+		printf("ID: %s\n", member[memberNUM].id);
+		printf("Contact Number: %s\n", member[memberNUM].phoneNo);
+		printf("Email: %s\n", member[memberNUM].email);
+		printf("\nEnter 1 to MODIFY PROFILE (0 EXIT)\n");
+		scanf("%d", &choice);
+
+		if (choice == 1) {
+			printf("----------------------\t ----------------------\t ----------------------\n");
+			printf("| 1 | Password       |\t | 2 | Contact Number |\t | 3 | Email          |\n");
+			printf("----------------------\t ----------------------\t ----------------------\n");
+
+			printf("\nEnter your choice: ");
+			scanf("%d", &modify);
+
+			if (modify == 1) {
+				do {
+					again = 0;
+					system("cls");
+					printf("Old Password: ");
+					scanf(" %[^ \n]", oldPassword);
+					printf("New Password: ");
+					scanf(" %[^ \n]", newPassword);
+					printf("Confirm Password: ");
+					scanf(" %[^ \n]", passConfirm);
+
+					if (strcmp(member[memberNUM].pass, oldPassword) != 0) {
+						printf("Old Password Incorrect\n");
+						again = tryAgain(again);
+						continue;
+					}
+
+					if (strcmp(newPassword, passConfirm) != 0) {
+						printf("New Password and Confrim Password Are Not Same\n");
+						again = tryAgain(again);
+						continue;
+					}
+					
+
+				} while (again == 1);
+
+				if (strcmp(member[memberNUM].pass, oldPassword) == 0 && strcmp(newPassword, passConfirm) == 0){
+					strcpy(member[memberNUM].pass, newPassword);
+					for (int i = 0; i < 100; i++) {
+						printf("Password is chagging....\n");
+						system("cls");
+					}
+				}
+
+			}
+
+			else if (modify == 2) {
+				printf("New Contact Number: ");
+				scanf(" %[^\n]", member[memberNUM].pass);
+				printf("Contact Number successfully changed\n");
+			}
+			else if (modify == 3) {
+				printf("New Email: ");
+				scanf(" %[^\n]", member[memberNUM].email);
+				printf("email successfully changed\n");
+			}
+			else {
+				printf("Invalid Choice\n");
+				again = tryAgain(again);
+			}
+		}
+	} while(again == 1);
+}
+
+void viewSchedule() {
+
+}
+
+void addBooking() {
+
+}
+
+void bookingHistory(){
+}
+
+void cancelBooking() {
+
+}
+
+void rewardPoint() {
+
 }
