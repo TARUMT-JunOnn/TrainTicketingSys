@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <Windows.h>
 #include <time.h>
 #pragma warning(disable:4996)
 #define MEMBER_NAME 100
@@ -39,6 +40,7 @@ struct Member {
 	char phoneNo[MAX_PHONE_NUM];
 	char email[MAX_LENGTH_EMAIL];
 	struct SecurityQuestion security[MAX_NUM_QUESTION];
+
 };
 
 int numMember = 0;
@@ -450,15 +452,17 @@ void viewProfile(struct Member* member, int memberNUM) {
 						again = tryAgain(again);
 						continue;
 					}
-					
+
 
 				} while (again == 1);
 
-				if (strcmp(member[memberNUM].pass, oldPassword) == 0 && strcmp(newPassword, passConfirm) == 0){
+				if (strcmp(member[memberNUM].pass, oldPassword) == 0 && strcmp(newPassword, passConfirm) == 0) {
 					strcpy(member[memberNUM].pass, newPassword);
-					for (int i = 0; i < 100; i++) {
-						printf("Password is chagging....\n");
-						system("cls");
+					printf("Password is changing. ");
+					for (int i = 0; i < 3; i++) {
+						Sleep(300);
+						printf(". ");
+						Sleep(300);
 					}
 				}
 
@@ -479,6 +483,11 @@ void viewProfile(struct Member* member, int memberNUM) {
 				again = tryAgain(again);
 			}
 		}
+		else if (choice == 0)
+			return 0;
+
+		else
+			again++;
 	} while(again == 1);
 }
 
