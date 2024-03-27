@@ -490,6 +490,7 @@ void viewProfile(struct Member* member, int memberNUM) {
 
 void viewSchedule() {
 
+
 }
 
 void addBooking() {
@@ -497,6 +498,7 @@ void addBooking() {
 }
 
 void bookingHistory(){
+
 }
 
 void cancelBooking() {
@@ -504,5 +506,5 @@ void cancelBooking() {
 }
 
 void rewardPoint() {
-
+	
 }
