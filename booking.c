@@ -1,9 +1,10 @@
-#include<stdio.h>
+﻿#include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
 #include<string.h>
 #include<math.h>
 #include<windows.h>
+#include<conio.h>
 #pragma warning(disable:4996)
 #define MAX_PAX 10
 #define MAX_TRIP 2
@@ -30,18 +31,25 @@ typedef struct {
 //Global Variable
 
 //Function Declaration
-void createDate(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*date)[MAX_PAX][11]);
+int addBooking();
+void searchBooking();
+void modifyBooking();
+void allBooking();
+void cancelBooking();
+void produceList();
+void createDate(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*date)[MAX_TRIP][MAX_PAX][11]);
 void calcPax(Info (*userChoice)[MAX_TRIP][MAX_PAX], int (*pax)[2]);
-float calcFare(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*)[MAX_PAX][11], int (*pax)[2], int);
+float calcFare(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*)[MAX_TRIP][MAX_PAX][11], int (*pax)[2], int);
 float calcTax(int, float);
 char userAction();
-void editPax(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*)[MAX_PAX][11], int(*pax)[2]);
-int payment(float, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*)[MAX_PAX][11], int(*pax)[2]);
-int card();
-int bank();
-int eWallet();
-addBooking();
+void editPax(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*)[MAX_TRIP][MAX_PAX][11], int(*pax)[2]);
+int payment(float*, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*)[MAX_TRIP][MAX_PAX][11], int(*pax)[2], char (*)[9]);
+int card(float*, char *name[20]);
+int bank(float*);
+int eWallet(float*, char* name[20]);
+void showBooking(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*)[MAX_TRIP][MAX_PAX][11], int(*pax)[2], float, char (*name)[20], char (*)[9]);
 
+//Reset all userChoice
 void reset(Info (*userChoice)[MAX_TRIP][MAX_PAX]) {
 	for (int j = 0; j < MAX_TRIP; ++j) {
 		for (int i = 0; i < MAX_PAX; ++i) {
@@ -57,6 +65,7 @@ void reset(Info (*userChoice)[MAX_TRIP][MAX_PAX]) {
 	}
 }
 
+//Same with all module
 void title(void) {
 	system("cls");
 	printf("%10s %s %s", "Train", "Ticketing", "System");
@@ -69,39 +78,48 @@ void title(void) {
 	printf("\n\n");
 }
 
+//Main Function
 int main(void) {
-	char dateAdd[MAX_TRIP][MAX_PAX][11], action = ' ';
-	int pax[2], status = 0;
-	float fare;
 	Info userChoice[MAX_TRIP][MAX_PAX];
 	reset(userChoice);
-	userChoice[0][0] = (Info) {"T1001", "KL Sentral",  "Kampar", 50, { 1, 4, 2024,{ 9, 13} } };
-	userChoice[1][0] = (Info){ "T1004", "Kampar", "KL Sentral", 25, { 2, 4, 2024,{ 5, 8} } };
-	do {
-		createDate(userChoice, dateAdd);
-		if (action == '2') {
-			editPax(userChoice, dateAdd, pax);
-		}
-		calcPax(userChoice, pax);
+	addBooking(userChoice);
+}
+
+int addBooking(Info (*userChoice)[MAX_TRIP][MAX_PAX]) {
+	char dateAdd[MAX_TRIP][MAX_PAX][11], action = ' ', paymentTime[9];
+	int pax[2], status = 0;
+	float fare;
+	(*userChoice)[0][0] = (Info){ "T1001", "KL Sentral",  "Kampar", 50, { 1, 4, 2024,{ 9, 13} } };
+	(*userChoice)[1][0] = (Info){ "T1004", "Kampar", "KL Sentral", 25, { 2, 4, 2024,{ 5, 8} } };
+	do{
 		do {
-			fare = calcFare(userChoice, dateAdd, pax, status);
-			if (fare == 0)
-				title(NULL);
-			action = userAction();
-		} while (action == 'N');
-	} while (action == '2');
-	switch (action)
-	{
-		case '1':
-			return 1; //Back to Schedules
-			break;
-		case '3':
-			fare = calcFare(userChoice, dateAdd, pax, status);
-			status = payment(fare, userChoice, dateAdd, pax);
-			break;
-		case '0':
-			return 0;
-	}
+			createDate(*userChoice, dateAdd);
+			if (action == '2') {
+				editPax(*userChoice, dateAdd, pax);
+			}
+			calcPax(*userChoice, pax);
+			do {
+				fare = calcFare(*userChoice, dateAdd, pax, status);
+				if (fare == 0)
+					title(NULL);
+				action = userAction();
+			} while (action == 'N');
+		} while (action == '2');
+		switch (action)
+		{
+			case '1':
+				return 1; //Back to Schedules
+				break;
+			case '3':
+				fare = calcFare(*userChoice, dateAdd, pax, status);
+				status = payment(&fare, *userChoice, dateAdd, pax, paymentTime);
+				break;
+			case '0':
+				return 0;
+		}
+		if (status == 1)
+			showBooking(*userChoice, dateAdd, pax, fare, "Marco", paymentTime);
+	} while (status != 1);
 }
 
 void createDate(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*date)[MAX_TRIP][MAX_PAX][11]) {
@@ -296,22 +314,22 @@ void editPax(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_TRIP][MAX_PAX
 	} while (paxInD < 0 || paxInD > 10 );
 }
 
-int payment(float price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_PAX][11], int(*pax)[2]) {
+int payment(float *price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_TRIP][MAX_PAX][11], int(*pax)[2], char (*time)[9]) {
 	char memName[20];
 	int mem_point;
 	strcpy(memName, "Marco");
 	mem_point = 1000;
 	char input;
 	int status = 0;
-	float redeem;
+	float redeem, temporary = *price;
 	printf("Member Name : %s\tRemaining Member Points : %d pts\n", memName, mem_point);
 	do {
 		if (mem_point > 0) {
 			printf("You can redeem up to %d pts points as cashback !\n", mem_point);
-			if ((float)mem_point / 100 < price)
+			if ((float)mem_point / 100 < *price)
 				redeem = (float)mem_point / 100;
 			else
-				redeem = price;
+				redeem = *price;
 			printf("Would you like to redeem? \n\n\t1. Yes(-%d pts)\n\t2. No\n\t0. Return\n\n", (int)(redeem*100));
 			printf("Enter the number : ");
 			rewind(stdin);
@@ -320,7 +338,7 @@ int payment(float price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_P
 		switch (input) {
 		case '1':
 			mem_point -= (int)(redeem * 100);
-			price -= redeem;
+			temporary -= redeem;
 			status = 1;
 			break;
 		case '2':
@@ -335,7 +353,7 @@ int payment(float price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_P
 	calcFare((*userChoice), (*date), (*pax), status);
 	if (status == 1) {
 		printf("%102s :-RM%6.02f\n", "Point Redeemed", redeem);
-		printf("%102s : RM%6.02f\n", "Total Price should payment", price);
+		printf("%102s : RM%6.02f\n", "Total Price should payment", temporary);
 	}
 	printf("Payments method :\n\t1. Credit/Debit Card\n\t2. Online Banking\n\t3. E-Wallet\n\t0. Cancel Payment (Return)\n\n");
 	printf("Enter the number : ");
@@ -343,13 +361,13 @@ int payment(float price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_P
 	scanf("%c", &input);
 	switch (input) {
 	case '1':
-		status = card();
+		status = card(&temporary, memName);
 		break;
 	case '2':
-		//status = bank();
+		status = bank(&temporary);
 		break;
 	case '3':
-		//status = eWallet();
+		status = eWallet(&temporary, memName);
 		break;
 	case '0':
 		return 0;
@@ -371,21 +389,41 @@ int payment(float price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_P
 	switch (status) {
 		case 1:
 			printf("Payment Sucessfully !\n");
+			char month[20], day[20];
+			SYSTEMTIME t;
+			GetLocalTime(&t);
+			itoa(t.wYear, (*time), 10);
+			for (int i = 0; i < 3; ++i) {
+				(*time)[i] = (*time)[i + 2];
+			}
+			itoa(t.wMonth, month, 10);
+			itoa(t.wDay, day, 10);
+			if (t.wMonth >= 1 && t.wMonth <= 9) 
+				strcat((*time), "0");
+			strcat((*time), month);
+			if (t.wDay >= 1 && t.wDay <= 9)
+				strcat((*time), "0");
+			strcat((*time), day);
+			*price = temporary;
+			Sleep(2000);
 			return status;
 		case 0:
 			printf("Payment Unsucessful.\n");
+			Sleep(2000);
 			return status;
 		case -1:
 			printf("Payment Denied.\n");
+			Sleep(2000);
 			return status;
 		default:
 			printf("Error, Please contact IT adminstrator.");
+			Sleep(2000);
 			return 404;
 	}
 }
 
-int card() {
-	char num[17], input = 'N', month[3], year[3], cvv[4];
+int card(float* price, char name[20]) {
+	char num[17], issuer[19], input = 'N', month[3], year[3], cvv[4];
 	int loop, bigLoop = 0;
 	strcpy(num, "NULL");
 	strcpy(month, "NO");
@@ -394,6 +432,7 @@ int card() {
 			do {
 				do {
 					input = 'N';
+					strcpy(issuer, "NULL");
 					title(NULL);
 					printf("\tPlease provide your card details (Press 0 to return): \n");
 					printf("\t\t%-13s : ", "Card Number");
@@ -407,6 +446,7 @@ int card() {
 					switch (num[0]) {
 					case '3':
 						printf("\t\t%-13s : ", "Card Issuer");
+						strcpy(issuer, "AMERICAN EXPRESS");
 						printf("AMERICAN EXPRESS\n");
 						if (num[15] != '\0') {
 							printf("Please type 15 number\n");
@@ -415,10 +455,12 @@ int card() {
 						break;
 					case '4':
 						printf("\t\t%-13s : ", "Card Issuer");
+						strcpy(issuer, "VISA");
 						printf("VISA\n");
 						break;
 					case '5':
 						printf("\t\t%-13s : ", "Card Issuer");
+						strcpy(issuer, "MASTERCARD");
 						printf("MASTERCARD\n");
 						break;
 					case '0':
@@ -479,11 +521,15 @@ int card() {
 						}
 					}
 					else if (month[0] == '1') {
-						if ((int)month[1] < 48 || (int)month[1] > 50)
+						if ((int)month[1] < 48 || (int)month[1] > 50) {
+							strcpy(month, "NO");
 							loop = 1;
+						}
 					}
-					else
+					else {
+						strcpy(month, "NO");
 						loop = 1;
+					}
 				} while (loop == 1);
 			} while (bigLoop == 1);
 			do {
@@ -522,10 +568,269 @@ int card() {
 			}
 		} while (loop == 1);
 	}while (bigLoop == 3);
-	return 1;
+	do {
+		title();
+		printf("%51s : RM%6.02f\n\n", "Total Price should payment", *price);
+		printf("%51s : %s\n", "Card Holder", name);
+		printf("%51s : ", "Card Number");
+		int i;
+		for (i = 17; num[i] != '\0'; --i);
+		for (int j = 0; j < i; ++j) {
+			if (j < i - 4) {
+				printf("X");
+			}
+			else {
+				printf("%c", num[j]);
+			}
+		}
+		printf("\n");
+		printf("%51s : %s\n", "Card Issuer", issuer);
+		printf("\n");
+		printf("Do you want to make payment with this card ?\n");
+		printf("\t1. Yes, make payment with this card. (-RM%6.02f)\n\t0. No, Return to main page\n\n", *price);
+		printf("Enter the number : ");
+		rewind(stdin);
+		scanf("%c", &input);
+		switch (input) {
+		case '1':
+			for (int j = 3; j >= 0; --j) {
+				title();
+				printf("Amount of RM%6.02f has been deducted from the card ", *price);
+				int i;
+				for (i = 17; num[i] != '\0'; --i);
+				for (int j = 0; j < i; ++j) {
+					if (j < i - 4) {
+						printf("X");
+					}
+					else {
+						printf("%c", num[j]);
+					}
+				}
+				printf("\n\nYou will be redirected to the merchant page in %d second(s)", j);
+				Sleep(1000);
+			}
+			return 1;
+			break;
+		case '0':
+			return 0;
+			break;
+		}
+	} while (input != '1' && input != '0');
 }
 
-addBooking() {
+int bank(float* price) {
+	char input[3], name[50], pin[100], input1;
+	int num;
+	struct {
+		char name[27];
+	}bank[33] = { "AFFIN BANK",
+			"AFFIN ISLAMIC",
+			"ARGO BANK",
+			"ALLIANCE BANK",
+			"ALLIANCE ISLAMIC BANK",
+			"AMBANK",
+			"AMBANK ISLAMIC",
+			"BANK ISLAM",
+			"BANK OF CHINA",
+			"BANK MUAMALAT",
+			"BANK RAKYAT",
+			"BSN",
+			"BNP PARIBAS",
+			"CIMB BANK",
+			"CIMB ISLAMIC",
+			"CITIBANK",
+			"DEUTCHE BANK",
+			"HONG LEONG BANK",
+			"HONG LEONG ISLAMIC BANK",
+			"HSBC",
+			"HSBC AMANAH",
+			"KUWAIT FINANCE HOUSE",
+			"MAYBANK",
+			"MAYBANK ISLAMIC",
+			"OCBC",
+			"OCBC AL-AMIN",
+			"PUBLIC BANK",
+			"PUBLIC ISLAMIC BANK",
+			"RHB BANK",
+			"RHB ISLAMIC BANK",
+			"STANDARD CHARTERED",
+			"STANDARD CHARTERED SAADIQ",
+			"UOB" };
+	do {
+		do {
+			do {
+				title();
+				printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
+				printf("Type 0 to return\n");
+				printf("Please choose the bank you prefered :\n\n");
+				printf("Page (1/2)\n");
+				for (int i = 0; i < 17; ++i) {
+					printf("%d. %s\n", i + 1, bank[i].name);
+				}
+				printf(".\n.\n.\n");
+				printf("Enter the number (Press Enter for next page) : ");
+				rewind(stdin);
+				if ((int)input[0] < 48 || (int)input[0] >57 || (int)input[1] < 48 && input[1] != '\0' || (int)input[1] >57) {
+					if (scanf("%[^\n]", input) == 0) {
+						title();
+						printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
+						printf("Please choose the bank you prefered :\n\n");
+						printf("Page (2/2)\n");
+						for (int i = 17; i < 33; ++i) {
+							printf("%d. %s\n", i + 1, bank[i].name);
+						}
+						printf("Enter the number (Press Enter for previous page) : ");
+						rewind(stdin);
+						if (scanf("%[^\n]", input) == 0) {
+							input[1] = 'A';
+						}
+					}
+					else if (input[0] == '3' && (int)input[1] > 51) {
+						input[1] == 'A';
+					}
+					else if (strcmp(input, "0") == 0) {
+						return -1;
+					}
+				}
+			} while ((int)input[0] < 48 || (int)input[0] >57 || (int)input[1] < 48 && input[1] != '\0' || (int)input[1] >57);
+			num = atoi(input) - 1;
+			title();
+			printf("%s\n\n", bank[num].name);
+			printf("Type 0 to return\n");
+			printf("Type your username : ");
+			rewind(stdin);
+			scanf("%s", name);
+			if (strcmp(name, "0") == 0)
+				input[1] = 'A';
+		} while (strcmp(name, "0") == 0);
+		printf("Type your password : ");
+		int j = 0;
+		do {
+			++j;
+			pin[j] = getch();
+		} while (pin[j] != '\r');
+	} while (pin[1] == '0' && pin[2] == '\r');
 	title();
-	printf("Schedules: \n"); //Integerate with schedule module
+	printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
+	printf("%s\n", bank[num].name);
+	srand(time(NULL));
+	printf("Username : %s\n", name);
+	int acc = rand() % (9999999999 - 1000000000 + 1) + 1000000000;
+	printf("Account Number : %d\n", acc);
+	float balance = ((100000 - 1000) * ((float)rand() / RAND_MAX)) + 1000;
+	printf("Remaining Balance : RM%.02f\n\n", balance);
+	printf("Do you want to make payment with this account number ?\n");
+	printf("\t1. Yes, make payment with this account number. (-RM%6.02f)\n\t0. No, Return to main page\n\n", *price);
+	printf("Enter the number : ");
+	rewind(stdin);
+	scanf("%c", &input1);
+	switch (input1) {
+	case '1':
+		for (int j = 3; j >= 0; --j) {
+			title();
+			printf("Amount of RM%6.02f has been deducted from the account ", *price);
+			int i;
+			printf("\n\nYou will be redirected to the merchant page in %d second(s)", j);
+			Sleep(1000);
+		}
+		return 1;
+		break;
+	case '0':
+		return 0;
+		break;
+	}
+}
+
+int eWallet(float *price, char* name[20]) {
+	char phone[15], pin[6];
+	char input;
+	int loop = 0, i;
+	do {
+		do {
+			title(NULL);
+			loop = 0;
+			printf("Touch N Go E Wallet\n");
+			printf("Type 0 to return\n\n");
+			printf("Enter your phone number : +60 ");
+			rewind(stdin);
+			scanf("%s", phone);
+			if (strcmp(phone, "0") == 0)
+				return -1;
+		} while (strlen(phone) < 9 || strlen(phone) > 11);
+		printf("Type your 6 Number PIN : ");
+		for (i = 0; i < 6; ++i) {
+			pin[i] = getch();
+			if ((int)pin[i] >= 48 && (int)pin[i] <= 57) 
+				printf("%c", 250);
+			else if (pin[1] == '\r' && pin[0] == '0') {
+				loop = 1;
+				break;
+			}
+			else {
+				--i;
+			}
+		}
+	} while (loop == 1);
+	do{
+		title();
+		printf("Touch N Go E Wallet\n\n");
+		printf("Account username : %s\n", name);
+		printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
+		printf("Do you want to pay ?\n");
+		printf("\t1. Yes, make payment with this e-Wallet account. (-RM%6.02f)\n\t0. No, Return to main page\n\n", *price);
+		printf("Enter the number : ");
+		rewind(stdin);
+		scanf("%c", &input);
+		switch (input) {
+		case '1':
+			for (int j = 3; j >= 0; --j) {
+				title();
+				printf("Amount of RM%6.02f has been deducted from the TnG E-Wallet account ", *price);
+				printf("\n\nYou will be redirected to the merchant page in %d second(s)", j);
+				Sleep(1000);
+			}
+			return 1;
+			break;
+		case '0':
+			return 0;
+			break;
+		}
+	} while (input != '1' && input != '0');
+}
+
+void showBooking(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_TRIP][MAX_PAX][11], int(*pax)[2], float fare, char (*name)[20], char (*paymentTime)[10]) {
+	char random[20];
+	srand(time(NULL));
+	char refNum[10];
+	strcpy(refNum, (*paymentTime));
+	itoa(rand() % (999 - 100 + 1) + 100, random, 10);
+	strcat(refNum, random);
+	FILE* fptr;
+	fptr = fopen("../TrainTicketingSys/res/booking.txt", "a+");
+	title();
+	printf("Reference Number : %s\n", refNum);
+	printf("Name : %s\n\n", *name);
+	printf("Booking Details :\n\n");
+	for (int i = 0; i < MAX_TRIP && strcmp((*date)[i][0], "NULL") != 0; ++i) {
+		if (strcmp((*date)[0][0], "NULL") != 0 && strcmp((*date)[1][0], "NULL") != 0) {
+			switch (i) {
+			case 0:
+				printf("Departure\n");
+				printf("------------\n");
+				break;
+			case 1:
+				printf("Return\n");
+				printf("--------\n");
+				break;
+			}
+		}
+		printf("Date : %s\n", (*date)[i][0]);
+		printf("Train ID : %s\n", (*userChoice)[i][0].trainId);
+		printf("Pax : %d\n", (*pax)[i]);
+		printf("Time : %.02f - %.02f\n", (*userChoice)[i][0].prefer.time.depart, (*userChoice)[i][0].prefer.time.arrive);
+		printf("Depart From : %s\n", (*userChoice)[i][0].departFrom);
+		printf("Destination : %s\n", (*userChoice)[i][0].destination);
+		printf("\n\n");
+		fprintf(fptr, "%s|%s|%s|%s|%d|%.02f|%.02f|%s|%s\n", refNum, *name, (*date)[i][0], (*userChoice)[i][0].trainId, (*pax)[i], (*userChoice)[i][0].prefer.time.depart, (*userChoice)[i][0].prefer.time.arrive, (*userChoice)[i][0].departFrom, (*userChoice)[i][0].destination);
+	}
 }
