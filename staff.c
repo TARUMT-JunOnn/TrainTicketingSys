@@ -25,7 +25,7 @@ void manager_login(struct Staff* staff, struct Manager* manager);
 void manager_registration(struct Manager* manager);
 void manager_main_page(struct Staff* staff, struct Manager* manager);
 void delete_Acc(struct Staff* staff, struct Manager* manager);
-void modify_staffInformation(struct Staff* staff, struct Manager* manager);
+//void modify_staffInformation(struct Staff* staff, struct Manager* manager);
 void staff_schedule(struct Staff* staff, struct Manager* manager);
 void staff_information(struct Staff* staff, struct Manager* manager);
 
@@ -47,7 +47,7 @@ void staff_information(struct Staff* staff, struct Manager* manager);
 //const char staff_id[] = "staff518518";
 
 
-struct Staff {
+struct Staff{
     char staff_id[MAX_ID_LENGTH];
     char staff_password[MAX_PASS_LENGTH];
     char staff_name[MAX_NAME_LENGTH];
@@ -56,7 +56,7 @@ struct Staff {
     char staff_position[MAX_POSITION_LENGTH];
 };
 
-struct Manager {
+struct Manager{ 
     char manager_id[MAX_ID_LENGTH];
     char manager_password[MAX_PASS_LENGTH];
     char manager_name[MAX_NAME_LENGTH];
@@ -72,24 +72,78 @@ int manager_count = 1;
 
 main() {
     struct Staff staff[MAX_STAFF];
+    struct Staff staff2;
     struct Manager manager[MAX_MANAGER];
+    
 
-    strcpy(staff[0].staff_id, "staff1");
-    strcpy(staff[0].staff_password, "123456");
-    strcpy(staff[0].staff_name, "Ali");
-    strcpy(staff[0].staff_phone, "011-1234567");
-    strcpy(staff[0].staff_email, "ali@gmail.com");
-    strcpy(staff[0].staff_position, "Cleaner");
+    FILE* fstaff;
+    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb+");
 
-    strcpy(manager[0].manager_id, "manager1");
-    strcpy(manager[0].manager_password, "654321");
-    strcpy(manager[0].manager_name, "Abu");
-    strcpy(manager[0].manager_phone, "010-9876543");
-    strcpy(manager[0].manager_email, "abuManager@gmail.com");
-    strcpy(manager[0].manager_position, "CEO");
+    if (fstaff == NULL) {
+        printf("Error Opening File\n");
+        exit(-1);
+    }
+
+    //strcpy(staff[0].staff_id, "lgw123");
+    //strcpy(staff[0].staff_password, "321");
+    //strcpy(staff[0].staff_phone, "01231323");
+    //strcpy(staff[0].staff_email, "lee@gmail.com");
+    //strcpy(staff[0].staff_position, "STAFF");
+
+    //strcpy(manager[0].manager_id, "ALi");
+    //strcpy(manager[0].manager_password, "773");
+    //strcpy(manager[0].manager_phone, "12312");
+    //strcpy(manager[0].manager_email, "ali@ail.com");
+    //strcpy(manager[0].manager_position, "MANAGER");
+
+    //fwrite(&staff[0], sizeof(staff), 1, fstaff);
+    //fwrite(&manager[0], sizeof(manager), 1, fstaff);
+
+     fread(&staff2, sizeof(staff2), 1, fstaff);
+    while (!feof(fstaff)) {
+        if (strcmp(staff2.staff_position, "STAFF") == 0)
+        {
+            strcpy(staff[staff_count].staff_id, staff2.staff_id);
+            strcpy(staff[staff_count].staff_password, staff2.staff_password);
+            strcpy(staff[staff_count].staff_phone, staff2.staff_phone);
+            strcpy(staff[staff_count].staff_email, staff2.staff_email);
+            strcpy(staff[staff_count].staff_position, staff2.staff_position);
+            staff_count++;
+
+        }
+
+        if (strcmp(staff2.staff_position, "MANAGER") == 0)
+        {
+            strcpy(manager[manager_count].manager_id, staff2.staff_id);
+            strcpy(manager[manager_count].manager_password, staff2.staff_password);
+            strcpy(manager[manager_count].manager_phone, staff2.staff_phone);
+            strcpy(manager[manager_count].manager_email, staff2.staff_email);
+            strcpy(manager[manager_count].manager_position, staff2.staff_position);
+            manager_count++;
+            printf("%d", manager_count);
+        }
+        fread(&staff2, sizeof(staff2), 1, fstaff);
+    }
+
+   //test file read 
+    printf("ID: %s\n", staff[1].staff_id);
+    printf("ID: %s\n", manager[1].manager_id);
+
+    fclose(fstaff);
 
     menu(staff, manager);
 
+    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
+
+    for (int i = 0; i < manager_count - 1; i++) {
+        fwrite(&manager[i], sizeof(manager), 1, fstaff);
+    }
+
+    for (int i = 0; i < staff_count - 1; i++) {
+        fwrite(&staff[i], sizeof(staff), 1, fstaff);
+    }
+
+    fclose(fstaff);
     return 0;
 
 }
@@ -253,12 +307,16 @@ void staff_login(struct Staff* staff, struct Manager* manager) {
 void staff_registration(struct Staff* staff) {
     char id[MAX_ID_LENGTH];
     char password[MAX_PASS_LENGTH];
+    char position[MAX_POSITION_LENGTH];
+
     printf("\nStaff Registration\n");
     printf("--------------------\n");
     printf("Enter your ID: ");
     scanf(" %[^\n]", id);
     printf("Enter your Password: ");
     scanf(" %[^\n]", password);
+    /*printf("Email:");
+    scanf();*/
 
     for (int i = 0; i < MAX_STAFF; i++) {
         if (strcmp(staff[i].staff_id, id) == 0) {
@@ -270,6 +328,9 @@ void staff_registration(struct Staff* staff) {
 
     strcpy(staff[staff_count].staff_id, id);
     strcpy(staff[staff_count].staff_password, password);
+    //copy email and phone
+    strcpy(staff[staff_count].staff_position, "STAFF");
+
 
     printf("\nRegistration successfully\n\n");
 
@@ -383,9 +444,9 @@ void manager_main_page(struct Staff* staff, struct Manager* manager) {
         printf("Manager\n");
         printf("------\n");
         printf("1. Employee rest schedule\n");
-        printf("2. Modify staff information\n");
-        printf("3. Delete staff record\n");
-        printf("4. Log Out\n");
+        //printf("2. Modify staff information\n");
+        printf("2. Delete staff record\n");
+        printf("3. Log Out\n");
         printf("Enter your Choice: ");
         scanf("%d", &choice);
 
@@ -393,17 +454,15 @@ void manager_main_page(struct Staff* staff, struct Manager* manager) {
         case 1:
             break;
         case 2:
-            modify_staffInformation(staff, manager);
+            delete_Acc(staff, manager);
+            //modify_staffInformation(staff, manager);
             break;
         case 3:
-            delete_Acc(staff, manager);
-            break;
-        case 4:
             break;
         default:
             break;
         }
-    } while (choice != 4);
+    } while (choice != 3);
 }
 
 // Manager registration
@@ -427,6 +486,9 @@ void manager_registration(struct Manager* manager) {
 
     strcpy(manager[manager_count].manager_id, id);
     strcpy(manager[manager_count].manager_password, password);
+    //email phone
+    strcpy(manager[staff_count].manager_position, "MANAGER");
+
 
     printf("\nRegistration successfully\n\n");
 
@@ -663,94 +725,94 @@ void delete_Acc(struct Staff* staff, struct Manager* manager)
 
 
 // Modify/ edit staff information
-void modify_staffInformation(struct Staff* staff, struct Manager* manager)
-{
-
-    int staffIDExist = 0;
-    char id[MAX_ID_LENGTH], name[MAX_NAME_LENGTH], phoneNo[MAX_PHONE_LENGTH], email[MAX_EMAIL_LENGTH], position[MAX_POSITION_LENGTH];
-    char confirm;
-    char add;
-
-    printf("Enter Staff ID:");
-    scanf(" %[^\n]", id);
-    for (int i = 0; i < MAX_STAFF; i++) {
-        if (strcmp(staff[i].staff_id, id) == 0)
-        {
-            staffIDExist++;
-            printf("\n---------BEFORE EDIT-----------\n");
-            printf("Staff ID: %s\n", staff[i].staff_id);
-            printf("Name : %s\n", staff[i].staff_name);
-            printf("Contact Number: %s\n", staff[i].staff_phone);
-            printf("Email: %s\n", staff[i].staff_email);
-            printf("Position: %s\n", staff[i].staff_position);
-
-            printf("--------------EDIT------------------\n");
-            printf("\nPlease Enter New Name: ");
-            scanf(" %[^\n]", name);
-            printf("Please enter New phone No : ");
-            scanf(" %[^\n]", phoneNo);
-            printf("Please enter New email :");
-            scanf(" %[^\n]", email);
-            printf("Please enter New position :");
-            scanf(" %[^\n]", position);
-            //maybe can let loop like when want to edit email only then just out for this edit menu.
-
-           /* printf("\n------------ADD---------------\n");
-            printf("Do you want to add phone_No? :");
-            printf(" \nY/y OR N/n : ");
-            scanf(" %c", &add);
-
-            if (add == 'Y' || add == 'y')
-            {
-
-                printf("\nEnter Phone_No: ");
-                scanf("%d", &staff.staff_phone);
-            }
-            else {
-
-                printf("Confirm? ");
-                scanf("%c", &confirm);
-                rewind(stdin);
-                if (confirm == 'Y' || confirm == 'y') {
-                    printf("\n");
-                    printf("Edit was successfully!\n");
-                }
-
-                printf("--------After edit---------------\n");
-                printf("\nName : %s\n", staff.staff_name);
-                printf("\nEmployee ID : %s\n", dff.employee_id);
-                printf("\nEmail: %s", staff.staff_email);
-                printf("Phone No :%d\n", staff.staff_phone);
-
-            }*/
-
-            printf("\nConfirm? \n");
-            scanf(" %c", &confirm);
-            if (confirm == 'Y' || confirm == 'y') {
-                strcpy(staff[i].staff_name, name);
-                strcpy(staff[i].staff_phone, phoneNo);
-                strcpy(staff[i].staff_email, email);
-                strcpy(staff[i].staff_position, position);
-                printf("\n");
-                printf("Edit was successfully!\n");
-                printf("--------After edit---------------\n");
-                printf("Staff ID : %s\n", staff[i].staff_id);
-                printf("Name : %s\n", staff[i].staff_name);
-                printf("Phone No :%s\n", staff[i].staff_phone);
-                printf("Email: %s", staff[i].staff_email);
-                printf("Position :%s\n", staff[i].staff_position);
-            }
-            else {
-                return;
-            }
-
-
-        }
-
-    }
-
-    if (staffIDExist == 0) {
-        printf("%s is unvailable!\n", id);
-        return 0;
-    }
-}
+////void modify_staffInformation(struct Staff* staff, struct Manager* manager)
+//{
+//
+//    int staffIDExist = 0;
+//    char id[MAX_ID_LENGTH], name[MAX_NAME_LENGTH], phoneNo[MAX_PHONE_LENGTH], email[MAX_EMAIL_LENGTH], position[MAX_POSITION_LENGTH];
+//    char confirm;
+//    char add;
+//
+//    printf("Enter Staff ID:");
+//    scanf(" %[^\n]", id);
+//    for (int i = 0; i < MAX_STAFF; i++) {
+//        if (strcmp(staff[i].staff_id, id) == 0)
+//        {
+//            staffIDExist++;
+//            printf("\n---------BEFORE EDIT-----------\n");
+//            printf("Staff ID: %s\n", staff[i].staff_id);
+//            printf("Name : %s\n", staff[i].staff_name);
+//            printf("Contact Number: %s\n", staff[i].staff_phone);
+//            printf("Email: %s\n", staff[i].staff_email);
+//            printf("Position: %s\n", staff[i].staff_position);
+//
+//            printf("--------------EDIT------------------\n");
+//            printf("\nPlease Enter New Name: ");
+//            scanf(" %[^\n]", name);
+//            printf("Please enter New phone No : ");
+//            scanf(" %[^\n]", phoneNo);
+//            printf("Please enter New email :");
+//            scanf(" %[^\n]", email);
+//            printf("Please enter New position :");
+//            scanf(" %[^\n]", position);
+//            //maybe can let loop like when want to edit email only then just out for this edit menu.
+//
+//           /* printf("\n------------ADD---------------\n");
+//            printf("Do you want to add phone_No? :");
+//            printf(" \nY/y OR N/n : ");
+//            scanf(" %c", &add);
+//
+//            if (add == 'Y' || add == 'y')
+//            {
+//
+//                printf("\nEnter Phone_No: ");
+//                scanf("%d", &staff.staff_phone);
+//            }
+//            else {
+//
+//                printf("Confirm? ");
+//                scanf("%c", &confirm);
+//                rewind(stdin);
+//                if (confirm == 'Y' || confirm == 'y') {
+//                    printf("\n");
+//                    printf("Edit was successfully!\n");
+//                }
+//
+//                printf("--------After edit---------------\n");
+//                printf("\nName : %s\n", staff.staff_name);
+//                printf("\nEmployee ID : %s\n", dff.employee_id);
+//                printf("\nEmail: %s", staff.staff_email);
+//                printf("Phone No :%d\n", staff.staff_phone);
+//
+//            }*/
+//
+//            printf("\nConfirm? \n");
+//            scanf(" %c", &confirm);
+//            if (confirm == 'Y' || confirm == 'y') {
+//                strcpy(staff[i].staff_name, name);
+//                strcpy(staff[i].staff_phone, phoneNo);
+//                strcpy(staff[i].staff_email, email);
+//                strcpy(staff[i].staff_position, position);
+//                printf("\n");
+//                printf("Edit was successfully!\n");
+//                printf("--------After edit---------------\n");
+//                printf("Staff ID : %s\n", staff[i].staff_id);
+//                printf("Name : %s\n", staff[i].staff_name);
+//                printf("Phone No :%s\n", staff[i].staff_phone);
+//                printf("Email: %s", staff[i].staff_email);
+//                printf("Position :%s\n", staff[i].staff_position);
+//            }
+//            else {
+//                return;
+//            }
+//
+//
+//        }
+//
+//    }
+//
+//    if (staffIDExist == 0) {
+//        printf("%s is unvailable!\n", id);
+//        return 0;
+//    }
+//}
