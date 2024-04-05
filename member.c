@@ -132,7 +132,7 @@ void memberLogin(struct Member* member) {
 				loginSuccess++;
 			}
 		}
-
+		
 		if (loginSuccess == 0) {
 
 				printf("Invalid ID or Password\n");
