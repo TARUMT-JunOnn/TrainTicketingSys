@@ -76,8 +76,9 @@ main() {
     struct Manager manager[MAX_MANAGER];
     
 
+
     FILE* fstaff;
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb+");
+    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb");
 
     if (fstaff == NULL) {
         printf("Error Opening File\n");
@@ -100,7 +101,7 @@ main() {
     //fwrite(&manager[0], sizeof(manager), 1, fstaff);
 
      fread(&staff2, sizeof(staff2), 1, fstaff);
-    while (!feof(fstaff)) {
+     while (!feof(fstaff)) {
         if (strcmp(staff2.staff_position, "STAFF") == 0)
         {
             strcpy(staff[staff_count].staff_id, staff2.staff_id);
@@ -109,7 +110,6 @@ main() {
             strcpy(staff[staff_count].staff_email, staff2.staff_email);
             strcpy(staff[staff_count].staff_position, staff2.staff_position);
             staff_count++;
-
         }
 
         if (strcmp(staff2.staff_position, "MANAGER") == 0)
@@ -120,14 +120,19 @@ main() {
             strcpy(manager[manager_count].manager_email, staff2.staff_email);
             strcpy(manager[manager_count].manager_position, staff2.staff_position);
             manager_count++;
-            printf("%d", manager_count);
         }
         fread(&staff2, sizeof(staff2), 1, fstaff);
     }
+     //write new information to file.
+     //strcpy(staff[1].staff_id, "staff1");
+     //strcpy(staff[1].staff_password, "321");
+     //strcpy(staff[1].staff_phone, "01231323");
+     //strcpy(staff[1].staff_email, "lee@gmail.com");
+     //strcpy(staff[1].staff_position, "STAFF");
+     //staff_count++;
 
    //test file read 
     printf("ID: %s\n", staff[1].staff_id);
-    printf("ID: %s\n", manager[1].manager_id);
 
     fclose(fstaff);
 
@@ -149,7 +154,8 @@ main() {
 }
 
 // Main menu
-void menu(struct Staff* staff, struct Manager* manager) {
+void menu(struct Staff* staff, struct Manager* manager) 
+{
     int choice;
     struct tm* hour;
     char buffer[50];
@@ -182,7 +188,7 @@ void menu(struct Staff* staff, struct Manager* manager) {
             //if enter character or string, it will be error
         }
 
-    } while (choice != 3);
+    } while (choice != 2);
     printf("\nYou are Log Out %s Right Now!\n", buffer);
 
 
@@ -198,6 +204,7 @@ void staffMenu(struct Staff* staff, struct Manager* manager)
     time(&t);
 
     do {
+        system("cls");
         printf("\n------ STAFF MENU ------\n");
         printf("-------------------------\n");
         printf("1. Login\n");
@@ -223,64 +230,12 @@ void staffMenu(struct Staff* staff, struct Manager* manager)
     printf("\nYou are Exit %s Right Now!\n", buffer);
 
 }
-//Staff create new acc
-//void add_staff(struct Staff* staff, struct Manager* manager)
-//{
-//    char choice;
-//    char id[MAX_ID_LENGTH];
-//    char password[MAX_PASS_LENGTH];
-//
-//    if (staff_count >= MAX_STAFF) {
-//        printf("Already full! No more staff can be add.\n");
-//
-//        printf("Do you want to delete staff acc?\n");
-//        rewind(stdin);
-//        scanf("%c", &choice);
-//        if (choice == 'Y' || choice == 'y')
-//        {
-//            deleteAcc();
-//
-//            /*printf("Only MANAGER can access!\n");
-//            printf("Enter Manager ID:");
-//            rewind(stdin);
-//            scanf("%s", id);
-//            printf("\nEnter password to access:");
-//            rewind(stdin);
-//            scanf("%[^\n]", password);
-//
-//            for (int i = 0; i < MAX_MANAGER; i++) {
-//                if (strcmp(manager[i].manager_id, id) == 0 && strcmp(manager[i].manager_password, password) == 0)
-//                {
-//                    deleteAcc();
-//                }
-//            }*/
-//        }
-//        return 0;
-//    }
-//
-//    printf("Enter your name：");
-//    rewind(stdin);
-//    scanf(" %[^\n]", staff[staff_count].staff_name);
-//
-//    printf("Enter your ID：");
-//    scanf(" %s", &staff[staff_count].staff_id);
-//
-//    printf("Enter your phone number：");
-//    scanf("%d", &staff[staff_count].staff_phone);
-//
-//    printf("Enter your email：");
-//    rewind(stdin);
-//    scanf("%[^\n]", staff[staff_count].staff_email);
-//
-//    printf("Enter your position：");
-//    scanf(" %s", &staff[staff_count].staff_position);
-//
-//    staff_count++;
-//    printf("Employee information has been added.\n");
-//}
+
+
 
 // Staff Login menu
-void staff_login(struct Staff* staff, struct Manager* manager) {
+void staff_login(struct Staff* staff, struct Manager* manager) 
+{
     char id[MAX_ID_LENGTH];
     char password[MAX_PASS_LENGTH];
     int loginSuccess = 0;
@@ -289,15 +244,18 @@ void staff_login(struct Staff* staff, struct Manager* manager) {
     scanf(" %[^\n]", id);
     printf("Enter your staff password: ");
     scanf(" %[^\n]", password);
-    for (int i = 0; i < MAX_STAFF; i++) {
-        if (strcmp(staff[i].staff_id, id) == 0 && strcmp(staff[i].staff_password, password) == 0) {
+    for (int i = 0; i < MAX_STAFF; i++)
+    {
+        if (strcmp(staff[i].staff_id, id) == 0 && strcmp(staff[i].staff_password, password) == 0) 
+        {
             printf("Login successful...\n");
             staff_main_page(staff, manager);
             loginSuccess++;
         }
     }
 
-    if (loginSuccess == 0) {
+    if (loginSuccess == 0) 
+    {
         printf("Invalid ID or Password");
         return 0;
     }
@@ -306,17 +264,30 @@ void staff_login(struct Staff* staff, struct Manager* manager) {
 //staff registration menu
 void staff_registration(struct Staff* staff) {
     char id[MAX_ID_LENGTH];
+    char name[MAX_NAME_LENGTH];
     char password[MAX_PASS_LENGTH];
     char position[MAX_POSITION_LENGTH];
+    char email[MAX_EMAIL_LENGTH];
+    char phoneNo[MAX_PHONE_LENGTH];
 
     printf("\nStaff Registration\n");
     printf("--------------------\n");
     printf("Enter your ID: ");
-    scanf(" %[^\n]", id);
+    rewind(stdin);
+    scanf("%[^\n]", id);
+    printf("Name: ");
+    rewind(stdin);
+    scanf("%[^\n]", name);
     printf("Enter your Password: ");
-    scanf(" %[^\n]", password);
-    /*printf("Email:");
-    scanf();*/
+    rewind(stdin);
+    scanf("%[^\n]", password);
+    rewind(stdin);
+    printf("Phone No: ");
+    rewind(stdin);
+    scanf("%[^\n]", phoneNo);
+    printf("Email:");
+    rewind(stdin);
+    scanf("%[^\n]", email);
 
     for (int i = 0; i < MAX_STAFF; i++) {
         if (strcmp(staff[i].staff_id, id) == 0) {
@@ -327,7 +298,11 @@ void staff_registration(struct Staff* staff) {
     }
 
     strcpy(staff[staff_count].staff_id, id);
+    strcpy(staff[staff_count].staff_name, name);
     strcpy(staff[staff_count].staff_password, password);
+    strcpy(staff[staff_count].staff_phone, phoneNo);
+    strcpy(staff[staff_count].staff_email, email);
+    
     //copy email and phone
     strcpy(staff[staff_count].staff_position, "STAFF");
 
@@ -379,7 +354,7 @@ void staff_information(struct Staff* staff, struct Manager* manager) {
 }
 
 
-// Manager menu !
+// Manager menu
 void manager_menu(struct Staff* staff, struct Manager* manager) {
     int choice;
     struct tm* hour;
@@ -468,13 +443,29 @@ void manager_main_page(struct Staff* staff, struct Manager* manager) {
 // Manager registration
 void manager_registration(struct Manager* manager) {
     char id[MAX_ID_LENGTH];
+    char name[MAX_NAME_LENGTH];
     char password[MAX_PASS_LENGTH];
+    char phone[MAX_PHONE_LENGTH];
+    char email[MAX_EMAIL_LENGTH];
+
     printf("\Manager Registration\n");
     printf("--------------------\n");
-    printf("Enter your ID: ");
-    scanf(" %[^\n]", id);
-    printf("Enter your Password: ");
+    printf("Manager ID: ");
+    rewind(stdin);
+    scanf("%[^\n]", id);
+    printf("Name: ");
+    rewind(stdin);
+    scanf("%[^\n]", name);
+    printf("Password: ");
     scanf(" %[^\n]", password);
+    //not sure the way of store
+    printf("Phone No: ");
+    rewind(stdin);
+    scanf("%[^\n]", phone);
+    printf("Email: ");
+    rewind(stdin);
+    scanf("%[^\n]", email);
+
 
     for (int i = 0; i < MAX_MANAGER; i++) {
         if (strcmp(manager[i].manager_id, id) == 0) {
@@ -485,8 +476,10 @@ void manager_registration(struct Manager* manager) {
     }
 
     strcpy(manager[manager_count].manager_id, id);
+    strcpy(manager[manager_count].manager_name, name);
     strcpy(manager[manager_count].manager_password, password);
-    //email phone
+    strcpy(manager[manager_count].manager_phone, phone);
+    strcpy(manager[manager_count].manager_email, email);
     strcpy(manager[staff_count].manager_position, "MANAGER");
 
 
@@ -495,178 +488,68 @@ void manager_registration(struct Manager* manager) {
     manager_count++;
 }
 
+//Manager delete staff record
 void delete_Acc(struct Staff* staff, struct Manager* manager)
 {
-    char id[MAX_ID_LENGTH];
     char confirm;
     char answers;
-
-    printf("You are able to delete the file\n");
-    printf("\nEnter Employee Name to DELETE :");
-    rewind(stdin);
-    scanf("%[^\n]", id);
-    for (int i = 0; i < MAX_STAFF; i++) {
-        if (strcmp(staff[i].staff_id, id) == 0) {
-            printf("\nConfirm ?\n");
-            scanf(" %c", &confirm);
-
-            while (confirm == 'y' || confirm == 'Y')
+    char deleteID[20];
+    int done =0;
+    do
+    {
+        printf("You are able to delete the file\n");
+        printf("\nEnter Staff ID to DELETE :");
+        rewind(stdin);
+        scanf("%[^\n]", deleteID);
+        for (int i = 0; i < MAX_STAFF; i++) {
+            if (strcmp(staff[i].staff_id, deleteID) == 0)
             {
-                // ...fread from binary file 
+                printf("\nConfirm ?\n");
+                scanf(" %c", &confirm);
+
+                while (confirm == 'y' || confirm == 'Y')
+                {
+                    //// ...fread from binary file 
+                    //printf("Enter ID to delete: ");
+                    //scanf(" %[^\n]", deleteID);
+
+                    for (int i = 0; i < staff_count; i++)
+                    {
+                        if (strcmp(staff[i].staff_id, deleteID) == 0)
+                        {
+                            staff_count--;
+
+                            for (i; i < staff_count; i++)
+                            {
+                                strcpy(staff[i].staff_id, staff[i + 1].staff_id);
+                                strcpy(staff[i].staff_name, staff[i + 1].staff_name);
+                                strcpy(staff[i].staff_password, staff[i + 1].staff_password);
+                                strcpy(staff[i].staff_email, staff[i + 1].staff_email);
+                                strcpy(staff[i].staff_phone, staff[i + 1].staff_phone);
+                                // no done yet
+
+                            }
+
+                            done++;
+                        }
+                    }
+
+                    if (done == 0) {
+                        printf("delete successful");
+                    }
+                    else
+                    {
+                        printf("Invalid");
+                    }
+
+                }
             }
-            printf("\nWant to delete another"
-                " record (Y/N) :");
-            rewind(stdin);
+            printf("\nWant to delete another record (Y/N)? :");
             scanf(" %c", &answers);
         }
-    }
-    //printf("\nConfirm ?\n");
-    //scanf(" %c", &confirm);
+    } while (answers == 'Y' || answers == 'y');
+} 
 
-    //while (confirm == 'y' || confirm == 'Y')
-    //{
-    //    // ...fread from binary file 
-    //}
-    //printf("\nWant to delete another"
-    //    " record (Y/N) :");
-    //rewind(stdin);
-    //scanf(" %c", &answers);
-    // .......
-
-    //fprintf(save) to binary file 
-
-
-}
-
-
-// Staff Login Acc
-//void login(struct Staff staff, struct Employee employee, struct Manager manager) {
-//    char id[MAX_ID_LENGTH];
-//    char choice;
-//    int wrong_password = 0;
-//
-//    printf("------ ONLY for STAFF Login ------\n");
-//    printf("\nEnter your staff ID: ");
-//    scanf("%s", id);
-//    if (strcmp(staff.staff_id, id) == 0)
-//    {
-//        printf("Welcome %s", staff.staff_name);
-//        printf("\nLogin to Employee Acc (S/s) OR Manager Acc (M/m): ");
-//        scanf(" %c", &choice);
-//
-//        if (choice == 'M' || choice == 'm') {
-//            printf("You are logged in as an manager.\n");
-//            staff_Manager();
-//        }
-//        else if (choice == 'S' || choice == 's') {
-//            printf("You are logged in as an Employee.\n");
-//            employee_Acc();
-//        }
-//        else {		// Checking if login failed 3 time logout directly
-//            printf("\nFailed to Login.\n");
-//            wrong_password++;
-//
-//            if (wrong_password >= 3) {
-//                printf("Incorrect password 3 times, Log Out!");
-//                return;
-//            }
-//        }
-//    }
-//    printf("Can't founed the staff in system.\n");
-//}
-
-
-//Staff menu 
-//void staffMenu(struct Staff staff, struct Manager manager) {
-//    int choice;
-//    struct tm* hour;
-//    char buffer[50];
-//    time_t t;
-//    time(&t);
-//
-//    hour = localtime(&t);
-//    strftime(buffer, 50, "%X", hour);
-//
-//
-//    do {
-//        printf("------ STAFF MENU ------\n");
-//        printf("-------------------------\n");
-//        printf("1. Sign In Acc\n");
-//        printf("2. Log In Acc\n");
-//        printf("3. Exit\n");
-//        scanf("%d", &choice);
-//        if (choice != 1 && choice != 2 && choice != 3)
-//            printf("Please select again:\n");
-//
-//        switch (choice) {
-//        case 1:
-//            add_staff(staff);
-//            break;
-//        case 2:
-//            login(staff, employee, manager);
-//            break;
-//        case 3:
-//            printf("\nYou are Log Out %s Right Now!\n", buffer);
-//            break;
-//        }
-//
-//    } while (choice != 1 && choice != 2 && choice != 3);
-//
-//}
-
-
-// Login to emp acc
-//void employee_Acc()
-//{
-//    char password[20];
-//    char id;
-//    char select;
-//
-//    struct tm* hour;
-//    char buffer[50];
-//    time_t t;
-//    time(&t);
-//
-//    hour = localtime(&t);
-//    strftime(buffer, 50, "%X", hour);
-//
-//    //Let emp define id and password (all is difference ID and password) - read form binary file
-//    printf("Enter your Emp.ID :");
-//    rewind(stdin);
-//    scanf(" %s", &id);
-//    printf("Please enter your password:");
-//    rewind(stdin);
-//    scanf("%[^\n]", password);
-//    if (strcmp(dff.employee_password, password) == 0) {
-//        printf("Your are sucessful login Acc");
-//        printf("Check to see :\n");
-//        printf("1. Employee rest schedule\n");
-//        printf("2. Employe Information\n");
-//        printf("3. Check IN\n");
-//        printf("4. Log OUT\n");
-//        scanf(" %c", &select);
-//        switch (select)
-//        {
-//        case 1:
-//            // rest_schedule();
-//            break;
-//        case 2:
-//            //log in to ourselfe record then edit only.
-//            modify_staffInformation();
-//            break;
-//        case 3:
-//            // after check in ,store check in & out time show to employee see when log out acc.
-//            printf("\nYou are Check IN %s Right Now!\n", buffer);
-//            break;
-//        case 4:
-//            printf("You are Log Out.");
-//            menu();
-//            break;
-//        }
-//    }
-//    else
-//        printf("Wrong Password!\n");
-//}
 
 
 
