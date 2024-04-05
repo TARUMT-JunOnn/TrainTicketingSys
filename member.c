@@ -10,7 +10,9 @@
 #define MAX_NUM_QUESTION 3
 #define MAX_PHONE_NUM 15
 #define MAX_LENGTH_EMAIL 50
+#define MAX_LENGTH_IC 15
 
+void title();
 int tryAgain(int again);
 void memberMenu(struct Member* member);
 void memberLogin(struct Member* member);
@@ -26,6 +28,8 @@ void bookingHistory();
 void cancelBooking();
 void rewardPoint();
 
+void title(void);
+
 struct SecurityQuestion {
 	int questionNum;
 	char answer[100];
@@ -34,17 +38,47 @@ struct SecurityQuestion {
 struct Member {
 	char id[MEMBER_NAME];
 	char pass[MEMBER_PASS];
+	char gender;
+	char ic[MAX_LENGTH_IC];
 	char phoneNo[MAX_PHONE_NUM];
 	char email[MAX_LENGTH_EMAIL];
+	float rewardPoints;
 	struct SecurityQuestion security[MAX_NUM_QUESTION];
 
 };
 
 int numMember = 0;
 
+void title(void) {
+	system("cls");
+	printf("%10s %s %s", "Train", "Ticketing", "System");
+	time_t t;
+	time(&t);
+	printf("%125s", ctime(&t));
+	for (int i = 0; i < 155; i++) {
+		printf("%s", "-");
+	}
+	printf("\n\n");
+}
+
 main() {
 	struct Member member[MAX_NUMBER_MEMBER];
-	system("cls");
+
+	//test data
+	strcpy(member[numMember].id, "123");
+	strcpy(member[numMember].pass, "321");
+	member[numMember].gender = 'M';
+	strcpy(member[numMember].ic, "123-321");
+	strcpy(member[numMember].phoneNo, "01161188688");
+	strcpy(member[numMember].email, "lee@gmail.com");
+	member[numMember].rewardPoints = 0.00;
+	member[numMember].security[0].questionNum = 1;
+	member[numMember].security[1].questionNum = 2;
+	member[numMember].security[2].questionNum = 3;
+	strcpy(member[numMember].security[0].answer, "1");
+	strcpy(member[numMember].security[1].answer, "2");
+	strcpy(member[numMember].security[2].answer, "3");
+
 	memberMenu(member);
 
 }
@@ -53,6 +87,7 @@ int tryAgain(int again) {
 	int choice, invalidChoice = 0;
 
 	do {
+
 		again = 0;
 		invalidChoice = 0;
 		printf("Do you want to try again?\n");
@@ -68,6 +103,7 @@ int tryAgain(int again) {
 		else if (choice == 2)
 			return 0;
 		else {
+			title();
 			printf("Invalid Choice\n");
 			printf("Please Enter A Valid Choice\n");
 			invalidChoice++;
@@ -80,7 +116,7 @@ void memberMenu(struct Member* member) {
 	int choice;
 	do {
 
-	system("cls");
+	title();
 	printf("Member Menu\n");
 	printf("-----------\n");
 	for (int i = 0; i < sizeof(menu)/sizeof(menu[0]); i++) {
@@ -118,7 +154,7 @@ void memberLogin(struct Member* member) {
 	do {
 		again = 0;
 
-		system("cls");
+		title();
 		printf("ID: ");
 		scanf(" %[^\n]", name);
 		printf("Password: ");
@@ -126,7 +162,14 @@ void memberLogin(struct Member* member) {
 
 		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
 			if (strcmp(member[i].id, name) == 0 && strcmp(member[i].pass, password) == 0) {
-				printf("Login successful...\n");
+				printf("Login Successful. ");
+
+				for (int i = 0; i < 3; i++) {
+					Sleep(300);
+					printf(". ");
+					Sleep(300);
+				}
+				
 				memberNUM = i;
 				memberMainPage(member, memberNUM);
 				loginSuccess++;
@@ -144,6 +187,7 @@ void memberLogin(struct Member* member) {
 }
 
 void securityQuestion() {
+	title();
 		printf("\nSecurity Questions\n");
 
 		printf("\n-----------------------\n");
@@ -183,7 +227,7 @@ void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MA
 
 void memberRegister(struct Member* member) {
 	
-	char memberID[MEMBER_NAME], password[MEMBER_PASS], phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
+	char memberID[MEMBER_NAME], password[MEMBER_PASS], ic[MAX_LENGTH_IC], gender, phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
 	int again;
 	int questionSelection[MAX_NUM_QUESTION], success;
 	char question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
@@ -191,7 +235,7 @@ void memberRegister(struct Member* member) {
 
 	do {
 		again = 0;
-		system("cls");
+		title();
 
 		printf("ID: ");
 		scanf(" %[^\n]", memberID);
@@ -200,11 +244,12 @@ void memberRegister(struct Member* member) {
 
 		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
 			if (strcmp(member[i].id, memberID) == 0) {
-					printf("The username %s already exits.\n", memberID);
-					printf("Please choose a different username.\n");
-					again = tryAgain(again);
-					if (again == 0)
-						return 0;
+				title();
+				printf("The username %s already exits.\n", memberID);
+				printf("Please choose a different username.\n");
+				again = tryAgain(again);
+				if (again == 0)
+					return 0;
 			}
 		}
 	} while (again == 1);
@@ -259,17 +304,35 @@ void memberRegister(struct Member* member) {
 		strcpy(member[numMember].security[i].answer, answer[i]);
 	}
 
-	printf("\nRegistration successfully\n\n");
+	printf("\nRegistration Successfully. ");
+	for (int i = 0; i < 3; i++) {
+		Sleep(300);
+		printf(". ");
+		Sleep(300);
+	}
+	printf("\n");
 
+	title();
+	printf("IC(XXXXXX-XX-XXXX): ");
+	scanf(" %[^\n]", ic);
+	printf("\n");
+	printf("Gender(M/F): ");
+	scanf(" %c", &gender);
+	//validate gender 
+	printf("\n");
 	printf("Phone number(011-XXXXXXX): ");
 	scanf(" %[^\n]", phone);
+	printf("\n");
 	printf("Email: ");
 	scanf(" %[^\n]", email);
 
+	strcpy(member[numMember].ic, ic);
+	member[numMember].gender = gender;
 	strcpy(member[numMember].phoneNo, phone);
 	strcpy(member[numMember].email, email);
+	member[numMember].rewardPoints = 0.00;
 
-	printf("Phone and email are added\n");
+	printf("Information Added\n");
 
 	numMember++;
 
@@ -281,7 +344,7 @@ void forgotPass(struct Member* member) {
 	int idExist = 0, again = 0, securityPass = 0, choice, invalidChoice = 0;
 
 	do {
-		system("cls");
+		title();
 		printf("ID: ");
 		scanf(" %[^\n]", id);
 		
@@ -360,7 +423,7 @@ void memberMainPage(struct Member* member, int memberNUM) {
 
 	do
 	{
-		system("cls");
+		title();
 		printf("Welcome %s\n", member[memberNUM].id);
 		//remove id and pass
 		printf("Pass: %s", member[memberNUM].pass);
@@ -392,7 +455,7 @@ void memberMainPage(struct Member* member, int memberNUM) {
 			cancelBooking();
 			break;
 		case 6:
-			rewardPoint();
+			rewardPoint(member, memberNUM);
 			break;
 		case 7:
 			printf("EXITING MEMBER MENU\n");
@@ -409,7 +472,7 @@ void viewProfile(struct Member* member, int memberNUM) {
 	char oldPassword[MEMBER_PASS], newPassword[MEMBER_PASS], passConfirm[MEMBER_PASS];
 
 	do {
-		system("cls");
+		title();
 		again = 0;
 		printf("Profile Information\n");
 		printf("--------------------\n");
@@ -420,9 +483,10 @@ void viewProfile(struct Member* member, int memberNUM) {
 		scanf("%d", &choice);
 
 		if (choice == 1) {
-			printf("----------------------\t ----------------------\t ----------------------\n");
-			printf("| 1 | Password       |\t | 2 | Contact Number |\t | 3 | Email          |\n");
-			printf("----------------------\t ----------------------\t ----------------------\n");
+			printf("\n");
+			printf("----------------------\t ----------------------\t  ----------------------\n");
+			printf("| 1 | Password       |\t | 2 | Contact Number |\t  | 3 | Email          |\n");
+			printf("----------------------\t ----------------------\t  ----------------------\n");
 
 			printf("\nEnter your choice: ");
 			scanf("%d", &modify);
@@ -430,13 +494,16 @@ void viewProfile(struct Member* member, int memberNUM) {
 			if (modify == 1) {
 				do {
 					again = 0;
-					system("cls");
+					title();
 					printf("Old Password: ");
-					scanf(" %[^ \n]", oldPassword);
+					scanf(" %[^\n]", oldPassword);
+					printf("\n");
 					printf("New Password: ");
-					scanf(" %[^ \n]", newPassword);
+					scanf(" %[^\n]", newPassword);
+					printf("\n");
 					printf("Confirm Password: ");
-					scanf(" %[^ \n]", passConfirm);
+					scanf(" %[^\n]", passConfirm);
+					printf("\n");
 
 					if (strcmp(member[memberNUM].pass, oldPassword) != 0) {
 						printf("Old Password Incorrect\n");
@@ -461,19 +528,34 @@ void viewProfile(struct Member* member, int memberNUM) {
 						printf(". ");
 						Sleep(300);
 					}
+					printf("\n");
 				}
 
 			}
 
-			else if (modify == 2) {
+			else if (modify == 2){
+				title();
+				printf("Current Contact Number: %s\n\n", member[memberNUM].phoneNo);
 				printf("New Contact Number: ");
-				scanf(" %[^\n]", member[memberNUM].pass);
-				printf("Contact Number successfully changed\n");
+				scanf(" %[^\n]", member[memberNUM].phoneNo);
+				printf("\nContact Number is changing. ");
+				for (int i = 0; i < 3; i++) {
+					Sleep(300);
+					printf(". ");
+					Sleep(300);
+				}
 			}
 			else if (modify == 3) {
+				title();
+				printf("Current Email: %s\n\n", member[memberNUM].email);
 				printf("New Email: ");
 				scanf(" %[^\n]", member[memberNUM].email);
-				printf("email successfully changed\n");
+				printf("\nEmail is changing. ");
+				for (int i = 0; i < 3; i++) {
+					Sleep(300);
+					printf(". ");
+					Sleep(300);
+				}
 			}
 			else {
 				printf("Invalid Choice\n");
@@ -489,15 +571,14 @@ void viewProfile(struct Member* member, int memberNUM) {
 }
 
 void viewSchedule() {
-
-
+		
 }
 
 void addBooking() {
 
 }
 
-void bookingHistory(){
+void bookingHistory() {
 
 }
 
@@ -505,6 +586,7 @@ void cancelBooking() {
 
 }
 
-void rewardPoint() {
-	
+void rewardPoint(struct Member* member, int memberNUM) {
+	printf("%.2f", member[memberNUM].rewardPoints);
 }
+
