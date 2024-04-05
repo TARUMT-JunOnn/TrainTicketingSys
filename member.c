@@ -4,7 +4,7 @@
 #include <Windows.h>
 #include <time.h>
 #pragma warning(disable:4996)
-#define MEMBER_NAME 100
+#define MEMBER_ID 100
 #define MEMBER_PASS 100
 #define MAX_NUMBER_MEMBER 100 
 #define MAX_NUM_QUESTION 3
@@ -36,7 +36,7 @@ struct SecurityQuestion {
 };
 
 struct Member {
-	char id[MEMBER_NAME];
+	char id[MEMBER_ID];
 	char pass[MEMBER_PASS];
 	char gender;
 	char ic[MAX_LENGTH_IC];
@@ -80,6 +80,8 @@ main() {
 	strcpy(member[numMember].security[2].answer, "3");
 
 	memberMenu(member);
+
+	searchMember(member);
 
 }
 
@@ -147,7 +149,7 @@ void memberMenu(struct Member* member) {
 }
 
 void memberLogin(struct Member* member) {
-	char name[MEMBER_NAME], password[MEMBER_PASS];
+	char name[MEMBER_ID], password[MEMBER_PASS];
 	int memberNUM;
 	int loginSuccess = 0, again = 0;
 	
@@ -227,7 +229,7 @@ void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MA
 
 void memberRegister(struct Member* member) {
 	
-	char memberID[MEMBER_NAME], password[MEMBER_PASS], ic[MAX_LENGTH_IC], gender, phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
+	char memberID[MEMBER_ID], password[MEMBER_PASS], ic[MAX_LENGTH_IC], gender, phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
 	int again;
 	int questionSelection[MAX_NUM_QUESTION], success;
 	char question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
@@ -339,7 +341,7 @@ void memberRegister(struct Member* member) {
 }
 
 void forgotPass(struct Member* member) {
-	char id[MEMBER_NAME], question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
+	char id[MEMBER_ID], question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
 	int num, questionSelection[MAX_NUMBER_MEMBER], newPassword[100];
 	int idExist = 0, again = 0, securityPass = 0, choice, invalidChoice = 0;
 
@@ -587,6 +589,57 @@ void cancelBooking() {
 }
 
 void rewardPoint(struct Member* member, int memberNUM) {
-	printf("%.2f", member[memberNUM].rewardPoints);
+
+	printf("Current Points \n%.2f\n", member[memberNUM].rewardPoints);
+	printf("1. Terms and conditions");
+}
+
+//havent done yet
+void searchMember(struct Member* member) {
+	char* menu[] = { "ID", "Birthday", "Forgot Password", "Exit Program" };
+	char id[MEMBER_ID];
+	int choice;
+
+	do {
+
+		title();
+		for (int i = 0; i < sizeof(menu) / sizeof(menu[0]); i++) {
+			printf("-----\n");
+			printf("| %d | %s\n", i + 1, menu[i]);
+			printf("-----\n");
+		}
+		printf("Please Enter Your Choice: ");
+		scanf("%d", &choice);
+		switch (choice) {
+		case 1:
+			memberLogin(member);
+			break;
+		case 2:
+			memberRegister(member);
+			break;
+		case 3:
+			forgotPass(member, numMember);
+			break;
+		case 4:
+			printf("EXITING PROGRAM.....\n");
+			break;
+		default:
+			printf("Invalid Choice!\n");
+			printf("Please Try Again\n");
+		}
+	} while (choice != 4);
+
+	printf("Enter Member's ID to search: ");
+	scanf(" %[^\n]", id);
+	
+	for (int i = 0; i < numMember; i++) {
+		if (strcmp(member[i].id, id) == 0) {
+
+		}
+	}
+}
+
+void deleteMember() {
+
 }
 
