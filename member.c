@@ -4,13 +4,14 @@
 #include <Windows.h>
 #include <time.h>
 #pragma warning(disable:4996)
-#define MEMBER_ID 100
+#define MEMBER_ID 11
 #define MEMBER_PASS 100
 #define MAX_NUMBER_MEMBER 100 
 #define MAX_NUM_QUESTION 3
 #define MAX_PHONE_NUM 15
 #define MAX_LENGTH_EMAIL 50
 #define MAX_LENGTH_IC 15
+#define MAX_LENGTH_GENDER 2
 
 void title();
 int tryAgain(int again);
@@ -27,6 +28,9 @@ void addBooking();
 void bookingHistory();
 void cancelBooking();
 void rewardPoint();
+void searchMember(struct Member* member);
+void searchMemberID(struct Member* member);
+void searchMemberGender(struct Member* member);
 
 struct SecurityQuestion {
 	int questionNum;
@@ -37,7 +41,7 @@ struct Member {
 	char id[MEMBER_ID];
 	char pass[MEMBER_PASS];
 	int age;
-	char gender;
+	char gender[MAX_LENGTH_GENDER];
 	char ic[MAX_LENGTH_IC];
 	char phoneNo[MAX_PHONE_NUM];
 	char email[MAX_LENGTH_EMAIL];
@@ -66,7 +70,8 @@ main() {
 	//test data
 	strcpy(member[numMember].id, "123");
 	strcpy(member[numMember].pass, "321");
-	member[numMember].gender = 'M';
+	member[numMember].age = 20;
+	strcpy(member[numMember].gender, "M");
 	strcpy(member[numMember].ic, "123-321");
 	strcpy(member[numMember].phoneNo, "01161188688");
 	strcpy(member[numMember].email, "lee@gmail.com");
@@ -77,10 +82,11 @@ main() {
 	strcpy(member[numMember].security[0].answer, "1");
 	strcpy(member[numMember].security[1].answer, "2");
 	strcpy(member[numMember].security[2].answer, "3");
-
-	memberMenu(member);
+	numMember++;
 
 	searchMember(member);
+
+	memberMenu(member);
 
 }
 
@@ -228,7 +234,7 @@ void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MA
 
 void memberRegister(struct Member* member) {
 	
-	char memberID[MEMBER_ID], password[MEMBER_PASS], ic[MAX_LENGTH_IC], gender, phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
+	char memberID[MEMBER_ID], password[MEMBER_PASS], ic[MAX_LENGTH_IC], gender[MAX_LENGTH_GENDER], phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
 	int age;
 	int again;
 	int questionSelection[MAX_NUM_QUESTION], success;
@@ -239,7 +245,7 @@ void memberRegister(struct Member* member) {
 		again = 0;
 		title();
 
-		printf("ID: ");
+		printf("ID(MAX 10 CHARACTERS): ");
 		scanf(" %[^\n]", memberID);
 		printf("Password: ");
 		scanf(" %[^\n]", password);
@@ -322,7 +328,7 @@ void memberRegister(struct Member* member) {
 	scanf(" %[^\n]", ic);
 	printf("\n");
 	printf("Gender(M/F): ");
-	scanf(" %c", &gender);
+	scanf(" %[^\n]", gender);
 	//validate gender 
 	printf("\n");
 	printf("Phone number(011-XXXXXXX): ");
@@ -333,7 +339,7 @@ void memberRegister(struct Member* member) {
 
 	member[numMember].age = age;
 	strcpy(member[numMember].ic, ic);
-	member[numMember].gender = gender;
+	strcpy(member[numMember].gender, gender);
 	strcpy(member[numMember].phoneNo, phone);
 	strcpy(member[numMember].email, email);
 	member[numMember].rewardPoints = 0.00;
@@ -618,7 +624,7 @@ void searchMember(struct Member* member) {
 			searchMemberID(member);
 			break;
 		case 2:
-			memberRegister(member);
+			searchMemberGender(member);
 			break;
 		case 3:
 			forgotPass(member, numMember);
@@ -634,22 +640,90 @@ void searchMember(struct Member* member) {
 }
 
 void searchMemberID(struct Member* member) {
-	char id[MEMBER_ID];
-	int success = 0;
+	char id[MEMBER_ID], next[10];
+	int success = 0, again = 0;
 
 	do {
 		success = 0;
+		again = 0;
 		title();
 		printf("Enter Member's ID to search: ");
 		scanf(" %[^\n]", id);
 
 		for (int i = 0; i < numMember; i++) {
 			if (strcmp(member[i].id, id) == 0) {
-				printf("")
-				success++;
+				do {
+					again = 0;
+					title();
+					printf("Enter Member's ID to search: %s\n\n", id);
+					printf("-----------------------------------------------------------------------------------------------\n");
+					printf("| ID         | AGE | GENDER | CONTACT NUMBER | EMAIL                          | Reward Points |\n");
+					printf("-----------------------------------------------------------------------------------------------\n");
+					printf("| %-10s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+					printf("-----------------------------------------------------------------------------------------------\n");
+					printf("\n\nClick 0 To Continue.....\n");
+					scanf(" %[^\n]", next);
+					if (strcmp(next, "0") == 0) {
+						again = 0;
+						success++;
+					}
+					else
+						again++;
+					
+				} while (again == 1);
 			}
 		}
-	} while ();
+		if (success == 0) {
+			printf("INVALID ID\n");
+			again = tryAgain(again);
+		}
+	} while (again == 1);
+}
+
+void searchMemberGender(struct Member* member) {
+	char gender[MAX_LENGTH_GENDER], next[10];
+	int success = 0, again = 0;
+
+	do {
+		success = 0;
+		again = 0;
+		title();
+		printf("M or F: ");
+		scanf(" %[^\n]", gender);
+		if (gender != );
+
+		for (int i = 0; i < numMember; i++) {
+			if (strcmp(member[i].gender, gender) == 0) {
+				do {
+					again = 0;
+					title();
+					if (strcmp(gender, "M") == 0)
+						printf("MALE:\n\n");
+					else
+						printf("FEMALE:\n\n");
+					
+					printf("-----------------------------------------------------------------------------------------------\n");
+					printf("| ID         | AGE | GENDER | CONTACT NUMBER | EMAIL                          | Reward Points |\n");
+					printf("-----------------------------------------------------------------------------------------------\n");
+					printf("| %-10s | %-3d | %-6c | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+					printf("-----------------------------------------------------------------------------------------------\n");
+					printf("\n\nClick 0 To Continue.....\n");
+					scanf(" %[^\n]", next);
+					if (strcmp(next, "0") == 0) {
+						again = 0;
+						success++;
+					}
+					else
+						again++;
+
+				} while (again == 1);
+			}
+		}
+		if (success == 0) {
+			printf("INVALID ID\n");
+			again = tryAgain(again);
+		}
+	} while (again == 1);
 }
 
 void deleteMember() {
