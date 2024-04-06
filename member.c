@@ -690,7 +690,10 @@ void searchMemberGender(struct Member* member) {
 		title();
 		printf("M or F: ");
 		scanf(" %[^\n]", gender);
-		if (gender != );
+		if (strcmp(gender, "M") != 0 && strcmp(gender, "F") != 0) {
+			printf("Invalid Gender\n");
+			again = tryAgain(again);
+		}
 
 		for (int i = 0; i < numMember; i++) {
 			if (strcmp(member[i].gender, gender) == 0) {
