@@ -28,8 +28,6 @@ void bookingHistory();
 void cancelBooking();
 void rewardPoint();
 
-void title(void);
-
 struct SecurityQuestion {
 	int questionNum;
 	char answer[100];
@@ -38,6 +36,7 @@ struct SecurityQuestion {
 struct Member {
 	char id[MEMBER_ID];
 	char pass[MEMBER_PASS];
+	int age;
 	char gender;
 	char ic[MAX_LENGTH_IC];
 	char phoneNo[MAX_PHONE_NUM];
@@ -230,6 +229,7 @@ void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MA
 void memberRegister(struct Member* member) {
 	
 	char memberID[MEMBER_ID], password[MEMBER_PASS], ic[MAX_LENGTH_IC], gender, phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
+	int age;
 	int again;
 	int questionSelection[MAX_NUM_QUESTION], success;
 	char question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
@@ -315,6 +315,9 @@ void memberRegister(struct Member* member) {
 	printf("\n");
 
 	title();
+	//validate age
+	printf("Age: ");
+	scanf("%d", &age);
 	printf("IC(XXXXXX-XX-XXXX): ");
 	scanf(" %[^\n]", ic);
 	printf("\n");
@@ -328,6 +331,7 @@ void memberRegister(struct Member* member) {
 	printf("Email: ");
 	scanf(" %[^\n]", email);
 
+	member[numMember].age = age;
 	strcpy(member[numMember].ic, ic);
 	member[numMember].gender = gender;
 	strcpy(member[numMember].phoneNo, phone);
@@ -596,8 +600,7 @@ void rewardPoint(struct Member* member, int memberNUM) {
 
 //havent done yet
 void searchMember(struct Member* member) {
-	char* menu[] = { "ID", "Birthday", "Forgot Password", "Exit Program" };
-	char id[MEMBER_ID];
+	char* menu[] = { "ID", "Gender", "Age", "Reward Points" };
 	int choice;
 
 	do {
@@ -612,7 +615,7 @@ void searchMember(struct Member* member) {
 		scanf("%d", &choice);
 		switch (choice) {
 		case 1:
-			memberLogin(member);
+			searchMemberID(member);
 			break;
 		case 2:
 			memberRegister(member);
@@ -628,15 +631,25 @@ void searchMember(struct Member* member) {
 			printf("Please Try Again\n");
 		}
 	} while (choice != 4);
+}
 
-	printf("Enter Member's ID to search: ");
-	scanf(" %[^\n]", id);
-	
-	for (int i = 0; i < numMember; i++) {
-		if (strcmp(member[i].id, id) == 0) {
+void searchMemberID(struct Member* member) {
+	char id[MEMBER_ID];
+	int success = 0;
 
+	do {
+		success = 0;
+		title();
+		printf("Enter Member's ID to search: ");
+		scanf(" %[^\n]", id);
+
+		for (int i = 0; i < numMember; i++) {
+			if (strcmp(member[i].id, id) == 0) {
+				printf("")
+				success++;
+			}
 		}
-	}
+	} while ();
 }
 
 void deleteMember() {
