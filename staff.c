@@ -28,6 +28,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager);
 //void modify_staffInformation(struct Staff* staff, struct Manager* manager);
 void staff_schedule(struct Staff* staff, struct Manager* manager);
 void staff_information(struct Staff* staff, struct Manager* manager);
+void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager);
 
 
 //void menu();
@@ -101,7 +102,8 @@ main() {
     //fwrite(&manager[0], sizeof(manager), 1, fstaff);
 
      fread(&staff2, sizeof(staff2), 1, fstaff);
-     while (!feof(fstaff)) {
+     while (!feof(fstaff))
+     {
         if (strcmp(staff2.staff_position, "STAFF") == 0)
         {
             strcpy(staff[staff_count].staff_id, staff2.staff_id);
@@ -109,7 +111,7 @@ main() {
             strcpy(staff[staff_count].staff_phone, staff2.staff_phone);
             strcpy(staff[staff_count].staff_email, staff2.staff_email);
             strcpy(staff[staff_count].staff_position, staff2.staff_position);
-            staff_count++;
+            staff_count=0;
         }
 
         if (strcmp(staff2.staff_position, "MANAGER") == 0)
@@ -119,7 +121,7 @@ main() {
             strcpy(manager[manager_count].manager_phone, staff2.staff_phone);
             strcpy(manager[manager_count].manager_email, staff2.staff_email);
             strcpy(manager[manager_count].manager_position, staff2.staff_position);
-            manager_count++;
+            manager_count=0;
         }
         fread(&staff2, sizeof(staff2), 1, fstaff);
     }
@@ -167,6 +169,7 @@ void menu(struct Staff* staff, struct Manager* manager)
 
 
     do {
+        system("cls");
         printf("------ STAFF MENU ------\n");
         printf("-------------------------\n");
         printf("1. Staff\n");
@@ -239,6 +242,8 @@ void staff_login(struct Staff* staff, struct Manager* manager)
     char id[MAX_ID_LENGTH];
     char password[MAX_PASS_LENGTH];
     int loginSuccess = 0;
+
+    system("cls");
     printf("------ STAFF Login ------\n");
     printf("\nEnter your staff ID: ");
     scanf(" %[^\n]", id);
@@ -270,6 +275,7 @@ void staff_registration(struct Staff* staff) {
     char email[MAX_EMAIL_LENGTH];
     char phoneNo[MAX_PHONE_LENGTH];
 
+    system("cls");
     printf("\nStaff Registration\n");
     printf("--------------------\n");
     printf("Enter your ID: ");
@@ -317,11 +323,13 @@ void staff_registration(struct Staff* staff) {
 // Staff Choice menu
 void staff_main_page(struct Staff* staff, struct Manager* manager) {
     int choice;
+
     do {
+        system("cls");
         printf("Staff\n");
         printf("------\n");
         printf("1. Employee rest schedule\n");
-        printf("2. Employe Information\n");
+        printf("2. Update Information\n");
        // printf("3. Tickets available\n");
        // printf("4. customer data\n");
         printf("5. Check IN\n");
@@ -346,21 +354,26 @@ void staff_main_page(struct Staff* staff, struct Manager* manager) {
 //staff rest svhedule 
 void staff_schedule(struct Staff* staff, struct Manager* manager) {
     //coming soon!
+   /* system("cls");*/
 }
 
-//staff View information
+//staff update information
 void staff_information(struct Staff* staff, struct Manager* manager) {
     //coming soon !
+    system("cls");
 }
 
 
 // Manager menu
-void manager_menu(struct Staff* staff, struct Manager* manager) {
+void manager_menu(struct Staff* staff, struct Manager* manager) 
+{
     int choice;
     struct tm* hour;
     char buffer[50];
     time_t t;
     time(&t);
+
+    system("cls");
     do {
         printf("\n------ MANAGER MENU ------\n");
         printf("-------------------------\n");
@@ -393,6 +406,8 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
     char id[MAX_ID_LENGTH];
     char password[MAX_PASS_LENGTH];
     int loginSuccess = 0;
+
+    system("cls");
     printf("\n------ MANAGER Login ------\n");
     printf("\nEnter your manager ID: ");
     scanf(" %[^\n]", id);
@@ -415,11 +430,13 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 //Manager Choice menu
 void manager_main_page(struct Staff* staff, struct Manager* manager) {
     int choice;
+    
+    system("cls");
     do {
         printf("Manager\n");
         printf("------\n");
         printf("1. Employee rest schedule\n");
-        //printf("2. Modify staff information\n");
+        //printf("2. Update information\n");
         printf("2. Delete staff record\n");
         printf("3. Log Out\n");
         printf("Enter your Choice: ");
@@ -427,10 +444,11 @@ void manager_main_page(struct Staff* staff, struct Manager* manager) {
 
         switch (choice) {
         case 1:
+            modifyEmpRestSchedule(staff, manager);
             break;
         case 2:
             delete_Acc(staff, manager);
-            //modify_staffInformation(staff, manager);
+            //modify_staffInformation(staff, manager); --become manager update themself information
             break;
         case 3:
             break;
@@ -448,6 +466,7 @@ void manager_registration(struct Manager* manager) {
     char phone[MAX_PHONE_LENGTH];
     char email[MAX_EMAIL_LENGTH];
 
+    system("cls");
     printf("\Manager Registration\n");
     printf("--------------------\n");
     printf("Manager ID: ");
@@ -497,6 +516,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager)
     int done =0;
     do
     {
+        system("cls");
         printf("You are able to delete the file\n");
         printf("\nEnter Staff ID to DELETE :");
         rewind(stdin);
@@ -551,6 +571,11 @@ void delete_Acc(struct Staff* staff, struct Manager* manager)
 } 
 
 
+void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
+{
+    //comming soon 
+    //manager modify particular staff / entire staff rest schedule
+}
 
 
 // Login to Manager acc.
