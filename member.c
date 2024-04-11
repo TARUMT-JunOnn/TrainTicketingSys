@@ -973,6 +973,10 @@ void searchMemberRewardPoints(struct Member* member) {
 		title();
 		printf("Enter Reward Points: ");
 		scanf("%f", &rewardPoints);
+		if (rewardPoints < 0) {
+			printf("INVALID INPUT\n");
+			return 0;
+		}
 		printf("\n");
 			for (int i = 0; i < sizeof(menu) / sizeof(menu[0]); i++) {
 				printf("-----\n");
