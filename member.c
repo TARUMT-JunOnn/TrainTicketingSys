@@ -4,13 +4,16 @@
 #include <Windows.h>
 #include <time.h>
 #pragma warning(disable:4996)
-#define MEMBER_NAME 100
+#define MEMBER_ID 11
 #define MEMBER_PASS 100
 #define MAX_NUMBER_MEMBER 100 
 #define MAX_NUM_QUESTION 3
 #define MAX_PHONE_NUM 15
 #define MAX_LENGTH_EMAIL 50
+#define MAX_LENGTH_IC 15
+#define MAX_LENGTH_GENDER 2
 
+void title();
 int tryAgain(int again);
 void memberMenu(struct Member* member);
 void memberLogin(struct Member* member);
@@ -25,6 +28,10 @@ void addBooking();
 void bookingHistory();
 void cancelBooking();
 void rewardPoint();
+void searchMember(struct Member* member);
+void searchMemberID(struct Member* member);
+void searchMemberGender(struct Member* member);
+void searchMemberAge(struct Member* member);
 
 struct SecurityQuestion {
 	int questionNum;
@@ -32,19 +39,54 @@ struct SecurityQuestion {
 };
 
 struct Member {
-	char id[MEMBER_NAME];
+	char id[MEMBER_ID];
 	char pass[MEMBER_PASS];
+	int age;
+	char gender[MAX_LENGTH_GENDER];
+	char ic[MAX_LENGTH_IC];
 	char phoneNo[MAX_PHONE_NUM];
 	char email[MAX_LENGTH_EMAIL];
+	float rewardPoints;
 	struct SecurityQuestion security[MAX_NUM_QUESTION];
 
 };
 
 int numMember = 0;
 
+void title(void) {
+	system("cls");
+	printf("%10s %s %s", "Train", "Ticketing", "System");
+	time_t t;
+	time(&t);
+	printf("%125s", ctime(&t));
+	for (int i = 0; i < 155; i++) {
+		printf("%s", "-");
+	}
+	printf("\n\n");
+}
+
 main() {
 	struct Member member[MAX_NUMBER_MEMBER];
-	system("cls");
+
+	//test data
+	strcpy(member[numMember].id, "123");
+	strcpy(member[numMember].pass, "321");
+	member[numMember].age = 20;
+	strcpy(member[numMember].gender, "M");
+	strcpy(member[numMember].ic, "123-321");
+	strcpy(member[numMember].phoneNo, "01161188688");
+	strcpy(member[numMember].email, "lee@gmail.com");
+	member[numMember].rewardPoints = 0.00;
+	member[numMember].security[0].questionNum = 1;
+	member[numMember].security[1].questionNum = 2;
+	member[numMember].security[2].questionNum = 3;
+	strcpy(member[numMember].security[0].answer, "1");
+	strcpy(member[numMember].security[1].answer, "2");
+	strcpy(member[numMember].security[2].answer, "3");
+	numMember++;
+
+	searchMember(member);
+
 	memberMenu(member);
 
 }
@@ -53,6 +95,7 @@ int tryAgain(int again) {
 	int choice, invalidChoice = 0;
 
 	do {
+
 		again = 0;
 		invalidChoice = 0;
 		printf("Do you want to try again?\n");
@@ -68,6 +111,7 @@ int tryAgain(int again) {
 		else if (choice == 2)
 			return 0;
 		else {
+			title();
 			printf("Invalid Choice\n");
 			printf("Please Enter A Valid Choice\n");
 			invalidChoice++;
@@ -80,7 +124,7 @@ void memberMenu(struct Member* member) {
 	int choice;
 	do {
 
-	system("cls");
+	title();
 	printf("Member Menu\n");
 	printf("-----------\n");
 	for (int i = 0; i < sizeof(menu)/sizeof(menu[0]); i++) {
@@ -111,14 +155,14 @@ void memberMenu(struct Member* member) {
 }
 
 void memberLogin(struct Member* member) {
-	char name[MEMBER_NAME], password[MEMBER_PASS];
+	char name[MEMBER_ID], password[MEMBER_PASS];
 	int memberNUM;
 	int loginSuccess = 0, again = 0;
 	
 	do {
 		again = 0;
 
-		system("cls");
+		title();
 		printf("ID: ");
 		scanf(" %[^\n]", name);
 		printf("Password: ");
@@ -126,7 +170,14 @@ void memberLogin(struct Member* member) {
 
 		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
 			if (strcmp(member[i].id, name) == 0 && strcmp(member[i].pass, password) == 0) {
-				printf("Login successful...\n");
+				printf("Login Successful. ");
+
+				for (int i = 0; i < 3; i++) {
+					Sleep(300);
+					printf(". ");
+					Sleep(300);
+				}
+				
 				memberNUM = i;
 				memberMainPage(member, memberNUM);
 				loginSuccess++;
@@ -144,6 +195,7 @@ void memberLogin(struct Member* member) {
 }
 
 void securityQuestion() {
+	title();
 		printf("\nSecurity Questions\n");
 
 		printf("\n-----------------------\n");
@@ -183,7 +235,8 @@ void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MA
 
 void memberRegister(struct Member* member) {
 	
-	char memberID[MEMBER_NAME], password[MEMBER_PASS], phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
+	char memberID[MEMBER_ID], password[MEMBER_PASS], ic[MAX_LENGTH_IC], gender[MAX_LENGTH_GENDER], phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
+	int age;
 	int again;
 	int questionSelection[MAX_NUM_QUESTION], success;
 	char question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
@@ -191,20 +244,21 @@ void memberRegister(struct Member* member) {
 
 	do {
 		again = 0;
-		system("cls");
+		title();
 
-		printf("ID: ");
+		printf("ID(MAX 10 CHARACTERS): ");
 		scanf(" %[^\n]", memberID);
 		printf("Password: ");
 		scanf(" %[^\n]", password);
 
 		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
 			if (strcmp(member[i].id, memberID) == 0) {
-					printf("The username %s already exits.\n", memberID);
-					printf("Please choose a different username.\n");
-					again = tryAgain(again);
-					if (again == 0)
-						return 0;
+				title();
+				printf("The username %s already exits.\n", memberID);
+				printf("Please choose a different username.\n");
+				again = tryAgain(again);
+				if (again == 0)
+					return 0;
 			}
 		}
 	} while (again == 1);
@@ -259,29 +313,51 @@ void memberRegister(struct Member* member) {
 		strcpy(member[numMember].security[i].answer, answer[i]);
 	}
 
-	printf("\nRegistration successfully\n\n");
+	printf("\nRegistration Successfully. ");
+	for (int i = 0; i < 3; i++) {
+		Sleep(300);
+		printf(". ");
+		Sleep(300);
+	}
+	printf("\n");
 
+	title();
+	//validate age
+	printf("Age: ");
+	scanf("%d", &age);
+	printf("IC(XXXXXX-XX-XXXX): ");
+	scanf(" %[^\n]", ic);
+	printf("\n");
+	printf("Gender(M/F): ");
+	scanf(" %[^\n]", gender);
+	//validate gender 
+	printf("\n");
 	printf("Phone number(011-XXXXXXX): ");
 	scanf(" %[^\n]", phone);
+	printf("\n");
 	printf("Email: ");
 	scanf(" %[^\n]", email);
 
+	member[numMember].age = age;
+	strcpy(member[numMember].ic, ic);
+	strcpy(member[numMember].gender, gender);
 	strcpy(member[numMember].phoneNo, phone);
 	strcpy(member[numMember].email, email);
+	member[numMember].rewardPoints = 0.00;
 
-	printf("Phone and email are added\n");
+	printf("Information Added\n");
 
 	numMember++;
 
 }
 
 void forgotPass(struct Member* member) {
-	char id[MEMBER_NAME], question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
+	char id[MEMBER_ID], question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
 	int num, questionSelection[MAX_NUMBER_MEMBER], newPassword[100];
 	int idExist = 0, again = 0, securityPass = 0, choice, invalidChoice = 0;
 
 	do {
-		system("cls");
+		title();
 		printf("ID: ");
 		scanf(" %[^\n]", id);
 		
@@ -360,7 +436,7 @@ void memberMainPage(struct Member* member, int memberNUM) {
 
 	do
 	{
-		system("cls");
+		title();
 		printf("Welcome %s\n", member[memberNUM].id);
 		//remove id and pass
 		printf("Pass: %s", member[memberNUM].pass);
@@ -392,7 +468,7 @@ void memberMainPage(struct Member* member, int memberNUM) {
 			cancelBooking();
 			break;
 		case 6:
-			rewardPoint();
+			rewardPoint(member, memberNUM);
 			break;
 		case 7:
 			printf("EXITING MEMBER MENU\n");
@@ -409,7 +485,7 @@ void viewProfile(struct Member* member, int memberNUM) {
 	char oldPassword[MEMBER_PASS], newPassword[MEMBER_PASS], passConfirm[MEMBER_PASS];
 
 	do {
-		system("cls");
+		title();
 		again = 0;
 		printf("Profile Information\n");
 		printf("--------------------\n");
@@ -420,9 +496,10 @@ void viewProfile(struct Member* member, int memberNUM) {
 		scanf("%d", &choice);
 
 		if (choice == 1) {
-			printf("----------------------\t ----------------------\t ----------------------\n");
-			printf("| 1 | Password       |\t | 2 | Contact Number |\t | 3 | Email          |\n");
-			printf("----------------------\t ----------------------\t ----------------------\n");
+			printf("\n");
+			printf("----------------------\t ----------------------\t  ----------------------\n");
+			printf("| 1 | Password       |\t | 2 | Contact Number |\t  | 3 | Email          |\n");
+			printf("----------------------\t ----------------------\t  ----------------------\n");
 
 			printf("\nEnter your choice: ");
 			scanf("%d", &modify);
@@ -430,13 +507,16 @@ void viewProfile(struct Member* member, int memberNUM) {
 			if (modify == 1) {
 				do {
 					again = 0;
-					system("cls");
+					title();
 					printf("Old Password: ");
-					scanf(" %[^ \n]", oldPassword);
+					scanf(" %[^\n]", oldPassword);
+					printf("\n");
 					printf("New Password: ");
-					scanf(" %[^ \n]", newPassword);
+					scanf(" %[^\n]", newPassword);
+					printf("\n");
 					printf("Confirm Password: ");
-					scanf(" %[^ \n]", passConfirm);
+					scanf(" %[^\n]", passConfirm);
+					printf("\n");
 
 					if (strcmp(member[memberNUM].pass, oldPassword) != 0) {
 						printf("Old Password Incorrect\n");
@@ -461,19 +541,34 @@ void viewProfile(struct Member* member, int memberNUM) {
 						printf(". ");
 						Sleep(300);
 					}
+					printf("\n");
 				}
 
 			}
 
-			else if (modify == 2) {
+			else if (modify == 2){
+				title();
+				printf("Current Contact Number: %s\n\n", member[memberNUM].phoneNo);
 				printf("New Contact Number: ");
-				scanf(" %[^\n]", member[memberNUM].pass);
-				printf("Contact Number successfully changed\n");
+				scanf(" %[^\n]", member[memberNUM].phoneNo);
+				printf("\nContact Number is changing. ");
+				for (int i = 0; i < 3; i++) {
+					Sleep(300);
+					printf(". ");
+					Sleep(300);
+				}
 			}
 			else if (modify == 3) {
+				title();
+				printf("Current Email: %s\n\n", member[memberNUM].email);
 				printf("New Email: ");
 				scanf(" %[^\n]", member[memberNUM].email);
-				printf("email successfully changed\n");
+				printf("\nEmail is changing. ");
+				for (int i = 0; i < 3; i++) {
+					Sleep(300);
+					printf(". ");
+					Sleep(300);
+				}
 			}
 			else {
 				printf("Invalid Choice\n");
@@ -489,15 +584,14 @@ void viewProfile(struct Member* member, int memberNUM) {
 }
 
 void viewSchedule() {
-
-
+		
 }
 
 void addBooking() {
 
 }
 
-void bookingHistory(){
+void bookingHistory() {
 
 }
 
@@ -505,6 +599,355 @@ void cancelBooking() {
 
 }
 
-void rewardPoint() {
-	
+void rewardPoint(struct Member* member, int memberNUM) {
+
+	printf("Current Points \n%.2f\n", member[memberNUM].rewardPoints);
+	printf("1. Terms and conditions");
 }
+
+//havent done yet
+void searchMember(struct Member* member) {
+	char* menu[] = { "ID", "Gender", "Age", "Reward Points" };
+	int choice;
+
+	do {
+
+		title();
+		for (int i = 0; i < sizeof(menu) / sizeof(menu[0]); i++) {
+			printf("-----\n");
+			printf("| %d | %s\n", i + 1, menu[i]);
+			printf("-----\n");
+		}
+		printf("Please Enter Your Choice: ");
+		scanf("%d", &choice);
+		switch (choice) {
+		case 1:
+			searchMemberID(member);
+			break;
+		case 2:
+			searchMemberGender(member);
+			break;
+		case 3:
+			searchMemberAge(member);
+			break;
+		case 4:
+			printf("EXITING PROGRAM.....\n");
+			break;
+		default:
+			printf("Invalid Choice!\n");
+			printf("Please Try Again\n");
+		}
+	} while (choice != 4);
+}
+
+void searchMemberID(struct Member* member) {
+	char id[MEMBER_ID], next[10];
+	int success = 0, again = 0;
+
+	do {
+		success = 0;
+		again = 0;
+		title();
+		printf("Enter Member's ID to search: ");
+		scanf(" %[^\n]", id);
+
+		for (int i = 0; i < numMember; i++) {
+			if (strcmp(member[i].id, id) == 0) {
+				do {
+					again = 0;
+					title();
+					printf("Enter Member's ID to search: %s\n\n", id);
+					printf("-----------------------------------------------------------------------------------------------\n");
+					printf("| ID         | AGE | GENDER | CONTACT NUMBER | EMAIL                          | Reward Points |\n");
+					printf("-----------------------------------------------------------------------------------------------\n");
+					printf("| %-10s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+					printf("-----------------------------------------------------------------------------------------------\n");
+					printf("\n\nClick 0 To Continue.....\n");
+					scanf(" %[^\n]", next);
+					if (strcmp(next, "0") == 0) {
+						again = 0;
+						success++;
+					}
+					else
+						again++;
+					
+				} while (again == 1);
+			}
+		}
+		if (success == 0) {
+			printf("There is no member(%s)\n", id);
+			again = tryAgain(again);
+		}
+	} while (again == 1);
+}
+
+void searchMemberGender(struct Member* member) {
+	char next[10];
+	int again = 0, gender, memberExist =0;
+
+	title();
+	if (numMember == 0) {
+		printf("\nThere is no member. ");
+		for (int i = 0; i < 3; i++) {
+			Sleep(300);
+			printf(". ");
+			Sleep(300);
+		}
+		return 0;
+	}
+
+	do {
+		memberExist = 0;
+		again = 0;
+		title();
+		
+			printf("1. Male\n");
+			printf("2. Female\n");
+			scanf("%d", &gender);
+
+			if (gender == 1 || gender == 2){
+			
+					do {
+						again = 0;
+						title();
+						if (gender == 1) {
+						
+							for (int i = 0; i < numMember; i++) {
+								if (strcmp(member[i].gender, "M") == 0)
+									memberExist++;
+							}
+
+							if (memberExist == 0) {
+								printf("There is no Male Member Record. ");
+								for (int i = 0; i < 3; i++) {
+									Sleep(300);
+									printf(". ");
+									Sleep(300);
+								}
+								return 0;
+							}
+						
+							printf("MALE:\n\n");
+							printf("-----------------------------------------------------------------------------------------------\n");
+							printf("| ID         | AGE | GENDER | CONTACT NUMBER | EMAIL                          | Reward Points |\n");
+							printf("-----------------------------------------------------------------------------------------------\n");
+							for (int i = 0; i < numMember; i++) {
+								if (strcmp(member[i].gender, "M") == 0) {
+									printf("| %-10s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+									printf("-----------------------------------------------------------------------------------------------\n");
+								}
+							}
+							printf("\n\nClick 0 To Continue.....\n");
+							scanf(" %[^\n]", next);
+							if (strcmp(next, "0") == 0) 
+								again = 0;
+							else
+								again++;
+						}
+						else {
+
+							for (int i = 0; i < numMember; i++) {
+								if (strcmp(member[i].gender, "F") == 0)
+									memberExist++;
+							}
+
+							if (memberExist == 0) {
+								printf("There is no Female Member Record. ");
+								for (int i = 0; i < 3; i++) {
+									Sleep(300);
+									printf(". ");
+									Sleep(300);
+								}
+								return 0;
+							}
+
+							printf("FEMALE:\n\n");
+
+							printf("-----------------------------------------------------------------------------------------------\n");
+							printf("| ID         | AGE | GENDER | CONTACT NUMBER | EMAIL                          | Reward Points |\n");
+							printf("-----------------------------------------------------------------------------------------------\n");
+
+							for (int i = 0; i < numMember; i++) {
+								if (strcmp(member[i].gender, "F") == 0) {
+									printf("| %-10s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+									printf("-----------------------------------------------------------------------------------------------\n");
+								}
+							}
+
+								printf("\n\nClick 0 To Continue.....\n");
+								scanf(" %[^\n]", next);
+								if (strcmp(next, "0") == 0) 
+									again = 0;
+								else
+									again++;	
+						}
+					}while (again == 1);
+			}
+			else {
+				printf("Invalid Choice\n");
+				again = tryAgain(again);
+			}
+			
+	} while (again == 1);
+}
+
+void searchMemberAge(struct Member* member) {
+	char* menu[] = { "Equal To ", "Greater Than or Equal To ", "Less Than or Equal To " };
+	char next[10];
+	int age, again=0, choice, memberExist = 0;
+
+	title();
+	if (numMember == 0) {
+		printf("\nThere is no member. ");
+		for (int i = 0; i < 3; i++) {
+			Sleep(300);
+			printf(". ");
+			Sleep(300);
+		}
+		return 0;
+	}
+
+	do {
+		again = 0, memberExist = 0;
+		title();
+		printf("Enter An Age (1-100): ");
+		scanf("%d", &age);
+
+		if (age > 0 && age < 101) {
+			printf("\n");
+			for (int i = 0; i < sizeof(menu) / sizeof(menu[0]); i++) {
+				printf("-----\n");
+				printf("| %d | %s%d\n", i + 1, menu[i], age);
+				printf("-----\n");
+			}
+			printf("\nPlease Enter Your Choice: ");
+			scanf("%d", &choice);
+
+			if (choice == 1) {
+				do {
+					again = 0, memberExist = 0;
+					title();
+					for (int i = 0; i < numMember; i++) {
+						if (member[i].age == age)
+							memberExist++;
+					}
+
+					if (memberExist == 0) {
+						printf("No Members Found With The Entered Age. ");
+						for (int i = 0; i < 3; i++) {
+							Sleep(300);
+							printf(". ");
+							Sleep(300);
+						}
+						return 0;
+					}
+
+					printf("-----------------------------------------------------------------------------------------------\n");
+					printf("| ID         | AGE | GENDER | CONTACT NUMBER | EMAIL                          | Reward Points |\n");
+					printf("-----------------------------------------------------------------------------------------------\n");
+					for (int i = 0; i < numMember; i++) {
+						if (member[i].age == age) {
+							printf("| %-10s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+							printf("-----------------------------------------------------------------------------------------------\n");
+						}
+					}
+
+					printf("\n\nClick 0 To Continue.......\n");
+					scanf(" %[^\n]", next);
+
+					if (strcmp(next, "0") == 0)
+						again = 0;
+					else again++;
+				} while (again == 1);
+			}
+			else if (choice == 2) {
+				do {
+					again = 0, memberExist = 0;
+					title();
+					for (int i = 0; i < numMember; i++) {
+						if (member[i].age >= age)
+							memberExist++;
+					}
+
+					if (memberExist == 0) {
+						printf("No Members Found With The Entered Age. ");
+						for (int i = 0; i < 3; i++) {
+							Sleep(300);
+							printf(". ");
+							Sleep(300);
+						}
+						return 0;
+					}
+
+					printf("-----------------------------------------------------------------------------------------------\n");
+					printf("| ID         | AGE | GENDER | CONTACT NUMBER | EMAIL                          | Reward Points |\n");
+					printf("-----------------------------------------------------------------------------------------------\n");
+					for (int i = 0; i < numMember; i++) {
+						if (member[i].age >= age) {
+							printf("| %-10s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+							printf("-----------------------------------------------------------------------------------------------\n");
+						}
+					}
+
+					printf("\n\nClick 0 To Continue.......\n");
+					scanf(" %[^\n]", next);
+
+					if (strcmp(next, "0") == 0)
+						again = 0;
+					else again++;
+				} while (again == 1);
+			}
+			else if(choice == 3) {
+				do {
+					again = 0, memberExist = 0;
+					title();
+					for (int i = 0; i < numMember; i++) {
+						if (member[i].age <= age)
+							memberExist++;
+					}
+
+					if (memberExist == 0) {
+						printf("No Members Found With The Entered Age. ");
+						for (int i = 0; i < 3; i++) {
+							Sleep(300);
+							printf(". ");
+							Sleep(300);
+						}
+						return 0;
+					}
+
+					printf("-----------------------------------------------------------------------------------------------\n");
+					printf("| ID         | AGE | GENDER | CONTACT NUMBER | EMAIL                          | Reward Points |\n");
+					printf("-----------------------------------------------------------------------------------------------\n");
+					for (int i = 0; i < numMember; i++) {
+						if (member[i].age <= age) {
+							printf("| %-10s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+							printf("-----------------------------------------------------------------------------------------------\n");
+						}
+					}
+
+					printf("\n\nClick 0 To Continue.......\n");
+					scanf(" %[^\n]", next);
+
+					if (strcmp(next, "0") == 0)
+						again = 0;
+					else again++;
+				} while (again == 1);
+			}
+			else {
+				printf("Invalid Choice");
+				again = tryAgain(again);
+			}
+		}
+		else {
+			printf("Invalid Age\n");
+			again = tryAgain(again);
+		}
+
+	}while (again == 1);
+}
+
+void deleteMember() {
+
+}
+
