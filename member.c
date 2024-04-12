@@ -52,7 +52,6 @@ struct Member {
 	char email[MAX_LENGTH_EMAIL];
 	float rewardPoints;
 	struct SecurityQuestion security[MAX_NUM_QUESTION];
-
 };
 
 int numMember = 0;
@@ -73,7 +72,7 @@ main() {
 	struct Member member[MAX_NUMBER_MEMBER];
 
 	//test data
-	strcpy(member[numMember].id, "123");
+	/*strcpy(member[numMember].id, "123");
 	strcpy(member[numMember].pass, "321");
 	member[numMember].age = 20;
 	strcpy(member[numMember].gender, "M");
@@ -87,7 +86,7 @@ main() {
 	strcpy(member[numMember].security[0].answer, "1");
 	strcpy(member[numMember].security[1].answer, "2");
 	strcpy(member[numMember].security[2].answer, "3");
-	numMember++;
+	numMember++;*/
 
 	searchMember(member);
 
@@ -130,7 +129,6 @@ void waitingScreen() {
 		Sleep(300);
 	}
 }
-
 
 void memberMenu(struct Member* member) {
 	char *menu[] = {"Login", "Registration", "Forgot Password", "Exit Program"};
@@ -1046,7 +1044,42 @@ void searchMemberRewardPoints(struct Member* member) {
 	} while (again == 1);
 }
 
-void deleteMember() {
+void deleteMember(struct Member* member) {
+	char* confirmationMenu[] = { "Yes", "No" };
+	char id[MEMBER_ID];
+	int confirmation;
 
+	if (validateNumberMember() == 0)
+		return 0;
+
+	printf("Enter An ID to Delete: ");
+	scanf(" %[^\n]", id);
+
+	for (int i = 0; i < numMember; i++) {
+		if (strcmp(member[i].id, id) == 0) {
+			searchMemberTitle();
+			printf("| %-10s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+			printf("-----------------------------------------------------------------------------------------------\n");
+
+			printf("Are You Sure You Want To Delete This Member Account?\n");
+			for (int i = 0; i < sizeof(confirmationMenu) / sizeof(confirmationMenu[0]); i++) {
+				printf("-----\n");
+				printf("| %d | %s\n", i + 1, confirmationMenu[i]);
+				printf("-----\n");
+			}
+			scanf("%d", &confirmation);
+
+			if (confirmation == 1) {
+				strcpy(*member[i].id, "NULL");
+				strcpy(*member[i].)
+			}
+			else if (confirmation == 2) {
+
+			}
+			else {
+
+			}
+		}
+	}
 }
 
