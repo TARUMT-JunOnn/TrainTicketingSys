@@ -82,12 +82,41 @@ void title(void) {
 int main(void) {
 	Info userChoice[MAX_TRIP][MAX_PAX];
 	reset(userChoice);
-	addBooking(userChoice);
+	char input;
+	int statAdd;
+	title(NULL);
+	printf("What action you would like to perform ?\n");
+	printf("\t1. Add booking\n\t2. Search booking\n\t3. Modify Booking\n\t4. Display Booking\n\t5. Cancel booking\n\t6. Produce List\n\n");
+	do {
+		printf("Enter the number : ");
+		rewind(stdin);
+		scanf("%c", &input);
+		switch (input) {
+		case '1':
+			statAdd = addBooking(userChoice);
+			break;
+		case '2':
+			//searchBooking();
+			break;
+		case '3':
+			//modifyBooking();
+			break;
+		case '4':
+			//allBooking();
+			break;
+		case '5':
+			//cancelBooking();
+			break;
+		case '6':
+			//produceList();
+			break;
+		}
+	} while (!(input == '1' || input == '2' || input == '3' || input == '4' || input == '5' || input == '6'));
 }
 
 int addBooking(Info (*userChoice)[MAX_TRIP][MAX_PAX]) {
-	char dateAdd[MAX_TRIP][MAX_PAX][11], action = ' ', paymentTime[9];
-	int pax[2], status = 0;
+	char dateAdd[MAX_TRIP][MAX_PAX][11], action = '2', paymentTime[9], input;
+	int pax[2] = {0, 0}, status = 0, j;
 	float fare;
 	(*userChoice)[0][0] = (Info){ "T1001", "KL Sentral",  "Kampar", 50, { 1, 4, 2024,{ 9, 13} } };
 	(*userChoice)[1][0] = (Info){ "T1004", "Kampar", "KL Sentral", 25, { 2, 4, 2024,{ 5, 8} } };
@@ -95,9 +124,18 @@ int addBooking(Info (*userChoice)[MAX_TRIP][MAX_PAX]) {
 		do {
 			createDate(*userChoice, dateAdd);
 			if (action == '2') {
+				j = 0;
 				editPax(*userChoice, dateAdd, pax);
+				calcPax(*userChoice, pax);
+				for (int i = 0; i < 2 ; ++i) {
+					if (pax[i] == 0) {
+						++j;
+					}
+				}
+				if (j == 2) {
+					return 1;
+				}
 			}
-			calcPax(*userChoice, pax);
 			do {
 				fare = calcFare(*userChoice, dateAdd, pax, status);
 				if (fare == 0)
@@ -117,9 +155,15 @@ int addBooking(Info (*userChoice)[MAX_TRIP][MAX_PAX]) {
 			case '0':
 				return 0;
 		}
-		if (status == 1)
-			showBooking(*userChoice, dateAdd, pax, fare, "Marco", paymentTime);
+		if (status == 1) {
+			do {
+				showBooking(*userChoice, dateAdd, pax, fare, "Marco", paymentTime);
+				printf("Press 1 for exit");
+				scanf("%c", &input);
+			} while (input != '1');
+		}
 	} while (status != 1);
+	return 0;
 }
 
 void createDate(Info (*userChoice)[MAX_TRIP][MAX_PAX], char (*date)[MAX_TRIP][MAX_PAX][11]) {
@@ -318,7 +362,7 @@ int payment(float *price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_
 	char memName[20];
 	int mem_point;
 	strcpy(memName, "Marco");
-	mem_point = 1000;
+	mem_point = 10000;
 	char input;
 	int status = 0;
 	float redeem, temporary = *price;
@@ -355,10 +399,24 @@ int payment(float *price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_
 		printf("%102s :-RM%6.02f\n", "Point Redeemed", redeem);
 		printf("%102s : RM%6.02f\n", "Total Price should payment", temporary);
 	}
-	printf("Payments method :\n\t1. Credit/Debit Card\n\t2. Online Banking\n\t3. E-Wallet\n\t0. Cancel Payment (Return)\n\n");
-	printf("Enter the number : ");
-	rewind(stdin);
-	scanf("%c", &input);
+	if (temporary != 0) {
+		printf("Payments method :\n\t1. Credit/Debit Card\n\t2. Online Banking\n\t3. E-Wallet\n\t0. Cancel Payment (Return)\n\n");
+		printf("Enter the number : ");
+		rewind(stdin);
+		scanf("%c", &input);
+	}
+	else {
+		printf("Would you like to proceed to payment ? (RM 0.00)\n\t1. Yes\n\t0. No, Return\n\n");
+		printf("Enter the number : ");
+		rewind(stdin);
+		scanf("%c", &input);
+		switch (input) {
+		case '1':
+			input = '9';
+			status = 1;
+			break;
+		}
+	}
 	switch (input) {
 	case '1':
 		status = card(&temporary, memName);
@@ -371,6 +429,8 @@ int payment(float *price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_
 		break;
 	case '0':
 		return 0;
+		break;
+	case '9':
 		break;
 	default:
 		return  -1;
@@ -812,7 +872,7 @@ void showBooking(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_TRIP][MAX
 	printf("Name : %s\n\n", *name);
 	printf("Booking Details :\n\n");
 	for (int i = 0; i < MAX_TRIP && strcmp((*date)[i][0], "NULL") != 0; ++i) {
-		if (strcmp((*date)[0][0], "NULL") != 0 && strcmp((*date)[1][0], "NULL") != 0) {
+		if (strcmp((*date)[0][0], "") != 0 && strcmp((*date)[1][0], "") != 0) {
 			switch (i) {
 			case 0:
 				printf("Departure\n");
@@ -824,13 +884,15 @@ void showBooking(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_TRIP][MAX
 				break;
 			}
 		}
-		printf("Date : %s\n", (*date)[i][0]);
-		printf("Train ID : %s\n", (*userChoice)[i][0].trainId);
-		printf("Pax : %d\n", (*pax)[i]);
-		printf("Time : %.02f - %.02f\n", (*userChoice)[i][0].prefer.time.depart, (*userChoice)[i][0].prefer.time.arrive);
-		printf("Depart From : %s\n", (*userChoice)[i][0].departFrom);
-		printf("Destination : %s\n", (*userChoice)[i][0].destination);
-		printf("\n\n");
-		fprintf(fptr, "%s|%s|%s|%s|%d|%.02f|%.02f|%s|%s\n", refNum, *name, (*date)[i][0], (*userChoice)[i][0].trainId, (*pax)[i], (*userChoice)[i][0].prefer.time.depart, (*userChoice)[i][0].prefer.time.arrive, (*userChoice)[i][0].departFrom, (*userChoice)[i][0].destination);
+		if (strcmp((*date)[i][0], "") != 0) {
+			printf("Date : %s\n", (*date)[i][0]);
+			printf("Train ID : %s\n", (*userChoice)[i][0].trainId);
+			printf("Pax : %d\n", (*pax)[i]);
+			printf("Time : %.02f - %.02f\n", (*userChoice)[i][0].prefer.time.depart, (*userChoice)[i][0].prefer.time.arrive);
+			printf("Depart From : %s\n", (*userChoice)[i][0].departFrom);
+			printf("Destination : %s\n", (*userChoice)[i][0].destination);
+			printf("\n\n");
+			fprintf(fptr, "%s|%s|%s|%s|%d|%.02f|%.02f|%s|%s\n", refNum, *name, (*date)[i][0], (*userChoice)[i][0].trainId, (*pax)[i], (*userChoice)[i][0].prefer.time.depart, (*userChoice)[i][0].prefer.time.arrive, (*userChoice)[i][0].departFrom, (*userChoice)[i][0].destination);
+		}
 	}
 }
