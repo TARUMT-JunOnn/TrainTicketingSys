@@ -62,8 +62,8 @@ struct Manager{
     char manager_position[MAX_POSITION_LENGTH];
 };
 
-int staff_count = 1;
-int manager_count = 1;
+int staff_count = 0;
+int manager_count = 0;
 
 
 
@@ -75,7 +75,7 @@ main() {
 
 
     FILE* fstaff;
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb+");
+    fstaff = fopen("../../TrainTicketingSys/res/staff.bin", "rb");
 
     if (fstaff == NULL) {
         printf("Error Opening File\n");
@@ -107,7 +107,7 @@ main() {
             strcpy(staff[staff_count].staff_phone, staff2.staff_phone);
             strcpy(staff[staff_count].staff_email, staff2.staff_email);
             strcpy(staff[staff_count].staff_position, staff2.staff_position);
-            staff_count=0;
+            staff_count++;
         }
 
         if (strcmp(staff2.staff_position, "MANAGER") == 0)
@@ -117,7 +117,7 @@ main() {
             strcpy(manager[manager_count].manager_phone, staff2.staff_phone);
             strcpy(manager[manager_count].manager_email, staff2.staff_email);
             strcpy(manager[manager_count].manager_position, staff2.staff_position);
-            manager_count=0;
+            manager_count++;
         }
         fread(&staff2, sizeof(staff2), 1, fstaff);
     }
@@ -130,19 +130,26 @@ main() {
      //staff_count++;
 
    //test file read 
-    printf("ID: %s\n", staff[1].staff_id);
+     for (int i = 0; i < staff_count; i++) {
+         printf("ID: %s\n", staff[i].staff_id);
+    }
+
+     for (int i = 0; i < manager_count; i++) {
+         printf("ID: %s\n", staff[i].staff_id);
+     }
+
 
     fclose(fstaff);
 
     menu(staff, manager);
 
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
+    fstaff = fopen("../../TrainTicketingSys/res/staff.bin", "wb");
 
-    for (int i = 0; i < manager_count - 1; i++) {
+    for (int i = 0; i < manager_count; i++) {
         fwrite(&manager[i], sizeof(manager), 1, fstaff);
     }
 
-    for (int i = 0; i < staff_count - 1; i++) {
+    for (int i = 0; i < staff_count; i++) {
         fwrite(&staff[i], sizeof(staff), 1, fstaff);
     }
 
@@ -753,33 +760,32 @@ void updateManager_information(struct Staff* staff, struct Manager* manager)
     char phone[MAX_PHONE_LENGTH];
     char id[MAX_ID_LENGTH];
     char stop;
+    /*do
+    {*/
+        staff_count++;
+        printf("Manager ID:");
+        scanf(" %[^\n]", id);
+        if (strcmp(id, manager[manager_count].manager_id) == 0)
+        {
+            // Before edit
+            printf("Name: %s\n", manager[manager_count].manager_name);
+            printf("Phone No: %s\n", manager[manager_count].manager_phone);
+            printf("Email:%s\n ", manager[manager_count].manager_email, email);
 
-     do
-     {
-         staff_count++;
-         printf("Manager ID:");
-         scanf(" %[^\n]", id);
-         if (stcmp(id, manager[manager_count].manager_id) == 0)
-         {
-             // Before edit
-             printf("Name: %s\n", manager[manager_count].manager_name);
-             printf("Phone No: %s\n", manager[manager_count].manager_phone);
-             printf("Email:%s\n ", manager[manager_count].manager_email, email);
+            //ask manager to update
+            printf("Name:");
+            scanf(" %[^\n]", name);
+            printf("Phone No:");
+            scanf(" %[^\n]", phone);
+            printf("Email:");
+            scanf(" %[^\n]", email);
 
-             //ask manager to update
-             scanf(" %[^\n]", );
-             printf("Name:");
-             scanf(" %[^\n]", name);
-             printf("Phone No:");
-             scanf(" %[^\n]", phone);
-             printf("Email:");
-             scanf(" %[^\n]", email);
+        }
 
-         }
-       
 
-     
-     } while(stop == 'Y' || stop == 'y')
+
+    //} while (stop == 'Y' || stop == 'y');
+}
      
 
          // FILE* fstaff;
