@@ -20,25 +20,20 @@ void staffMenu(struct Staff* staff, struct Manager* manager);
 void staff_login(struct Staff* staff, struct Manager* manager);
 void staff_registration(struct Staff* staff);
 void staff_main_page(struct Staff* staff, struct Manager* manager);
+void staff_schedule(struct Staff* staff, struct Manager* manager);
+void staff_information(struct Staff* staff, struct Manager* manager);
+void staff_logout(struct Staff* staff);
+// manager
 void manager_menu(struct Staff* staff, struct Manager* manager);
 void manager_login(struct Staff* staff, struct Manager* manager);
 void manager_registration(struct Manager* manager);
 void manager_main_page(struct Staff* staff, struct Manager* manager);
 void delete_Acc(struct Staff* staff, struct Manager* manager);
 //void modify_staffInformation(struct Staff* staff, struct Manager* manager);
-void staff_schedule(struct Staff* staff, struct Manager* manager);
-void staff_information(struct Staff* staff, struct Manager* manager);
 void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager);
 void updateManager_information(struct Staff* staff, struct Manager* manager);
 
 
-//void menu();
-//void add_staff(struct Difference dff);
-//void login();
-//void employee_Acc();
-//void staff_Manager();
-//void modify_staffInformation();
-//void delect_ACC();
 
 
 // Predefined employee and manager IDs and passwords
@@ -80,7 +75,7 @@ main() {
 
 
     FILE* fstaff;
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb");
+    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb+");
 
     if (fstaff == NULL) {
         printf("Error Opening File\n");
@@ -237,7 +232,6 @@ void staffMenu(struct Staff* staff, struct Manager* manager)
 }
 
 
-
 // Staff Login menu
 void staff_login(struct Staff* staff, struct Manager* manager) 
 {
@@ -349,7 +343,7 @@ void staff_main_page(struct Staff* staff, struct Manager* manager) {
            // printf("Check in time:%x");
             break;
         case 6:
-            // call log_out function
+            staff_logout(staff);
             break;
         default:
             break;
@@ -370,43 +364,59 @@ void staff_information(struct Staff* staff, struct Manager* manager) {
 }
 
 
-// log out function 
-//{
-//    printf(" <1>  Log out for dinner?");
-//    printf(" <2>  Log out get off work?")
-//        if (ans == 1) {
-//            printf("Log out time: %x", );
-//            printf("you dinner time to be record");
-//        }
-//        else {
-//            printf("Year!See you tmmr");
-//            printf("Log out time: %x", );
-//            login time - logout time;
-//            if (working time >= 8 hour)
-//            {
-//                printf("You completed enough work hours today");
-//                printf("Log out time: %x", )
-//            }
-//            else {
-//
-//                printf("Comfirm?");
-//                scanf("%c", &ans);
-//                if (ans)
-//                {
-//                    printf("You not enough time for the working");
-//                    printf("Log out time: %x", );
-//                }
-//
-//            }
-//               //printing result
-//            printf("TODAY HOURS\n");
-//            printf("")
-//               
-//        }
+//staff log out selected ****
+ void staff_logout(struct Staff* staff)
+{
+     //SYSTEMTIME t;
+     time_t current_time;
+     time(&current_time);
+     int ans;
+
+    printf("---------LOG OUT------------\n");
+    printf(" <1>  Break time\n");
+    printf(" <2>  Off work\n ");
+    scanf("%d", &ans);
+        if (ans == 1)
+        {
+            //GetLocalTime(&t);
+
+            printf("Break time: %s", ctime(&current_time));
+            printf("you break time Already recorded\n");
+        }
+        else 
+        {
+            printf("See you tomorrow\n");
+            printf("%s\n", ctime(&current_time));
+        //    login time - logout time;
+        //    if (working time >= 8 hour)*/
+        //    {
+                //                printf("You completed enough work hours today");
+                //                printf("You are log out %sright now!\n", ctime(&current_time));
+                //            }
+                //            else {
+                //
+                //                printf("Comfirm?");
+                //                scanf("%c", &ans);
+                //                if (ans=='y' || ans=='Y')
+                //                {
+                //                    printf("you don't have enough working hours\n");
+                //                    printf("You are log out %sright now!\n", ctime(&current_time));
+                //                }
+                //
+                //            }
+
+        //}
+  
+//               // printing result -login & logout time
+//            printf("------TODAY HOURS------\n");
+//            printf("\t\tTIME\t\t\n);
+//            printf("Check In\t\tCheck Out\n");
+//            printf("%x\t\t%x");
+            }
 //       
 //   
 //    
-//}
+}
 
 // Manager menu
 void manager_menu(struct Staff* staff, struct Manager* manager) 
@@ -480,7 +490,7 @@ void manager_main_page(struct Staff* staff, struct Manager* manager) {
         printf("Manager\n");
         printf("------\n");
         printf("1. Employee rest schedule\n");
-        printf("2. Delete staff record\n");
+        printf("2. Remove staff\n");
         printf("3. Update information\n");
         printf("4. Log Out\n");
         printf("Enter your Choice: ");
@@ -504,7 +514,6 @@ void manager_main_page(struct Staff* staff, struct Manager* manager) {
 }
 
 // Manager registration
-
 void manager_registration(struct Manager* manager) {
     char id[MAX_ID_LENGTH];
     char name[MAX_NAME_LENGTH];
@@ -554,7 +563,7 @@ void manager_registration(struct Manager* manager) {
     system("cls");
 }
 
-//Manager delete staff record
+//Manager delete/remove staff acc
 void delete_Acc(struct Staff* staff, struct Manager* manager)
 {
     char confirm;
@@ -576,10 +585,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager)
 
                 while (confirm == 'y' || confirm == 'Y')
                 {
-                    //// ...fread from binary file 
-                    //printf("Enter ID to delete: ");
-                    //scanf(" %[^\n]", deleteID);
-
+                   
                     for (int i = 0; i < staff_count; i++)
                     {
                         if (strcmp(staff[i].staff_id, deleteID) == 0)
@@ -618,143 +624,173 @@ void delete_Acc(struct Staff* staff, struct Manager* manager)
 } 
 
 
-//manager modify particular staff / entire staff rest schedule
-//no done yet
-void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
-{
-    
-    //int ans;
-    //char name[MAX_NAME_LENGTH];
-
-    //FILE* fstaff;
-    //fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb+");
-
-    //if (fstaff == NULL) {
-    //    printf("Error Opening File\n");
-    //    exit(-1);
-    //}
-
-    //while (fread(&staff[staff_count], sizeof(Staff), 1, fstaff))
-    //{
-    //    staff_count++;
-    //}
-
-    //fclose(fstaff);
-
-    //do {
-    //    staff_count++;
-
-    //    // printf("> Modify Entire staff rest schedule\n");
-    //    printf("> Modify particular staff rest schedule\n");
-    //    printf("Staff Name:");
-    //    scanf("");
-
-    //    // Compare the product code in the array
-    //    for (i = 0; i < pCount; i++)
-    //    {
-    //        if (stcmp(code, p[i].product_code) == 0)
-    //        {
-    //            printf("Product code: %s\n", p[i].product_code);
-    //            printf("Expire Year: %d\n", p[i].expYr);
-    //            printf("Country : %s\n", p[i].country);
-
-    //            printf("Enter new expire Year:");
-    //            scanf("%d", &year);
-    //            printf("\nEnter country:");
-    //            scanf(" %[^\n]", country);
-
-    //            printf("Sure to modify? Y/N : ");
-    //            scanf("%c", &answers);
-    //            if (answers == 'Y' || answers == 'y')
-    //            {
-    //                numRecModify++;
-    //                p[i].expYr = year;
-    //                strcpy(p[i].country, country);
-    //            }
-    //        }
-    //    }
-
-    //    printf("Anymore to modify Y/N :");
-    //    scanf("%c", &answers);
-    //} while (answers == 'Y' || answers == 'y');
-
-
-    ////copy array into file 
-    //fp = fopen("product.dat", "ab");
-    //if (fp == NULL)
-    //{
-    //    printf("Can't open the file\n");
-    //}
-    //for (i = 0; i < pCount; i++)
-    //{
-    //    fwrite(&p[pCount], sizeof(Product), 1, fp);
-
-    //}
-
-    //fclose(fp);
-    //}
-   
+//manager modify particular staff / entire staff rest schedule ****
+void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager) {
+    //    int ans;
+//    char id[MAX_ID_LENGTH];
+//    double begin_time;
+//    double rest_time;
+//    double end_time;
+//    char answers;
+//
+//    FILE* fstaff;
+//    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb+");
+//
+//    if (fstaff == NULL) {
+//        printf("Error Opening File\n");
+//        exit(-1);
+//    }
+//
+//    while (fread(&staff[staff_count], sizeof(Staff), 1, fstaff))
+//    {
+//        staff_count++;
+//    }
+//
+//    fclose(fstaff);
+//
+//do{
+//        staff_count++;
+//
+//        printf("> Modify particular staff rest schedule\n");
+//        printf("Staff ID:");
+//        scanf(" %[^\n]", &id);
+//
+//        // Compare the product code in the array
+//
+//    for (int i = 0; i < MAX_STAFF; i++)
+//    {
+//        if (strcmp(staff[i].staff_id, id) == 0)
+//        {
+//            printf("%s WORKING TIME\n", staff[staff_count].staff_name);
+//            printf("\nBEGIN:");
+//            scanf("%lf", &begin_time);
+//            printf("\nREST:");
+//            scanf("%lf", &rest_time);
+//            printf("\nEND:");
+//            scanf("%lf", &end_time);
+//            printf("---------------------------------------------\n");
+//            printf("| STAFF END WORKING TIME MUST ENOUGH 8 HOUR |\n");
+//            printf("---------------------------------------------\n");
+//
+//            printf("Sure to modify? Y/N : ");
+//            scanf(" %c", &answers);
+//            if (answers == 'Y' || answers == 'y')
+//            {
+//
+//                printf("-------------------------------------------------\n");
+//                printf("| NAME\t\tWORKING TIME\t\tREST TIME\t\tEND TIME |\n");
+//                printf("%s\t\t%f\t\t%f\t\t%f\n");
+//                printf("-------------------------------------------------\n");
+//
+//                staff_count++;
+//                ....
+//            }
+//        }
+//     } 
+//    printf("Anymore to modify Y/N :");
+//    scanf("%c", &answers);
+//
+// } while (answers == 'Y' || answers == 'y');
+//
+// fopen("../TrainTicketingSys/res/staff.bin", "wb");
+// .....
+// ---------------------------------------------------------------
+//
+//
+//     reference :
+//        for (i = 0; i < pCount; i++)
+//        {
+//            if (stcmp(code, p[i].product_code) == 0)
+//            {
+//                printf("Product code: %s\n", p[i].product_code);
+//                printf("Expire Year: %d\n", p[i].expYr);
+//                printf("Country : %s\n", p[i].country);
+//
+//                printf("Enter new expire Year:");
+//                scanf("%d", &year);
+//                printf("\nEnter country:");
+//                scanf(" %[^\n]", country);
+//
+//                printf("Sure to modify? Y/N : ");
+//                scanf("%c", &answers);
+//                if (answers == 'Y' || answers == 'y')
+//                {
+//                    numRecModify++;
+//                    p[i].expYr = year;
+//                    strcpy(p[i].country, country);
+//                }
+//            }
+//        }
+//
+//        printf("Anymore to modify Y/N :");
+//        scanf("%c", &answers);
+//    } while (answers == 'Y' || answers == 'y');
+//
+//
+//    //copy array into file 
+//    fp = fopen("product.dat", "ab");
+//    if (fp == NULL)
+//    {
+//        printf("Can't open the file\n");
+//    }
+//    for (i = 0; i < pCount; i++)
+//    {
+//        fwrite(&p[pCount], sizeof(Product), 1, fp);
+//
+//    }
+//
+//    fclose(fp);
 }
+
+
 
 
 //Manager update information
 void updateManager_information(struct Staff* staff, struct Manager* manager)
 {
-    //coming soon
-    // same with practical question
-}
+    char name[MAX_NAME_LENGTH];
+    char email[MAX_EMAIL_LENGTH];
+    char phone[MAX_PHONE_LENGTH];
+    char id[MAX_ID_LENGTH];
+    char stop;
 
+     do
+     {
+         staff_count++;
+         printf("Manager ID:");
+         scanf(" %[^\n]", id);
+         if (stcmp(id, manager[manager_count].manager_id) == 0)
+         {
+             // Before edit
+             printf("Name: %s\n", manager[manager_count].manager_name);
+             printf("Phone No: %s\n", manager[manager_count].manager_phone);
+             printf("Email:%s\n ", manager[manager_count].manager_email, email);
 
+             //ask manager to update
+             scanf(" %[^\n]", );
+             printf("Name:");
+             scanf(" %[^\n]", name);
+             printf("Phone No:");
+             scanf(" %[^\n]", phone);
+             printf("Email:");
+             scanf(" %[^\n]", email);
 
-// Login to Manager acc.
-//void staff_Manager()
-//{
-//    struct Difference dff;
-//    //got bugs
-//    char id;
-//    char password[20];
-//    char select;
-//
-//    printf("\nPlease enter you manager ID :");
-//    scanf("%d", &id);
-//    printf("\nPlease enter you Manager Password:");
-//    scanf(" %[^\n]", password);
-//    rewind(stdin);
-//    //while (fread(&dffid, sizeof(Difference), 1, fptr) == 1) 
-//    if (strcmp(id, dff.employee_id)) {
-//
-//        if (strcmp(dff.manager_id, id) && strcmp(dff.manager_password, password) == 0) {
-//            printf("Manager login successful!\n");
-//            printf("Check to edit : \n");
-//            printf("1. Employee rest schedule\n");
-//            printf("2. Modify staff information\n");
-//            printf("3. Delect staff record\n");
-//            printf("4. EXIT\n");
-//            rewind(stdin);
-//            scanf("%c", &select);
-//
-//            switch (select)
-//            {
-//            case 1:
-//                // rest_schedule();
-//                break;
-//            case 2:
-//                modify_staffInformation();
-//                break;
-//            case 3:
-//                delect_ACC();
-//                break;
-//            case 4:
-//                printf("You are Log Out.");
-//                menu(staff, dff);
-//                break;
-//            }
-//        }
-//
-//    }
-//    else
-//        printf("Sorry can't found this Manager!\n");
-//
+         }
+       
+
+     
+     } while(stop == 'Y' || stop == 'y')
+     
+
+         // FILE* fstaff;
+      //    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
+      //
+      // if (fstaff == NULL) 
+      // {
+      //   printf("Failed Opening File\n");
+      // }
+      // 
+    //    fclose(fstaff);
 //}
 
 
