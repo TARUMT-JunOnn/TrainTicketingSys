@@ -36,6 +36,7 @@ void searchMemberID(struct Member* member);
 void searchMemberGender(struct Member* member);
 void searchMemberAge(struct Member* member);
 void searchMemberRewardPoints(struct Member* member);
+void deleteMember(struct Member* member);
 
 struct SecurityQuestion {
 	int questionNum;
@@ -72,7 +73,7 @@ main() {
 	struct Member member[MAX_NUMBER_MEMBER];
 
 	//test data
-	/*strcpy(member[numMember].id, "123");
+	strcpy(member[numMember].id, "123");
 	strcpy(member[numMember].pass, "321");
 	member[numMember].age = 20;
 	strcpy(member[numMember].gender, "M");
@@ -86,7 +87,9 @@ main() {
 	strcpy(member[numMember].security[0].answer, "1");
 	strcpy(member[numMember].security[1].answer, "2");
 	strcpy(member[numMember].security[2].answer, "3");
-	numMember++;*/
+	numMember++;
+
+	deleteMember(member);
 
 	searchMember(member);
 
@@ -1045,41 +1048,79 @@ void searchMemberRewardPoints(struct Member* member) {
 }
 
 void deleteMember(struct Member* member) {
-	char* confirmationMenu[] = { "Yes", "No" };
+	char* confirmationMenu[] = { "Confirm", "Cancel" };
 	char id[MEMBER_ID];
-	int confirmation;
+	int confirmation, again = 0, success = 0;
 
 	if (validateNumberMember() == 0)
 		return 0;
 
-	printf("Enter An ID to Delete: ");
-	scanf(" %[^\n]", id);
+	do {
+		title();
+		printf("Enter An ID to Delete: ");
+		scanf(" %[^\n]", id);
 
-	for (int i = 0; i < numMember; i++) {
-		if (strcmp(member[i].id, id) == 0) {
-			searchMemberTitle();
-			printf("| %-10s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
-			printf("-----------------------------------------------------------------------------------------------\n");
+		for (int i = 0; i < numMember; i++) {
+			if (strcmp(member[i].id, id) == 0) {
+				do {
+					title();
+					again = 0;
+					success = 0;
+					searchMemberTitle();
+					printf("| %-10s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+					printf("-----------------------------------------------------------------------------------------------\n");
 
-			printf("Are You Sure You Want To Delete This Member Account?\n");
-			for (int i = 0; i < sizeof(confirmationMenu) / sizeof(confirmationMenu[0]); i++) {
-				printf("-----\n");
-				printf("| %d | %s\n", i + 1, confirmationMenu[i]);
-				printf("-----\n");
-			}
-			scanf("%d", &confirmation);
+					printf("Are You Sure You Want To Delete This Member Account?\n\n");
+					for (int i = 0; i < sizeof(confirmationMenu) / sizeof(confirmationMenu[0]); i++) {
+						printf("-----\n");
+						printf("| %d | %s\n", i + 1, confirmationMenu[i]);
+						printf("-----\n");
+					}
+					printf("\nEnter Your Choice: ");
+					scanf("%d", &confirmation);
 
-			if (confirmation == 1) {
-				strcpy(*member[i].id, "NULL");
-				strcpy(*member[i].)
-			}
-			else if (confirmation == 2) {
+					if (confirmation == 1) {
+						strcpy(member[i].id, member[i + 1].id);
+						strcpy(member[i].pass, member[i + 1].pass);
+						member[i].age = member[i + 1].age;
+						strcpy(member[i].gender, member[i + 1].gender);
+						strcpy(member[i].ic, member[i + 1].ic);
+						strcpy(member[i].phoneNo, member[i + 1].phoneNo);
+						strcpy(member[i].email, member[i + 1].email);
+						member[i].rewardPoints = member[i + 1].rewardPoints;
 
-			}
-			else {
+						for (int x = 0; x < 3; x++) {
+							member[i].security[x].questionNum = member[i + 1].security[x].questionNum;
+							strcpy(member[i].security[x].answer, member[i + 1].security[x].answer);
+						}
+						numMember--;
+						title();
+						printf("Deleting. ");
+						waitingScreen();
 
+						printf("\n\nThe Member Account(%s) Has Been Successfully Deleted. ", id);
+						waitingScreen();
+						success++;
+					}
+					else if (confirmation == 2) {
+						title();
+						printf("Cancelling. ");
+						waitingScreen();
+						return 0;
+					}
+					else 
+						again++;
+						
+					
+				} while (again == 1);
 			}
 		}
-	}
+
+		if (success == 0) {
+			again = 0;
+			printf("Invalid ID\n");
+			again = tryAgain(again);
+		}
+	} while (again == 1);
 }
 
