@@ -43,6 +43,10 @@ void updateManager_information(struct Staff* staff, struct Manager* manager);
 //const char manager_password[] = "password456";
 //const char staff_id[] = "staff518518";
 
+struct schedule {
+    float beginTime;
+    
+};
 
 struct Staff{
     char staff_id[MAX_ID_LENGTH];
@@ -51,6 +55,8 @@ struct Staff{
     char staff_phone[MAX_PHONE_LENGTH];
     char staff_email[MAX_EMAIL_LENGTH];
     char staff_position[MAX_POSITION_LENGTH];
+
+
 };
 
 struct Manager{ 
@@ -505,7 +511,7 @@ void manager_main_page(struct Staff* staff, struct Manager* manager) {
 
         switch (choice) {
         case 1:
-            modifyEmpRestSchedule(staff, manager);
+           /* modifyEmpRestSchedule(staff, manager);*/
             break;
         case 2:
             delete_Acc(staff, manager);
@@ -623,204 +629,206 @@ void delete_Acc(struct Staff* staff, struct Manager* manager)
                                     strcpy(staff[i].staff_phone, staff[i + 1].staff_phone);
                                     strcpy(staff[i].staff_position, staff[i + 1].staff_position);
 
-                                done++;
+                                    done++;
+                                }
                             }
-                        }
 
-                        if (done == 0) {
-                            printf("delete successful");
-                        }
-                        else
-                        {
-                            printf("Invalid");
-                        }
+                            if (done == 0) {
+                                printf("delete successful");
+                            }
+                            else
+                            {
+                                printf("Invalid");
+                            }
 
+                        }
+                        printf("\nWant to delete another record (Y/N)? :");
+                        scanf(" %c", &answers);
                     }
-                    printf("\nWant to delete another record (Y/N)? :");
-                    scanf(" %c", &answers);
+
                 }
 
             }
-
         }
     } while (answers == 'Y' || answers == 'y');
 }
 
 
-////manager modify particular staff / entire staff rest schedule ****
-//void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager) {
-//    //    int ans;
-////    char id[MAX_ID_LENGTH];
-////    double begin_time;
-////    double rest_time;
-////    double end_time;
-////    char answers;
-//
-//
-////do{
-////        staff_count++;
-////
-////        printf("> Modify particular staff rest schedule\n");
-////        printf("Staff ID:");
-////        scanf(" %[^\n]", &id);
-////
-////        // Compare the product code in the array
-////
-////    for (int i = 0; i < MAX_STAFF; i++)
-////    {
-////        if (strcmp(staff[i].staff_id, id) == 0)
-////        {
-////            printf("%s WORKING TIME\n", staff[staff_count].staff_name);
-////            printf("\nBEGIN:");
-////            scanf("%lf", &begin_time);
-////            printf("\nREST:");
-////            scanf("%lf", &rest_time);
-////            printf("\nEND:");
-////            scanf("%lf", &end_time);
-////            printf("---------------------------------------------\n");
-////            printf("| STAFF END WORKING TIME MUST ENOUGH 8 HOUR |\n");
-////            printf("---------------------------------------------\n");
-////
-////            printf("Sure to modify? Y/N : ");
-////            scanf(" %c", &answers);
-////            if (answers == 'Y' || answers == 'y')
-////            {
-////
-////                printf("-------------------------------------------------\n");
-////                printf("| NAME\t\tWORKING TIME\t\tREST TIME\t\tEND TIME |\n");
-////                printf("%s\t\t%f\t\t%f\t\t%f\n");
-////                printf("-------------------------------------------------\n");
-////
-////                staff_count++;
-////                ....
-////            }
-////        }
-////     } 
-////    printf("Anymore to modify Y/N :");
-////    scanf("%c", &answers);
-////
-//// } while (answers == 'Y' || answers == 'y');
-////
-//// fopen("../TrainTicketingSys/res/staff.bin", "wb");
-//// .....
-//// ---------------------------------------------------------------
-////
-////
-////     reference :
-////        for (i = 0; i < pCount; i++)
-////        {
-////            if (stcmp(code, p[i].product_code) == 0)
-////            {
-////                printf("Product code: %s\n", p[i].product_code);
-////                printf("Expire Year: %d\n", p[i].expYr);
-////                printf("Country : %s\n", p[i].country);
-////
-////                printf("Enter new expire Year:");
-////                scanf("%d", &year);
-////                printf("\nEnter country:");
-////                scanf(" %[^\n]", country);
-////
-////                printf("Sure to modify? Y/N : ");
-////                scanf("%c", &answers);
-////                if (answers == 'Y' || answers == 'y')
-////                {
-////                    numRecModify++;
-////                    p[i].expYr = year;
-////                    strcpy(p[i].country, country);
-////                }
-////            }
-////        }
-////
-////        printf("Anymore to modify Y/N :");
-////        scanf("%c", &answers);
-////    } while (answers == 'Y' || answers == 'y');
-////
-////
-////    //copy array into file 
-////    fp = fopen("product.dat", "ab");
-////    if (fp == NULL)
-////    {
-////        printf("Can't open the file\n");
-////    }
-////    for (i = 0; i < pCount; i++)
-////    {
-////        fwrite(&p[pCount], sizeof(Product), 1, fp);
-////
-////    }
-////
-////    fclose(fp);
-//}
+
+    ////manager modify particular staff / entire staff rest schedule ****
+    //void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager) {
+    //    //    int ans;
+    ////    char id[MAX_ID_LENGTH];
+    ////    double begin_time;
+    ////    double rest_time;
+    ////    double end_time;
+    ////    char answers;
+    //
+    //
+    ////do{
+    ////        staff_count++;
+    ////
+    ////        printf("> Modify particular staff rest schedule\n");
+    ////        printf("Staff ID:");
+    ////        scanf(" %[^\n]", &id);
+    ////
+    ////        // Compare the product code in the array
+    ////
+    ////    for (int i = 0; i < MAX_STAFF; i++)
+    ////    {
+    ////        if (strcmp(staff[i].staff_id, id) == 0)
+    ////        {
+    ////            printf("%s WORKING TIME\n", staff[staff_count].staff_name);
+    ////            printf("\nBEGIN:");
+    ////            scanf("%lf", &begin_time);
+    ////            printf("\nREST:");
+    ////            scanf("%lf", &rest_time);
+    ////            printf("\nEND:");
+    ////            scanf("%lf", &end_time);
+    ////            printf("---------------------------------------------\n");
+    ////            printf("| STAFF END WORKING TIME MUST ENOUGH 8 HOUR |\n");
+    ////            printf("---------------------------------------------\n");
+    ////
+    ////            printf("Sure to modify? Y/N : ");
+    ////            scanf(" %c", &answers);
+    ////            if (answers == 'Y' || answers == 'y')
+    ////            {
+    ////
+    ////                printf("-------------------------------------------------\n");
+    ////                printf("| NAME\t\tWORKING TIME\t\tREST TIME\t\tEND TIME |\n");
+    ////                printf("%s\t\t%f\t\t%f\t\t%f\n");
+    ////                printf("-------------------------------------------------\n");
+    ////
+    ////                staff_count++;
+    ////                ....
+    ////            }
+    ////        }
+    ////     } 
+    ////    printf("Anymore to modify Y/N :");
+    ////    scanf("%c", &answers);
+    ////
+    //// } while (answers == 'Y' || answers == 'y');
+    ////
+    //// fopen("../TrainTicketingSys/res/staff.bin", "wb");
+    //// .....
+    //// ---------------------------------------------------------------
+    ////
+    ////
+    ////     reference :
+    ////        for (i = 0; i < pCount; i++)
+    ////        {
+    ////            if (stcmp(code, p[i].product_code) == 0)
+    ////            {
+    ////                printf("Product code: %s\n", p[i].product_code);
+    ////                printf("Expire Year: %d\n", p[i].expYr);
+    ////                printf("Country : %s\n", p[i].country);
+    ////
+    ////                printf("Enter new expire Year:");
+    ////                scanf("%d", &year);
+    ////                printf("\nEnter country:");
+    ////                scanf(" %[^\n]", country);
+    ////
+    ////                printf("Sure to modify? Y/N : ");
+    ////                scanf("%c", &answers);
+    ////                if (answers == 'Y' || answers == 'y')
+    ////                {
+    ////                    numRecModify++;
+    ////                    p[i].expYr = year;
+    ////                    strcpy(p[i].country, country);
+    ////                }
+    ////            }
+    ////        }
+    ////
+    ////        printf("Anymore to modify Y/N :");
+    ////        scanf("%c", &answers);
+    ////    } while (answers == 'Y' || answers == 'y');
+    ////
+    ////
+    ////    //copy array into file 
+    ////    fp = fopen("product.dat", "ab");
+    ////    if (fp == NULL)
+    ////    {
+    ////        printf("Can't open the file\n");
+    ////    }
+    ////    for (i = 0; i < pCount; i++)
+    ////    {
+    ////        fwrite(&p[pCount], sizeof(Product), 1, fp);
+    ////
+    ////    }
+    ////
+    ////    fclose(fp);
+    //}
 
 
 
 
-//Manager update information
-void updateManager_information(struct Staff* staff, struct Manager* manager)
-{
-    char name[MAX_NAME_LENGTH];
-    char email[MAX_EMAIL_LENGTH];
-    char phone[MAX_PHONE_LENGTH];
-    char id[MAX_ID_LENGTH];
-    char stop;
-    int success = 0, again = 0, choice;
+    //Manager update information
+void updateManager_information(struct Staff* staff, struct Manager* manager) {
+        char name[MAX_NAME_LENGTH];
+        char email[MAX_EMAIL_LENGTH];
+        char phone[MAX_PHONE_LENGTH];
+        char id[MAX_ID_LENGTH];
+        char stop;
+        int success = 0, again = 0, choice;
 
-            do {
-                success = 0;
-                again = 0;
-                printf("Manager ID: ");
-                scanf(" %[^\n]", id);
+        do {
+            success = 0;
+            again = 0;
+            printf("Manager ID: ");
+            scanf(" %[^\n]", id);
 
-                for (int i = 0; i < manager_count; i++) 
+            for (int i = 0; i < manager_count; i++)
+            {
+                if (strcmp(manager[i].manager_id, id) == 0)
                 {
-                    if (strcmp(manager[i].manager_id, id) == 0)
-                    {
-                        // Before edit
-                        printf("Name: %s\n", manager[i].manager_name);
-                        printf("Phone No: %s\n", manager[i].manager_phone);
-                        printf("Email:%s\n", manager[i].manager_email);
+                    // Before edit
+                    printf("Name: %s\n", manager[i].manager_name);
+                    printf("Phone No: %s\n", manager[i].manager_phone);
+                    printf("Email:%s\n", manager[i].manager_email);
 
-                        //ask manager to update
-                        printf("Name:");
-                        scanf(" %[^\n]", name);
-                        printf("Phone No:");
-                        scanf(" %[^\n]", phone);
-                        printf("Email:");
-                        scanf(" %[^\n]", email);
+                    //ask manager to update
+                    printf("Name:");
+                    scanf(" %[^\n]", name);
+                    printf("Phone No:");
+                    scanf(" %[^\n]", phone);
+                    printf("Email:");
+                    scanf(" %[^\n]", email);
 
-                        strcpy(manager[i].manager_name, "NULL");
-                        strcpy(manager[i].manager_phone, "NULL");
-                        strcpy(manager[i].manager_email, "NULL");
+                    strcpy(manager[i].manager_name, "NULL");
+                    strcpy(manager[i].manager_phone, "NULL");
+                    strcpy(manager[i].manager_email, "NULL");
 
-                        strcpy(manager[i].manager_name, name);
-                        strcpy(manager[i].manager_phone, phone);
-                        strcpy(manager[i].manager_email, email);
+                    strcpy(manager[i].manager_name, name);
+                    strcpy(manager[i].manager_phone, phone);
+                    strcpy(manager[i].manager_email, email);
 
-                        success++;
-                    }
+                    success++;
                 }
+            }
 
-                if (success == 0) {
-                    do {
+            if (success == 0) {
+                do {
+                    again = 0;
+                    printf("Invalid\n");
+                    printf("DO you want to enter again\n");
+                    printf("1. Yes\n");
+                    printf("2. No\n");
+                    printf("Enter you choice: ");
+                    scanf("%d", &choice);
+                    if (choice == 1)
+                        again++;
+                    else if (choice == 2)
+                        return 0;
+                    else
                         again = 0;
-                        printf("Invalid\n");
-                        printf("DO you want to enter again\n");
-                        printf("1. Yes\n");
-                        printf("2. No\n");
-                        printf("Enter you choice: ");
-                        scanf("%d", &choice);
-                        if (choice == 1)
-                            again++;
-                        else if (choice == 2)
-                            return 0;
-                        else
-                            again = 0;
-                    } while (again == 0);
+                } while (again == 0);
 
-                }
+            }
 
-                //} while (stop == 'Y' || stop == 'y');
-            } while (again == 1);
-    }
+            //} while (stop == 'Y' || stop == 'y');
+        } while (again == 1);
+        
+}
      
 
          // FILE* fstaff;
