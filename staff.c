@@ -82,7 +82,7 @@ main() {
 
 
     FILE* fstaff;
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb");
+    fstaff = fopen("../../TrainTicketingSys/res/staff.bin", "rb");
 
     if (fstaff == NULL) {
         printf("Error Opening File\n");
@@ -151,7 +151,17 @@ main() {
 
     menu(staff, manager);
 
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
+    //print all manager and staff account
+
+    for (int i = 0; i < staff_count; i++) {
+        printf("ID: %s\n", staff[i].staff_id);
+    }
+
+    for (int i = 0; i < manager_count; i++) {
+        printf("ID: %s\n", staff[i].staff_id);
+    }
+
+    fstaff = fopen("../../TrainTicketingSys/res/staff.bin", "wb");
 
     for (int i = 0; i < manager_count; i++) {
         fwrite(&manager[i], sizeof(manager), 1, fstaff);
@@ -669,81 +679,82 @@ void delete_Acc(struct Staff* staff, struct Manager* manager)
     char answers;
     char deleteID[MAX_ID_LENGTH];
     int deleted = 0;
-    int tryAgain = 0;
-    int done = 0;
+    int again = 0;
+    int done = 1;
     system("cls");
 
-    //do
-    //{
-    //    memberExist = 0;
-    //    printf("You are able to delete the file\n");
-    //    printf("\nEnter Staff ID to DELETE :");
-    //    rewind(stdin);
-    //    scanf("%[^\n]", deleteID);
+   /* do
+    {
+        memberExist = 0;
+        printf("You are able to delete the file\n");
+        printf("\nEnter Staff ID to DELETE :");
+        rewind(stdin);
+        scanf("%[^\n]", deleteID);
 
-    //    for (int i = 0; i < MAX_STAFF; i++) {
-    //        if (strcmp(staff[i].staff_id, deleteID) == 0)
-    //            memberExist++;
-    //    }
-    //    if (memberExist == 1) {
-    //        for (int i = 0; i < MAX_STAFF; i++) {
-    //            if (strcmp(staff[i].staff_id, deleteID) == 0)
-    //            {
-    //                printf("\nConfirm ?\n");
-    //                scanf(" %c", &confirm);
+        for (int i = 0; i < MAX_STAFF; i++) {
+            if (strcmp(staff[i].staff_id, deleteID) == 0)
+                memberExist++;
+        }
+        if (memberExist == 1) {
+            for (int i = 0; i < MAX_STAFF; i++) {
+                if (strcmp(staff[i].staff_id, deleteID) == 0)
+                {
+                    printf("\nConfirm ?\n");
+                    scanf(" %c", &confirm);
 
-    //                while (confirm == 'y' || confirm == 'Y')
-    //                {
+                    while (confirm == 'y' || confirm == 'Y')
+                    {
 
-    //                    for (int i = 0; i < staff_count; i++)
-    //                    {
-    //                        if (strcmp(staff[i].staff_id, deleteID) == 0)
-    //                        {
-    //                            staff_count--;
+                        for (int i = 0; i < staff_count; i++)
+                        {
+                            if (strcmp(staff[i].staff_id, deleteID) == 0)
+                            {
+                                staff_count--;
 
-    //                            for (i; i < staff_count; i++)
-    //                            {
-    //                                strcpy(staff[i].staff_id, NULL);
-    //                                strcpy(staff[i].staff_name, NULL);
-    //                                strcpy(staff[i].staff_password, NULL);
-    //                                strcpy(staff[i].staff_email, NULL);
-    //                                strcpy(staff[i].staff_phone, NULL);
-    //                                strcpy(staff[i].staff_position, NULL);
+                                for (i; i < staff_count; i++)
+                                {
+                                    strcpy(staff[i].staff_id, NULL);
+                                    strcpy(staff[i].staff_name, NULL);
+                                    strcpy(staff[i].staff_password, NULL);
+                                    strcpy(staff[i].staff_email, NULL);
+                                    strcpy(staff[i].staff_phone, NULL);
+                                    strcpy(staff[i].staff_position, NULL);
 
-    //                                strcpy(staff[i].staff_id, staff[i + 1].staff_id);
-    //                                strcpy(staff[i].staff_name, staff[i + 1].staff_name);
-    //                                strcpy(staff[i].staff_password, staff[i + 1].staff_password);
-    //                                strcpy(staff[i].staff_email, staff[i + 1].staff_email);
-    //                                strcpy(staff[i].staff_phone, staff[i + 1].staff_phone);
-    //                                strcpy(staff[i].staff_position, staff[i + 1].staff_position);
+                                    strcpy(staff[i].staff_id, staff[i + 1].staff_id);
+                                    strcpy(staff[i].staff_name, staff[i + 1].staff_name);
+                                    strcpy(staff[i].staff_password, staff[i + 1].staff_password);
+                                    strcpy(staff[i].staff_email, staff[i + 1].staff_email);
+                                    strcpy(staff[i].staff_phone, staff[i + 1].staff_phone);
+                                    strcpy(staff[i].staff_position, staff[i + 1].staff_position);
 
-    //                                done++;
-    //                            }
-    //                        }
+                                    done++;
+                                }
+                            }
 
-    //                        if (done == 0) {
-    //                            printf("delete successful");
-    //                        }
-    //                        else
-    //                        {
-    //                            printf("Invalid");
-    //                        }
+                            if (done == 0) {
+                                printf("delete successful");
+                            }
+                            else
+                            {
+                                printf("Invalid");
+                            }
 
-    //                    }
-    //                    printf("\nWant to delete another record (Y/N)? :");
-    //                    scanf(" %c", &answers);
-    //                }
+                        }
+                        printf("\nWant to delete another record (Y/N)? :");
+                        scanf(" %c", &answers);
+                    }
 
-    //            }
+                }
 
-    //        }
-    //    }
-    //} while (answers == 'Y' || answers == 'y');
+            }
+        }
+    } while (answers == 'Y' || answers == 'y');*/
 
     do
     {
+        done = 1;
         deleted = 0;
-        tryAgain = 0;
+        again = 0;
         printf("you are able to delete the record\n");
 
         printf("\nEenter staff id to delete :");
@@ -759,6 +770,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager)
                 printf("%s\t%s\t%s", staff[i].staff_name, staff[i].staff_phone, staff[i].staff_email);
                 printf("\n------------------------------------------\n");
 
+                do{
                 printf("\nConfirm To delete?\n");
                 printf("\n1. Yes\n");
                 printf("2. No\n");
@@ -766,12 +778,9 @@ void delete_Acc(struct Staff* staff, struct Manager* manager)
                 scanf(" %d", &confirm);
                 printf("\n------------------------------------------\n");
 
-                do {
+                
                     if (confirm == 1) 
                     {
-                        staff_count--;
-                        for (i; i < staff_count; i++)
-                        {
                             // got error!!!! 
                             strcpy(staff[i].staff_id, "NULL");
                             strcpy(staff[i].staff_name, "NULL");
@@ -786,11 +795,12 @@ void delete_Acc(struct Staff* staff, struct Manager* manager)
                             strcpy(staff[i].staff_email, staff[i + 1].staff_email);
                             strcpy(staff[i].staff_phone, staff[i + 1].staff_phone);
                             strcpy(staff[i].staff_position, staff[i + 1].staff_position);
+                            staff_count--;
 
-                            done++;
+                            deleted++;
 
                             printf("\nDELETE SUCCESSFUL\n");
-                        }
+                        
                         
                     }
                        
@@ -807,10 +817,18 @@ void delete_Acc(struct Staff* staff, struct Manager* manager)
                 } while (done == 0);
                 
             }
-            else
-                printf("\nInvalid staff ID.\n");
+            
         }
 
+        if (deleted == 0) {
+            printf("INVALID");
+            //havent done yet
+        }
+
+        printf("Do you want to continue");
+        printf("1. Yes");
+        printf("2. ");
+        // havent done yet
 
     } while (done == 1);
 }
