@@ -31,10 +31,10 @@ void delete_Acc(struct Staff* staff, struct Manager* manager);
 //void modify_staffInformation(struct Staff* staff, struct Manager* manager);
 void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager);
 void updateManager_information(struct Staff* staff, struct Manager* manager);
-//int tryAgain(int again);
 void resetPassword(struct Staff* staff);
 void sendValidationCode(char* email, char* code);
 char* generateValidationCode();
+void manager_reset_pass(struct Manager* manager);
 
 
 
@@ -49,9 +49,15 @@ char* generateValidationCode();
 
 //structure for checkin in & out time
 struct Schedule {
-    int begin_time;
+
+    int begin_hour;
+    int begin_minute;
+    char begin_period[3]; // "a.m." or "p.m."
     int rest_time;
-    int end_time;
+    int end_hour;
+    int end_minute;
+    char end_period[3]; // "a.m." or "p.m."
+
 };
 
 struct Staff{
@@ -291,7 +297,8 @@ void staff_login(struct Staff* staff, struct Manager* manager)
     /*title();*/
     printf("------ STAFF Login ------\n");
 
-    do {
+    do 
+    {
         printf("\nEnter your staff ID: ");
         scanf(" %[^\n]", id);
         printf("Enter your staff password: ");
@@ -331,14 +338,16 @@ void staff_login(struct Staff* staff, struct Manager* manager)
             } while (again == 0);
 
             //
-            if (count == 3) {
+            if (count == 3)
+            {
                 printf("You are failed to log in!\n");
                 printf("\n1. RESET PASSWORD\n");
                 printf("2. EXIT\n");
                 printf("Do u want to reset the password ? ____   ____");
                 scanf("%d", &ans);
 
-                if (ans == 1) {
+                if (ans == 1) 
+                {
                     resetPassword(staff);
                 }
                 else
@@ -441,10 +450,33 @@ void staff_main_page(struct Staff* staff, struct Manager* manager) {
     } while (choice != 5);
 }
 
-//staff rest schedule 
+//staff rest schedule **** !!!
 void staff_schedule(struct Staff* staff, struct Manager* manager) {
     //coming soon!
    /* system("cls");*/
+   /* int total_begin_minutes = 0;
+    int total_working_hours = 0;
+    int remaining_minutes = 0;
+    char id[MAX_ID_LENGTH];*/
+
+   /* printf("Staff ID:");
+    scanf(" %[^\n]", &id);*/
+
+    // need to let staff can see the schedule after manager modify it
+    //wrong 
+   /* for (int i = 0; i < staff_count; i++)
+    {
+
+        if (strcmp(staff[i].staff_id, id) == 0)
+        {
+            printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
+            printf("BEGIN TIME\tREST TIME\tEND TIME\n");
+            printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
+            printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", total_working_hours, remaining_minutes);
+            printf("-------------------------------------------------------------------\n");
+        }
+    }*/
+
 }
 
 
@@ -541,7 +573,7 @@ void staff_information(struct Staff* staff, struct Manager* manager) {
 }
 
 
-//combination of log out&in time selected *******
+//combination of log out&in time selected *******!
  void staff_logout(struct Staff* staff)
 {
      //SYSTEMTIME t;
@@ -561,6 +593,7 @@ void staff_information(struct Staff* staff, struct Manager* manager) {
      if (ans == 1)
      {
          //check in time
+         // got error
          printf("---------CHECK IN------------\n");
          printf("STAFF ID:%s\tCHECK IN TIME:%s");
          printf("Check In succeed");
@@ -652,30 +685,83 @@ void manager_menu(struct Staff* staff, struct Manager* manager)
     printf("\nYou are Exit %s Right Now!\n", buffer);
 }
 
-// Manager Login menu
+// Manager Login menu --need to do let manager reset password!***
 void manager_login(struct Staff* staff, struct Manager* manager) {
     char id[MAX_ID_LENGTH];
     char password[MAX_PASS_LENGTH];
     int loginSuccess = 0;
+    int again = 0;
+    int ans;
+    int count = 0;
 
     /*title();*/
     printf("\n------ MANAGER Login ------\n");
-    printf("\nEnter your manager ID: ");
-    scanf(" %[^\n]", id);
-    printf("Enter your staff password: ");
-    scanf(" %[^\n]", password);
-    for (int i = 0; i < MAX_MANAGER; i++) {
-        if (strcmp(manager[i].manager_id, id) == 0 && strcmp(manager[i].manager_password, password) == 0) {
-            printf("\nLogin successful...\n");
-            manager_main_page(staff, manager);
-            loginSuccess++;
-        }
-    }
 
-    if (loginSuccess == 0) {
-        printf("\nInvalid ID or Password\n");
-        return 0;
-    }
+    do
+    {
+
+
+        printf("\nEnter your manager ID: ");
+        scanf(" %[^\n]", id);
+        printf("Enter your staff password: ");
+        scanf(" %[^\n]", password);
+        for (int i = 0; i < MAX_MANAGER; i++) {
+            if (strcmp(manager[i].manager_id, id) == 0 && strcmp(manager[i].manager_password, password) == 0) {
+                printf("\nLogin successful...\n");
+                manager_main_page(staff, manager);
+                loginSuccess++;
+            }
+        }
+
+        if (loginSuccess == 0)
+        {
+            do
+            {
+                again = 0;
+                printf("\nInvalid ID or Password\n");
+                printf("Do you want to try again?");
+                printf("\n1. Yes\n");
+                printf("2. No\n");
+                printf("Enter you choice:");
+                scanf("%d", &ans);
+                printf("---------------------------\n");
+                if (ans == 1) {
+                    again++;
+                    count++;
+                }
+                else if (ans == 2) {
+                    return 0;
+                    system("cls");
+                }
+                else
+                    again = 0;
+
+            } while (again == 0);
+
+            if (count == 3)
+            {
+                printf("You are failed to log in!\n");
+                printf("\n1. RESET PASSWORD\n");
+                printf("2. EXIT\n");
+                printf("Do u want to reset the password ? ____   ____");
+                scanf("%d", &ans);
+
+                if (ans == 1)
+                {
+                    manager_reset_pass(manager);
+                }
+                else
+                {
+                    printf("You are exit right now!\n");
+                    return 0;
+                }
+
+            }
+
+            //return 0;
+        }
+    } while (again == 1);
+
 }
 
 //Manager Choice menu
@@ -869,17 +955,22 @@ void delete_Acc(struct Staff* staff, struct Manager* manager)
 }
 
 
-    //manager modify particular staff / entire staff rest schedule ***!
+//manager modify particular staff / entire staff rest schedule ***
 void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 {
     char id[MAX_ID_LENGTH];
     int ans = 0;
-    int beginTime;
-    int restTime;
-    int endTime;
+    //int beginTime;
+    //int restTime;
+    //int endTime;
     int successful = 0;
     int choice;
     int again = 0;
+    int total_end_minutes = 0;
+    int total_working_minutes = 0;
+    int total_begin_minutes = 0;
+    int total_working_hours = 0;
+    int remaining_minutes = 0;
     
     do
     {
@@ -895,39 +986,56 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 
             if (strcmp(staff[i].staff_id, id) == 0)
             {
-                //Let the staff rest time is default
-                printf("\nTIME SELECTED\n");
-                printf("1. 8:00a.m - 12:00p.m 2:00p.m-4p.m");
-                printf("2. ");
-                printf("3. ");
-                scanf("");
-                //.......
-
-
 
                 printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
-                printf("\nBEGIN:");
-                scanf("%d", &beginTime);
-                printf("\nREST:");
-                scanf("%d", &restTime);
-                printf("\nEND:");
-                scanf("%d", &endTime);
-                printf("---------------------------------------------\n");
-                printf("| STAFF END WORKING TIME MUST ENOUGH 8 HOUR |\n");
-                printf("---------------------------------------------\n");
+                printf("\nBEGIN (hh:mm a.m./p.m.): ");
+                scanf("%d:%d %s", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute, staff[i].schedule.begin_period);
+                printf("\nREST (in minutes): ");
+                scanf("%d", &staff[i].schedule.rest_time);
+                printf("\nEND (hh:mm a.m./p.m.): ");
+                scanf("%d:%d %s", &staff[i].schedule.end_hour, &staff[i].schedule.end_minute, staff[i].schedule.end_period);
 
-                staff[i].schedule.begin_time = beginTime;
-                staff[i].schedule.rest_time = restTime;
-                staff[i].schedule.end_time = endTime;
-                
+
+                //here testing==============================
+                total_begin_minutes = staff[i].schedule.begin_hour * 60 + staff[i].schedule.begin_minute;
+                total_end_minutes = staff[i].schedule.end_hour * 60 + staff[i].schedule.end_minute;
+                total_working_minutes = total_end_minutes - total_begin_minutes - staff[i].schedule.rest_time;
+
+                // Adjust for overnight working(if end time is before begin time)
+                if (total_end_minutes < total_begin_minutes) {
+                    total_working_minutes = (24 * 60 - total_begin_minutes) + total_end_minutes;
+                }
+                else {
+                    total_working_minutes = total_end_minutes - total_begin_minutes;
+                }
+
+                if (total_working_minutes >= 8 * 60) {
+
+                    // Calculate total working hours and minutes
+                    total_working_hours = total_working_minutes / 60;
+                    remaining_minutes = total_working_minutes % 60;
+
+                    printf("\n---------------------------------------------\n");
+                    printf("| WORKING TIME UPDATED SUCCESSFULLY |\n");
+                    printf("---------------------------------------------\n");
+
+                    printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
+                    printf("BEGIN TIME\tREST TIME\tEND TIME\n");
+                    printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
+                    printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", total_working_hours, remaining_minutes);
+                    printf("-------------------------------------------------------------------\n");
+                    // system("cls");
+
+                }
+                else 
+                {
+                    printf("---------------------------------------------\n");
+                    printf("| STAFF END WORKING TIME MUST ENOUGH 8 HOUR |\n");
+                    printf("---------------------------------------------\n");
+                }
 
                 successful++;
 
-                printf("\n-------- WORKING TIME SCHEDULE ------- |- %s -|\n", staff[i].staff_name);
-                printf("BEGIN TIME\tREST TIME\tEND TIME\n");
-                printf("%d\t%d\t%d\n", staff[i].schedule.begin_time, staff[i].schedule.rest_time, staff[i].schedule.end_time);
-                printf("--------- TOTAL WORKING HOUR > ? ------------\n");
-                // system("cls");
             }
 
         }
@@ -962,6 +1070,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
         else
         {
             do {
+                //got error 
                 printf("\n1. CONTINUE\n");
                 printf("2. EXIT\n");
                 printf("Enter you choice:");
@@ -1163,7 +1272,6 @@ void resetPassword(struct Staff* staff)
         /*return 0;*/
     }
      
-    
     // Reference only!  
 //                    if (atoi(code) == codeReceived) {
 //                        printf("Able to reset the password\n");
@@ -1201,7 +1309,6 @@ void resetPassword(struct Staff* staff)
 //}
   
 
-
 void sendValidationCode(char* email, char* code) {
     // Implement sending the validation code to the provided email
     printf("Validation code sent to %s is: %s\n", email, code);
@@ -1214,6 +1321,13 @@ char* generateValidationCode() {
     return code;
 }
 
+
+// Manager reset password
+void manager_reset_pass(struct Manager* manager)
+{
+    //comming soon!
+
+}
 
 // Modify/ edit staff information
 ////void modify_staffInformation(struct Staff* staff, struct Manager* manager)
@@ -1309,30 +1423,3 @@ char* generateValidationCode() {
 //}
 //
 
-
-//int tryAgain(int again) {
-//    int choice, invalidChoice = 0;
-//    do {
-//
-//        again = 0;
-//        invalidChoice = 0;
-//        printf("Do you want to try again?\n");
-//        printf("1. Yes\n");
-//        printf("2. No\n");
-//        printf("Please Enter Your Choice: ");
-//        scanf("%d", &choice);
-//
-//        if (choice == 1) {
-//            again++;
-//            return again;
-//        }
-//        else if (choice == 2)
-//            return 0;
-//        else {
-//            title();
-//            printf("Invalid Choice\n");
-//            printf("Please Enter A Valid Choice\n");
-//            invalidChoice++;
-//        }
-//    } while (invalidChoice == 1);
-//}
