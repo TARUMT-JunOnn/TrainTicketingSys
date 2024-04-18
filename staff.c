@@ -21,19 +21,19 @@ void menu(struct Staff* staff, struct Manager* manager);
 void staffMenu(struct Staff* staff, struct Manager* manager);
 void staff_login(struct Staff* staff, struct Manager* manager);
 void staff_registration(struct Staff* staff);
-void staff_main_page(struct Staff* staff, struct Manager* manager);
-void staff_schedule(struct Staff* staff, struct Manager* manager);
-void staff_information(struct Staff* staff, struct Manager* manager);
-void staff_logout(struct Staff* staff);
+void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum);
+void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum);
+void staff_information(struct Staff* staff, struct Manager* manager, int staffNum);
+void staff_logout(struct Staff* staff, int staffNum);
 // manager
 void manager_menu(struct Staff* staff, struct Manager* manager);
 void manager_login(struct Staff* staff, struct Manager* manager);
 void manager_registration(struct Manager* manager);
-void manager_main_page(struct Staff* staff, struct Manager* manager);
+void manager_main_page(struct Staff* staff, struct Manager* manager, int managerNum);
 void delete_Acc(struct Staff* staff, struct Manager* manager);
 //void modify_staffInformation(struct Staff* staff, struct Manager* manager);
 void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager);
-void updateManager_information(struct Staff* staff, struct Manager* manager);
+void updateManager_information(struct Staff* staff, struct Manager* manager, int managerNum);
 void resetPassword(struct Staff* staff);
 void sendValidationCode(char* email, char* code);
 char* generateValidationCode();
@@ -96,7 +96,7 @@ main() {
 
 
     FILE* fstaff;
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb");
+    fstaff = fopen("../../TrainTicketingSys/res/staff.bin", "rb");
 
     if (fstaff == NULL) {
         printf("Error Opening File\n");
@@ -175,7 +175,7 @@ main() {
         printf("ID: %s\n", staff[i].staff_id);
     }
 
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
+    fstaff = fopen("../../TrainTicketingSys/res/staff.bin", "wb");
 
     for (int i = 0; i < manager_count; i++) {
         fwrite(&manager[i], sizeof(manager), 1, fstaff);
@@ -462,35 +462,20 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
 //staff rest schedule **** !!!
 void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum) {
     //coming soon!
-    system("cls");
-    int total_begin_minutes = 0;
-    int total_working_hours = 0;
-    int remaining_minutes = 0;
-    char id[MAX_ID_LENGTH];
-
-    printf("Staff ID:");
-    scanf(" %[^\n]", &id);
-
     // need to let staff can see the schedule after manager modify it
     //wrong 
-    for (int i = 0; i < staff_count; i++)
-    {
 
-        if (strcmp(staff[i].staff_id, id) == 0)
-        {
-            printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
+            printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[staffNum].staff_name);
             printf("BEGIN TIME\tREST TIME\tEND TIME\n");
-            printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
-            printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule.total_working_hours, staff[i].schedule.remaining_minutes);
+            printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[staffNum].schedule.begin_hour, staff[staffNum].schedule.begin_minute, staff[staffNum].schedule.begin_period, staff[staffNum].schedule.rest_time, staff[staffNum].schedule.end_hour, staff[staffNum].schedule.end_minute, staff[staffNum].schedule.end_period);
+            printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[staffNum].schedule.total_working_hours, staff[staffNum].schedule.remaining_minutes);
             printf("-------------------------------------------------------------------\n");
-        }
-    }
 
 }
 
 
 //staff update information
-void staff_information(struct Staff* staff, struct Manager* manager) {
+void staff_information(struct Staff* staff, struct Manager* manager, int staffNum) {
     char name[MAX_NAME_LENGTH];
     char email[MAX_EMAIL_LENGTH];
     char phone[MAX_PHONE_LENGTH];
@@ -503,21 +488,14 @@ void staff_information(struct Staff* staff, struct Manager* manager) {
         again = 0;
 
         /*title();*/
-        printf("\nStaff ID: ");
-        scanf(" %[^\n]", id);
-
-        for (int i = 0; i < staff_count; i++)
-        {
-            if (strcmp(staff[i].staff_id, id) == 0)
-            {
                 /*title();*/
                 // Before edit --change the versio view
                 printf("---------------------------\n");
                 printf("------ Before Update ------\n");
                 printf("---------------------------\n");
-                printf("\nName: %s\n", staff[i].staff_name);
-                printf("Phone No: %s\n", staff[i].staff_phone);
-                printf("Email:%s\n", staff[i].staff_email);
+                printf("\nName: %s\n", staff[staffNum].staff_name);
+                printf("Phone No: %s\n", staff[staffNum].staff_phone);
+                printf("Email:%s\n", staff[staffNum].staff_email);
 
 
                 //ask manager to update
@@ -531,9 +509,9 @@ void staff_information(struct Staff* staff, struct Manager* manager) {
                 printf("Email:");
                 scanf(" %[^\n]", email);
 
-                strcpy(staff[i].staff_name, name);
-                strcpy(staff[i].staff_phone, phone);
-                strcpy(staff[i].staff_email, email);
+                strcpy(staff[staffNum].staff_name, name);
+                strcpy(staff[staffNum].staff_phone, phone);
+                strcpy(staff[staffNum].staff_email, email);
 
                 success++;
 
@@ -543,14 +521,12 @@ void staff_information(struct Staff* staff, struct Manager* manager) {
                 printf("\n---------------------------\n");
                 printf("------- After Updated -------\n");
                 printf("-----------------------------\n");
-                printf("Manager ID: %s\n", staff[i].staff_id);
-                printf("\nName: %s\n", staff[i].staff_name);
-                printf("Phone No: %s\n", staff[i].staff_phone);
-                printf("Email:%s\n", staff[i].staff_email);
+                printf("Manager ID: %s\n", staff[staffNum].staff_id);
+                printf("\nName: %s\n", staff[staffNum].staff_name);
+                printf("Phone No: %s\n", staff[staffNum].staff_phone);
+                printf("Email:%s\n", staff[staffNum].staff_email);
                 printf("\n---------------------------\n");
-                
-            }
-        }
+               
 
         if (success == 0) {
             do {
@@ -720,7 +696,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
         for (int i = 0; i < MAX_MANAGER; i++) {
             if (strcmp(manager[i].manager_id, id) == 0 && strcmp(manager[i].manager_password, password) == 0) {
                 printf("\nLogin successful...\n");
-                manager_main_page(staff, manager);
+                manager_main_page(staff, manager, i);
                 loginSuccess++;
             }
         }
@@ -777,7 +753,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 }
 
 //Manager Choice menu
-void manager_main_page(struct Staff* staff, struct Manager* manager) {
+void manager_main_page(struct Staff* staff, struct Manager* manager, int managerNum) {
     int choice;
     
     system("cls");
@@ -801,7 +777,7 @@ void manager_main_page(struct Staff* staff, struct Manager* manager) {
             break;
         case 3:
             //modify_staffInformation(staff, manager); --become manager update themself information
-            updateManager_information(staff, manager);
+            updateManager_information(staff, manager, managerNum);
             break;
         default:
             break;
@@ -1111,7 +1087,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 
 
 //Manager update information
-void updateManager_information(struct Staff* staff, struct Manager* manager) {
+void updateManager_information(struct Staff* staff, struct Manager* manager, int managerNum) {
         char name[MAX_NAME_LENGTH];
         char email[MAX_EMAIL_LENGTH];
         char phone[MAX_PHONE_LENGTH];
@@ -1124,20 +1100,16 @@ void updateManager_information(struct Staff* staff, struct Manager* manager) {
             again = 0;
             /*title();*/
 
-            printf("\nManager ID: ");
-            scanf(" %[^\n]", id);
+            //no need enter manager ID
 
-            for (int i = 0; i < manager_count; i++)
-            {
-                if (strcmp(manager[i].manager_id, id) == 0)
-                {
+           
                     // Before edit
                     printf("---------------------------\n");
                     printf("------ Before Update ------\n");
                     printf("---------------------------\n");
-                    printf("\nName: %s\n", manager[i].manager_name);
-                    printf("Phone No: %s\n", manager[i].manager_phone);
-                    printf("Email:%s\n", manager[i].manager_email);
+                    printf("\nName: %s\n", manager[managerNum].manager_name);
+                    printf("Phone No: %s\n", manager[managerNum].manager_phone);
+                    printf("Email:%s\n", manager[managerNum].manager_email);
 
                     //ask manager to update
                     printf("\n--------------------------\n");
@@ -1150,9 +1122,9 @@ void updateManager_information(struct Staff* staff, struct Manager* manager) {
                     printf("Email:");
                     scanf(" %[^\n]", email);
 
-                    strcpy(manager[i].manager_name, name);
-                    strcpy(manager[i].manager_phone, phone);
-                    strcpy(manager[i].manager_email, email);
+                    strcpy(manager[managerNum].manager_name, name);
+                    strcpy(manager[managerNum].manager_phone, phone);
+                    strcpy(manager[managerNum].manager_email, email);
 
                     success++;
 
@@ -1161,14 +1133,12 @@ void updateManager_information(struct Staff* staff, struct Manager* manager) {
                     printf("\n---------------------------\n");
                     printf("------- After Updated -------\n");
                     printf("-----------------------------\n");
-                    printf("Manager ID: %s\n", manager[i].manager_id);
-                    printf("\nName: %s\n", manager[i].manager_name);
-                    printf("Phone No: %s\n", manager[i].manager_phone);
-                    printf("Email:%s\n", manager[i].manager_email);
+                    printf("Manager ID: %s\n", manager[managerNum].manager_id);
+                    printf("\nName: %s\n", manager[managerNum].manager_name);
+                    printf("Phone No: %s\n", manager[managerNum].manager_phone);
+                    printf("Email:%s\n", manager[managerNum].manager_email);
                     printf("\n---------------------------\n");
                     // system("cls");
-                }
-            }
 
             if (success == 0) {
                 do {
