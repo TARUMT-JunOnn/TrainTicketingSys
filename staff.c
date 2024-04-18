@@ -94,7 +94,7 @@ main() {
 
 
     FILE* fstaff;
-    fstaff = fopen("../ TrainTicketingSys / res / staff.bin", "rb");
+    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb");
 
     if (fstaff == NULL) {
         printf("Error Opening File\n");
@@ -1457,3 +1457,4 @@ void security_Ques()
 }
 
 // validation the manager has choice 2 ques or not?
+//123456
