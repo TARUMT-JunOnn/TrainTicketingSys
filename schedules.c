@@ -656,37 +656,37 @@ void ModifySchedule(time_t currentTime)
 				scanf("%[^\n]", modifyDay);
 				
 				// Converting to next week day
-				if (strcmp(modifyDay, "Monday"))
+				if (strcmp(modifyDay, "Monday") == 0)
 				{
 					strcpy(modifyDay, "nextMonday");
 				}
 
-				else if (strcmp(modifyDay, "Tuesday"))
+				else if (strcmp(modifyDay, "Tuesday") == 0)
 				{
 					strcpy(modifyDay, "nextTuesday");
 				}
 
-				else if (strcmp(modifyDay, "Wednesday"))
+				else if (strcmp(modifyDay, "Wednesday") == 0)
 				{
 					strcpy(modifyDay, "nextWednesday");
 				}
 
-				else if (strcmp(modifyDay, "Thursday"))
+				else if (strcmp(modifyDay, "Thursday") == 0)
 				{
 					strcpy(modifyDay, "nextThursday");
 				}
 
-				else if (strcmp(modifyDay, "Friday"))
+				else if (strcmp(modifyDay, "Friday") == 0)
 				{
 					strcpy(modifyDay, "nextFriday");
 				}
 
-				else if (strcmp(modifyDay, "Saturday"))
+				else if (strcmp(modifyDay, "Saturday") == 0)
 				{
 					strcpy(modifyDay, "nextSaturday");
 				}
 
-				else if (strcmp(modifyDay, "Sunday"))
+				else if (strcmp(modifyDay, "Sunday") == 0)
 				{
 					strcpy(modifyDay, "nextSunday");
 				}
