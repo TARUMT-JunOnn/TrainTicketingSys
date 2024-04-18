@@ -94,7 +94,7 @@ main() {
 
 
     FILE* fstaff;
-    fstaff = fopen("../../TrainTicketingSys/res/staff.bin", "rb");
+    fstaff = fopen("../ TrainTicketingSys / res / staff.bin", "rb");
 
     if (fstaff == NULL) {
         printf("Error Opening File\n");
@@ -173,7 +173,7 @@ main() {
         printf("ID: %s\n", staff[i].staff_id);
     }
 
-    fstaff = fopen("../../TrainTicketingSys/res/staff.bin", "wb");
+    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
 
     for (int i = 0; i < manager_count; i++) {
         fwrite(&manager[i], sizeof(manager), 1, fstaff);
