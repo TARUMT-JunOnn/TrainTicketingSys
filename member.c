@@ -17,9 +17,9 @@
 #define MAX_LENGTH_IC 15
 #define MAX_LENGTH_GENDER 2
 
-void title();
+void title(void);
 int tryAgain(int again);
-void waitingScreen();
+void waitingScreen(void);
 void memberMenu(struct Member* member);
 
 //member Login
@@ -30,7 +30,7 @@ void securityQuestion();
 void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]);
 
 //registration validation
-void passwordFormat();
+void passwordFormat(void);
 bool verify_password(char* pass);
 bool verify_email(char* email);
 bool verify_phone_no(char* phoneNo);
@@ -53,12 +53,12 @@ void bookingHistory();
 void cancelBooking();
 
 //reward point
-void rewardPoint();
+void rewardPoint(struct Member* member, int memberNUM);
 
-int validateNumberMember();
+int validateNumberMember(void);
 
 //search modules
-void searchMemberTitle();
+void searchMemberTitle(void);
 void searchMember(struct Member* member);
 void searchMemberID(struct Member* member);
 void searchMemberGender(struct Member* member);
@@ -103,8 +103,9 @@ void title(void) {
 	printf("\n\n");
 }
 
-main() {
+main(void) {
 	struct Member member[MAX_NUMBER_MEMBER];
+	struct Member member2;
 	int choice;
 
 	FILE *memberFptr;
@@ -116,24 +117,54 @@ main() {
 		exit(-1);
 	}
 
+	fread(&member2, sizeof(member2), 1, memberFptr);
+	while (!feof(memberFptr))
+	{
+	
+		strcpy(member[numMember].id, member2.id);
+		strcpy(member[numMember].name, member2.name);
+		strcpy(member[numMember].pass, member2.pass);
+		member[numMember].age = member2.age;
+		strcpy(member[numMember].gender, member2.gender);
+		strcpy(member[numMember].ic, member2.ic);
+		strcpy(member[numMember].phoneNo, member2.phoneNo);
+		strcpy(member[numMember].email, member2.email);
+		member[numMember].rewardPoints = member2.rewardPoints;
+		for (int i = 0; i < 3; i++)
+			member[numMember].security[i].questionNum = member2.security[i].questionNum;
+
+
+		for(int i = 0; i < 3; i++)
+			strcpy(member[numMember].security[i].answer, member2.security[i].answer);
+
+		numMember++;
+		fread(&member2, sizeof(member2), 1, memberFptr);
+	}
+
+	fclose(memberFptr);
+
+	//test to display all data
+	for (int i = 0; i < numMember; i++) {
+		printf("%d. %s\n", i + 1, member[i].id);
+	}
 
 	//test data
-	strcpy(member[numMember].id, "123");
-	strcpy(member[numMember].pass, "321");
-	strcpy(member[numMember].name, "Lee");
-	member[numMember].age = 20;
-	strcpy(member[numMember].gender, "M");
-	strcpy(member[numMember].ic, "123-321");
-	strcpy(member[numMember].phoneNo, "01161188688");
-	strcpy(member[numMember].email, "lee@gmail.com");
-	member[numMember].rewardPoints = 0.00;
-	member[numMember].security[0].questionNum = 1;
-	member[numMember].security[1].questionNum = 2;
-	member[numMember].security[2].questionNum = 3;
-	strcpy(member[numMember].security[0].answer, "1");
-	strcpy(member[numMember].security[1].answer, "2");
-	strcpy(member[numMember].security[2].answer, "3");
-	numMember++;
+	//strcpy(member[numMember].id, "123");
+	//strcpy(member[numMember].pass, "321");
+	//strcpy(member[numMember].name, "Lee");
+	//member[numMember].age = 20;
+	//strcpy(member[numMember].gender, "M");
+	//strcpy(member[numMember].ic, "123-321");
+	//strcpy(member[numMember].phoneNo, "01161188688");
+	//strcpy(member[numMember].email, "lee@gmail.com");
+	//member[numMember].rewardPoints = 0.00;
+	//member[numMember].security[0].questionNum = 1;
+	//member[numMember].security[1].questionNum = 2;
+	//member[numMember].security[2].questionNum = 3;
+	//strcpy(member[numMember].security[0].answer, "1");
+	//strcpy(member[numMember].security[1].answer, "2");
+	//strcpy(member[numMember].security[2].answer, "3");
+	//numMember++;
 
 	//deleteMember(member);
 
@@ -164,6 +195,15 @@ main() {
 			printf("Please Try Again\n");
 		}
 	} while (choice != 4);
+
+	memberFptr = fopen("../../TrainTicketingSys/res/member.bin", "wb");
+
+	for (int i = 0; i < numMember; i++) {
+		fwrite(&member[i], sizeof(member[0]), 1, memberFptr);
+	}
+
+	fclose(memberFptr);
+
 	//memberMenu(member);
 
 }
@@ -196,7 +236,7 @@ int tryAgain(int again) {
 	} while (invalidChoice == 1);
 }
 
-void waitingScreen() {
+void waitingScreen(void) {
 	for (int i = 0; i < 3; i++) {
 		Sleep(300);
 		printf(". ");
@@ -314,7 +354,7 @@ void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MA
 	}
 }
 
-void passwordFormat() {
+void passwordFormat(void) {
 
 	printf("-------------------------------------------------------------------\n");
 	printf("| Please Set A Password That Meets The Following Requirements:    |\n");
@@ -1003,7 +1043,7 @@ int validateNumberMember() {
 	}
 }
 
-void searchMemberTitle() {
+void searchMemberTitle(void) {
 	printf("----------------------------------------------------------------------------------------------------------------------\n");
 	printf("| ID         | NAME                 | AGE | GENDER | CONTACT NUMBER | EMAIL                          | Reward Points |\n");
 	printf("----------------------------------------------------------------------------------------------------------------------\n");
