@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <Windows.h>
-#include <time.h>
 #pragma warning(disable:4996)
+#define _CRT_SECURE_NO_WARNINGS
 #define MEMBER_ID 11
 #define MEMBER_PASS 100
 #define MAX_NUMBER_MEMBER 100 
@@ -60,9 +60,12 @@ int numMember = 0;
 void title(void) {
 	system("cls");
 	printf("%10s %s %s", "Train", "Ticketing", "System");
-	time_t t;
-	time(&t);
-	printf("%125s", ctime(&t));
+	SYSTEMTIME t;
+	GetLocalTime(&t);
+	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
+	const char month[12][10] = { {"January"}, {"February"}, {"March"}, {"April"}, {"May"}, {"June"}, {"July"}, {"August"}, {"September"}, {"October"}, {"November"}, {"December"} };
+	printf("%104s %02d %s %d %02d:%02d:%02d", day[t.wDayOfWeek], t.wDay, month[t.wMonth - 1], t.wYear, t.wHour, t.wMinute, t.wSecond);
+	printf("\n");
 	for (int i = 0; i < 155; i++) {
 		printf("%s", "-");
 	}
@@ -89,9 +92,9 @@ main() {
 	strcpy(member[numMember].security[2].answer, "3");
 	numMember++;
 
-	deleteMember(member);
+	//deleteMember(member);
 
-	searchMember(member);
+	//searchMember(member);
 
 	memberMenu(member);
 
@@ -245,32 +248,65 @@ void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MA
 
 void memberRegister(struct Member* member) {
 	
-	char memberID[MEMBER_ID], password[MEMBER_PASS], ic[MAX_LENGTH_IC], gender[MAX_LENGTH_GENDER], phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
+	char memberID[MEMBER_ID];
+	char numID[5];
+	int iDUnique;
+	char password[MEMBER_PASS], passConfirm[MEMBER_PASS], ic[MAX_LENGTH_IC], gender[MAX_LENGTH_GENDER], phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
 	int age;
 	int again;
 	int questionSelection[MAX_NUM_QUESTION], success;
 	char question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
 
 
+	for (int i = 0; i < numMember + 1; i++) {
+
+		iDUnique = 1;
+		strcpy(memberID, "M");
+		sprintf(numID, "%03d", i+1);
+			
+		strncat_s(memberID, MEMBER_ID, numID, MEMBER_ID - strlen(memberID) - 1);
+
+			for (int x = 0; x < numMember; x++) {
+				if (strcmp(member[x].id, memberID) == 0) {
+					iDUnique = 0;
+				}
+			}
+		
+
+		if (iDUnique == 1) {
+				break;
+		}
+	}	
+
+
 	do {
 		again = 0;
 		title();
 
-		printf("ID(MAX 10 CHARACTERS): ");
-		scanf(" %[^\n]", memberID);
+
+		printf("ID: %s\n", memberID);
 		printf("Password: ");
 		scanf(" %[^\n]", password);
+		printf("Password Confirm: ");
+		scanf(" %[^\n]", passConfirm);
 
-		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
-			if (strcmp(member[i].id, memberID) == 0) {
-				title();
-				printf("The username %s already exits.\n", memberID);
-				printf("Please choose a different username.\n");
-				again = tryAgain(again);
-				if (again == 0)
-					return 0;
-			}
+		if (strcmp(password, passConfirm) != 0) {
+			printf("New Password and Confrim Password Are Not Same\n");
+			again = tryAgain(again);
+			if (again == 0)
+				return 0;
 		}
+		
+		//for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
+		//	if (strcmp(member[i].id, memberID) == 0) {
+		//		title();
+		//		printf("The username %s already exits.\n", memberID);
+		//		printf("Please choose a different username.\n");
+		//		again = tryAgain(again);
+		//		if (again == 0)
+		//			return 0;
+		//	}
+		//}
 	} while (again == 1);
 
 	strcpy(member[numMember].id, memberID);
@@ -287,8 +323,11 @@ void memberRegister(struct Member* member) {
 			scanf("%d", &questionSelection[i]);
 
 			if (questionSelection[i] > 6 || questionSelection[i] < 1) {
-				printf("Invalid Choice!\n");
-				printf("Please Enter Number 1 - 6!\n");
+				printf("\nInvalid Choice!\n");
+				printf("Please Enter Number 1 - 6. ");
+
+				waitingScreen();
+				
 				success = 0;
 				break;
 			}
@@ -296,7 +335,9 @@ void memberRegister(struct Member* member) {
 				for (int x = 0; x < i; x++) {
 					if (questionSelection[i] == questionSelection[x]) {
 						printf("\nThe Selected Security Question Must Be Different From The Previous One.\n");
-						printf("Please Try Again.\n");
+						printf("Please Try Again. ");
+
+						waitingScreen();
 						again++;
 						success = 0;
 						break;
@@ -314,8 +355,6 @@ void memberRegister(struct Member* member) {
 
 	questionTitle(questionSelection, question);
 
-
-
 	for (int i = 0; i < MAX_NUM_QUESTION; i++) {
 		printf("%s ?\n", question[i]);
 		printf("Answer: ");
@@ -331,6 +370,7 @@ void memberRegister(struct Member* member) {
 	//validate age
 	printf("Age: ");
 	scanf("%d", &age);
+	printf("\n");
 	printf("IC(XXXXXX-XX-XXXX): ");
 	scanf(" %[^\n]", ic);
 	printf("\n");
@@ -596,7 +636,7 @@ void cancelBooking() {
 void rewardPoint(struct Member* member, int memberNUM) {
 
 	printf("Current Points \n%.2f\n", member[memberNUM].rewardPoints);
-	printf("1. Terms and conditions");
+	/*printf("1. Terms and conditions");*/
 }
 
 //havent done yet
