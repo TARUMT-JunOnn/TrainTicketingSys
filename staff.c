@@ -57,6 +57,8 @@ struct Schedule {
     int end_hour;
     int end_minute;
     char end_period[3]; // "a.m." or "p.m."
+    int total_working_hours;
+    int remaining_minutes;
 
 };
 
@@ -315,7 +317,7 @@ void staff_login(struct Staff* staff, struct Manager* manager)
             if (strcmp(staff[i].staff_id, id) == 0 && strcmp(staff[i].staff_password, password) == 0)
             {
                 printf("Login successful...\n");
-                staff_main_page(staff, manager);
+                staff_main_page(staff, manager,i);
                 loginSuccess++;
             }
         }
@@ -419,7 +421,7 @@ void staff_registration(struct Staff* staff) {
 
 
 // Staff Choice menu
-void staff_main_page(struct Staff* staff, struct Manager* manager) {
+void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum) {
     int choice;
 
     system("cls");
@@ -439,17 +441,17 @@ void staff_main_page(struct Staff* staff, struct Manager* manager) {
 
         switch (choice) {
         case 1:
-            staff_schedule(staff, manager);
+            staff_schedule(staff, manager, staffNum);
             break;
         case 2:
-            staff_information(staff, manager);
+            staff_information(staff, manager, staffNum);
             break;
         case 3:
             break;
         case 4:
             break;
         case 5:
-            staff_logout(staff);
+            staff_logout(staff, staffNum);
             break;
         default:
             break;
@@ -458,7 +460,7 @@ void staff_main_page(struct Staff* staff, struct Manager* manager) {
 }
 
 //staff rest schedule **** !!!
-void staff_schedule(struct Staff* staff, struct Manager* manager) {
+void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum) {
     //coming soon!
     system("cls");
     int total_begin_minutes = 0;
@@ -479,7 +481,7 @@ void staff_schedule(struct Staff* staff, struct Manager* manager) {
             printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
             printf("BEGIN TIME\tREST TIME\tEND TIME\n");
             printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
-            printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", total_working_hours, remaining_minutes);
+            printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule.total_working_hours, staff[i].schedule.remaining_minutes);
             printf("-------------------------------------------------------------------\n");
         }
     }
@@ -713,7 +715,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 
         printf("\nEnter your manager ID: ");
         scanf(" %[^\n]", id);
-        printf("Enter your staff password: ");
+        printf("Enter your manager password: ");
         scanf(" %[^\n]", password);
         for (int i = 0; i < MAX_MANAGER; i++) {
             if (strcmp(manager[i].manager_id, id) == 0 && strcmp(manager[i].manager_password, password) == 0) {
@@ -1037,6 +1039,9 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                     printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
                     printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", total_working_hours, remaining_minutes);
                     printf("-------------------------------------------------------------------\n");
+
+                    staff[i].schedule.total_working_hours = total_working_hours;
+                    staff[i].schedule.remaining_minutes = remaining_minutes;
                     // system("cls");
 
                 }
