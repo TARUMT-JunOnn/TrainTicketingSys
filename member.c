@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <ctype.h>
 #pragma warning(disable:4996)
+
+//ensure the strncat_s no warning even the size is larger
 #define _CRT_SECURE_NO_WARNINGS
 
 #define MEMBER_ID 11
@@ -989,6 +991,7 @@ void cancelBooking() {
 
 }
 
+//havent done yet
 void rewardPoint(struct Member* member, int memberNUM) {
 
 	printf("Current Points \n%.2f\n", member[memberNUM].rewardPoints);
@@ -1024,6 +1027,7 @@ void searchMember(struct Member* member) {
 			searchMemberRewardPoints(member);
 			break;
 		case 5:
+			//not exiting program
 			printf("EXITING PROGRAM.....\n");
 			break;
 		default:
