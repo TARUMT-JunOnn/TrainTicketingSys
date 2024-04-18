@@ -13,7 +13,7 @@
 #define MAX_PHONE_LENGTH 15
 #define MAX_EMAIL_LENGTH 50
 #define MAX_POSITION_LENGTH 50
-#define MAX_QUESTION_LENGTH 2
+#define MAX_QUESTION_LENGTH 5
 //#define MAX_ANSWER_LENGTH 1
 
 
@@ -39,11 +39,6 @@ void sendValidationCode(char* email, char* code);
 char* generateValidationCode();
 void manager_reset_pass(struct Manager* manager);
 void security_Ques();
-int securityAns(int security_ques, int maxQues);
-
-
-
-
 
 // Predefined employee and manager IDs and passwords
 //const char employee_id[] = "emp123";
@@ -99,7 +94,7 @@ main() {
 
 
     FILE* fstaff;
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb");
+    fstaff = fopen("../../TrainTicketingSys/res/staff.bin", "rb");
 
     if (fstaff == NULL) {
         printf("Error Opening File\n");
@@ -178,7 +173,7 @@ main() {
         printf("ID: %s\n", staff[i].staff_id);
     }
 
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
+    fstaff = fopen("../../TrainTicketingSys/res/staff.bin", "wb");
 
     for (int i = 0; i < manager_count; i++) {
         fwrite(&manager[i], sizeof(manager), 1, fstaff);
@@ -223,11 +218,11 @@ void menu(struct Staff* staff, struct Manager* manager)
     system("cls");
     do {
         /*title();*/
-        printf("------ STAFF MENU ------\n");
+        printf("------ EMPLOYEE MENU ------\n");
         printf("-------------------------\n");
         printf("1. Staff\n");
         printf("2. Manager\n");
-        printf("3. Exit\n");
+        printf("3. Exit Program\n");
         scanf("%d", &choice);
 
         switch (choice) {
@@ -279,9 +274,13 @@ void staffMenu(struct Staff* staff, struct Manager* manager)
         case 2:
             staff_registration(staff);
             break;
+        case 3:
+            printf("Exiting....\n");
+            break;
         default:
             printf("Invalid Choice!\n");
             printf("Please Select Again\n");
+            break;
             //only can validate numeric answer
             //if enter character or string, it will be error
         }
@@ -461,18 +460,18 @@ void staff_main_page(struct Staff* staff, struct Manager* manager) {
 //staff rest schedule **** !!!
 void staff_schedule(struct Staff* staff, struct Manager* manager) {
     //coming soon!
-   /* system("cls");*/
-   /* int total_begin_minutes = 0;
+    system("cls");
+    int total_begin_minutes = 0;
     int total_working_hours = 0;
     int remaining_minutes = 0;
-    char id[MAX_ID_LENGTH];*/
+    char id[MAX_ID_LENGTH];
 
-   /* printf("Staff ID:");
-    scanf(" %[^\n]", &id);*/
+    printf("Staff ID:");
+    scanf(" %[^\n]", &id);
 
     // need to let staff can see the schedule after manager modify it
     //wrong 
-   /* for (int i = 0; i < staff_count; i++)
+    for (int i = 0; i < staff_count; i++)
     {
 
         if (strcmp(staff[i].staff_id, id) == 0)
@@ -483,7 +482,7 @@ void staff_schedule(struct Staff* staff, struct Manager* manager) {
             printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", total_working_hours, remaining_minutes);
             printf("-------------------------------------------------------------------\n");
         }
-    }*/
+    }
 
 }
 
@@ -682,6 +681,9 @@ void manager_menu(struct Staff* staff, struct Manager* manager)
         case 2:
             manager_registration(manager);
             break;
+        case 3:
+            printf("Exiting....\n");
+            break;
         default:
             printf("Invalid Choice!\n");
             printf("Please Select Again\n");
@@ -813,6 +815,7 @@ void manager_registration(struct Manager* manager) {
     char phone[MAX_PHONE_LENGTH];
     char email[MAX_EMAIL_LENGTH];
     int security_ques[MAX_QUESTION_LENGTH];
+    int x;
     
 
     /*title();*/
@@ -825,11 +828,6 @@ void manager_registration(struct Manager* manager) {
     printf("Password: ");
     scanf(" %[^\n]", password);
 
-    do {
-        security_Ques();
-        scanf("%d", &security_ques);
-    } while (!securityAns(security_ques, MAX_QUESTION_LENGTH));
-    
 
     printf("Phone No: ");
     rewind(stdin);
@@ -1459,12 +1457,3 @@ void security_Ques()
 }
 
 // validation the manager has choice 2 ques or not?
-int securityAns(int security_ques, int maxQues)
-{
-    if (security_ques >= 0 && security_ques <= maxQues) {
-        return 1;
-    }
-    else
-        return 0;
-
-}
