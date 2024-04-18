@@ -13,6 +13,9 @@
 #define MAX_PHONE_LENGTH 15
 #define MAX_EMAIL_LENGTH 50
 #define MAX_POSITION_LENGTH 50
+#define MAX_QUESTION_LENGTH 2
+//#define MAX_ANSWER_LENGTH 1
+
 
 void menu(struct Staff* staff, struct Manager* manager);
 void staffMenu(struct Staff* staff, struct Manager* manager);
@@ -35,6 +38,8 @@ void resetPassword(struct Staff* staff);
 void sendValidationCode(char* email, char* code);
 char* generateValidationCode();
 void manager_reset_pass(struct Manager* manager);
+void security_Ques();
+int securityAns(int security_ques, int maxQues);
 
 
 
@@ -77,7 +82,10 @@ struct Manager{
     char manager_phone[MAX_PHONE_LENGTH];
     char manager_email[MAX_EMAIL_LENGTH];
     char manager_position[MAX_POSITION_LENGTH];
+    char security_question[MAX_QUESTION_LENGTH];
+    /*char security_answer[MAX_ANSWER_LENGTH];*/
 };
+
 
 int staff_count = 0;
 int manager_count = 0;
@@ -318,7 +326,7 @@ void staff_login(struct Staff* staff, struct Manager* manager)
             do {
                 again = 0;
                 printf("\nInvalid ID or Password\n");
-                printf("Do you want to try again?");
+                printf("\nDo you want to try again?");
                 printf("\n1. Yes\n");
                 printf("2. No\n");
                 printf("Enter you choice:");
@@ -340,7 +348,7 @@ void staff_login(struct Staff* staff, struct Manager* manager)
             //
             if (count == 3)
             {
-                printf("You are failed to log in!\n");
+                printf("\nYou are failed to log in!\n");
                 printf("\n1. RESET PASSWORD\n");
                 printf("2. EXIT\n");
                 printf("Do u want to reset the password ? ____   ____");
@@ -740,7 +748,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 
             if (count == 3)
             {
-                printf("You are failed to log in!\n");
+                printf("\nYou are failed to log in!\n");
                 printf("\n1. RESET PASSWORD\n");
                 printf("2. EXIT\n");
                 printf("Do u want to reset the password ? ____   ____");
@@ -752,7 +760,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
                 }
                 else
                 {
-                    printf("You are exit right now!\n");
+                    printf("\nYou are exit right now\n");
                     return 0;
                 }
 
@@ -804,19 +812,25 @@ void manager_registration(struct Manager* manager) {
     char password[MAX_PASS_LENGTH];
     char phone[MAX_PHONE_LENGTH];
     char email[MAX_EMAIL_LENGTH];
+    int security_ques[MAX_QUESTION_LENGTH];
+    
 
     /*title();*/
     printf("\Manager Registration\n");
     printf("--------------------\n");
     printf("Manager ID: ");
-    rewind(stdin);
-    scanf("%[^\n]", id);
+    scanf(" %[^\n]", id);
     printf("Name: ");
-    rewind(stdin);
-    scanf("%[^\n]", name);
+    scanf(" %[^\n]", name);
     printf("Password: ");
     scanf(" %[^\n]", password);
-    //not sure the way of store
+
+    do {
+        security_Ques();
+        scanf("%d", &security_ques);
+    } while (!securityAns(security_ques, MAX_QUESTION_LENGTH));
+    
+
     printf("Phone No: ");
     rewind(stdin);
     scanf("%[^\n]", phone);
@@ -836,6 +850,7 @@ void manager_registration(struct Manager* manager) {
     strcpy(manager[manager_count].manager_id, id);
     strcpy(manager[manager_count].manager_name, name);
     strcpy(manager[manager_count].manager_password, password);
+    strcpy(manager[manager_count].security_question, security_Ques);
     strcpy(manager[manager_count].manager_phone, phone);
     strcpy(manager[manager_count].manager_email, email);
     strcpy(manager[staff_count].manager_position, "MANAGER");
@@ -1183,7 +1198,7 @@ void updateManager_information(struct Staff* staff, struct Manager* manager) {
      
 
 
-//Security Question ***
+// Staff reset password ***
 void resetPassword(struct Staff* staff)
 {
     char id[MAX_ID_LENGTH];
@@ -1225,7 +1240,7 @@ void resetPassword(struct Staff* staff)
                     //store(send) the code to email.Then compare the code staff keyin and the code in the email.
                     char* code = generateValidationCode();
                     sendValidationCode(staff[i].staff_email, code);
-                    printf("\nPlease enter the validation code you receive:\n");
+                    printf("\nPlease enter the validation code you receive:");
                     scanf("%d", &codeReceived);
 
                     /*if (strcmp(code, codeReceived) == 0)*/   //got error
@@ -1423,3 +1438,33 @@ void manager_reset_pass(struct Manager* manager)
 //}
 //
 
+
+// Security question 
+void security_Ques() 
+{
+
+    printf("\n------------- Security Question -------------\n");
+    printf("|  Choose 2 question as your security question  |\n");
+    
+    printf("1. What was the first name of your first pet?\n");
+    printf("2. What was your childhood nickname?\n");
+    printf("3. What are the favorite food as a child?\n");
+    printf("4. In what city were you born?\n");
+    printf("5. What is your mother's maiden name?\n");
+    
+
+    printf("-----------------------------------------------\n");
+
+    
+}
+
+// validation the manager has choice 2 ques or not?
+int securityAns(int security_ques, int maxQues)
+{
+    if (security_ques >= 0 && security_ques <= maxQues) {
+        return 1;
+    }
+    else
+        return 0;
+
+}
