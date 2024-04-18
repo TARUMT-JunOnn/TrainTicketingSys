@@ -2,8 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <Windows.h>
+#include <stdbool.h>
+#include <ctype.h>
 #pragma warning(disable:4996)
 #define _CRT_SECURE_NO_WARNINGS
+
 #define MEMBER_ID 11
 #define MEMBER_PASS 100
 #define MAX_NUMBER_MEMBER 100 
@@ -20,6 +23,9 @@ void memberMenu(struct Member* member);
 void memberLogin(struct Member* member);
 void securityQuestion();
 void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]);
+bool verify_password(char* pass);
+bool verify_email(char* email);
+bool verify_phone_no(char* phoneNo);
 void memberRegister(struct Member* member);
 void forgotPass(struct Member* member);
 void memberMainPage(struct Member* member, int memberNUM);
@@ -76,7 +82,7 @@ main() {
 	struct Member member[MAX_NUMBER_MEMBER];
 
 	//test data
-	strcpy(member[numMember].id, "123");
+	/*strcpy(member[numMember].id, "123");
 	strcpy(member[numMember].pass, "321");
 	member[numMember].age = 20;
 	strcpy(member[numMember].gender, "M");
@@ -90,7 +96,7 @@ main() {
 	strcpy(member[numMember].security[0].answer, "1");
 	strcpy(member[numMember].security[1].answer, "2");
 	strcpy(member[numMember].security[2].answer, "3");
-	numMember++;
+	numMember++;*/
 
 	//deleteMember(member);
 
@@ -246,17 +252,98 @@ void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MA
 	}
 }
 
+bool verify_password(char *pass) {
+	int length = strlen(pass);
+	bool hasUpper = false;
+	bool hasLower = false;
+	bool hasDigit = false;
+	bool hasSymbol = false;
+
+	if (length < 8)
+		return false;
+
+	for (int i = 0; i < length; i++) {
+		if (isupper(pass[i]))
+			hasUpper = true;
+		if (islower(pass[i]))
+			hasLower = true;
+		if (isdigit(pass[i]))
+			hasDigit = true;
+		if (ispunct(pass[i]))
+			hasSymbol = true;
+	}
+
+	if (!hasUpper) return false;
+	if (!hasLower) return false;
+	if (!hasDigit) return false;
+	if (!hasSymbol) return false;
+
+	return true;
+
+}
+
+bool verify_email(char* email) {
+	int count = 0;
+
+	for (int i = 0; i < strlen(email); i++) {
+		if (email[i] == '@') 
+			count++;
+		
+
+		if (email[i] == ' ' || email[i] == '/' || email == ':' || email[i] == ';'
+			|| email[i] == '[' || email[i] == ']' || email[i] == '<' || email[i] == '>'
+			|| email[i] == ',') 
+			return false;
+	}
+
+	if (count == 1) {
+		if (email[0] != '@') {
+			char* dot = strchr(email, '.');
+
+			if (dot != NULL && dot > strchr(email, '@')) 
+				return true;
+			
+		}
+	}
+}
+
+bool verify_phone_no(char* phoneNo) {
+
+	if (strlen(phoneNo) != 11 || strlen(phoneNo) != 12)
+		return false;
+
+	if (phoneNo[0] != '0' || phoneNo[1] != '1')
+		return false;
+
+	for (int i = 0; i < 3; i++) {
+
+		if (!isdigit(phoneNo[i])) 
+			return false;	
+	}
+
+	for (int i = 5; i < strlen(phoneNo); i++) {
+		if (!isdigit(phoneNo[i]))
+			return false;
+	}
+
+	if (phoneNo[4] != '-')
+		return false;
+
+	return true;
+
+}
+
 void memberRegister(struct Member* member) {
 	
 	char memberID[MEMBER_ID];
 	char numID[5];
 	int iDUnique;
+	bool resultPass, resultEmail = false, resultPhoneNo = false;
 	char password[MEMBER_PASS], passConfirm[MEMBER_PASS], ic[MAX_LENGTH_IC], gender[MAX_LENGTH_GENDER], phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
 	int age;
 	int again;
 	int questionSelection[MAX_NUM_QUESTION], success;
 	char question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
-
 
 	for (int i = 0; i < numMember + 1; i++) {
 
@@ -272,41 +359,52 @@ void memberRegister(struct Member* member) {
 				}
 			}
 		
-
 		if (iDUnique == 1) {
 				break;
 		}
 	}	
 
-
 	do {
 		again = 0;
 		title();
 
-
 		printf("ID: %s\n", memberID);
+
+		printf("\n");
+
+		printf("-------------------------------------------------------------------\n");
+		printf("| Please Set A Password That Meets The Following Requirements:    |\n");
+		printf("| Must Be At Least 8 Characters Long                              |\n");
+		printf("| Must Contain At Least 1 Uppercase Letter                        |\n");
+		printf("| Must Contain At Least 1 Lowercase Letter                        |\n");
+		printf("| Must Contain At Least 1 Digit                                   |\n");
+		printf("| Must Contain At Least 1 Symbol                                  |\n");
+		printf("-------------------------------------------------------------------\n");
+
 		printf("Password: ");
 		scanf(" %[^\n]", password);
 		printf("Password Confirm: ");
 		scanf(" %[^\n]", passConfirm);
 
 		if (strcmp(password, passConfirm) != 0) {
-			printf("New Password and Confrim Password Are Not Same\n");
+			printf("\nNew Password and Confrim Password Are Not Same!\n");
 			again = tryAgain(again);
 			if (again == 0)
 				return 0;
 		}
+		else {
+			resultPass = verify_password(password);
+			
+			if (!resultPass) {
+				printf("Error: Password Does Not Meet The Required Format!\n");
+				printf("Please Try Again. ");
+
+				waitingScreen();
+				again++;
+			}
+		}
+
 		
-		//for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
-		//	if (strcmp(member[i].id, memberID) == 0) {
-		//		title();
-		//		printf("The username %s already exits.\n", memberID);
-		//		printf("Please choose a different username.\n");
-		//		again = tryAgain(again);
-		//		if (again == 0)
-		//			return 0;
-		//	}
-		//}
 	} while (again == 1);
 
 	strcpy(member[numMember].id, memberID);
@@ -366,23 +464,58 @@ void memberRegister(struct Member* member) {
 	waitingScreen();
 	printf("\n");
 
-	title();
-	//validate age
-	printf("Age: ");
-	scanf("%d", &age);
+	do {
+		title();
+		//validate age
+		printf("Age: ");
+		scanf("%d", &age);
+	} while (age <= 0 || age > 100);
+
 	printf("\n");
 	printf("IC(XXXXXX-XX-XXXX): ");
 	scanf(" %[^\n]", ic);
 	printf("\n");
-	printf("Gender(M/F): ");
-	scanf(" %[^\n]", gender);
+
+	do {
+		printf("Gender(M/F): ");
+		scanf(" %[^\n]", gender);
+
+		if (gender != 'M' && gender != 'F') {
+			printf("Invalid Gender!\n");
+			printf("Please Try Again. ");
+			waitingScreen();
+		}
+
+	} while (gender != 'M' && gender != 'F');
+
 	//validate gender 
 	printf("\n");
-	printf("Phone number(011-XXXXXXX): ");
-	scanf(" %[^\n]", phone);
-	printf("\n");
-	printf("Email: ");
-	scanf(" %[^\n]", email);
+
+	do {
+		printf("Phone number(011-XXXXXXX): ");
+		scanf(" %[^\n]", phone);
+
+		resultPhoneNo = verify_phone_no(phone);
+
+		if (!resultPhoneNo) {
+			printf("Invalid Phone Number!\n");
+			printf("Please Try Again. ");
+			waitingScreen();
+		}
+	} while (!resultPhoneNo);
+
+	do {
+		printf("Email: ");
+		scanf(" %[^\n]", email);
+
+		resultEmail = verify_email(email);
+
+		if (!resultEmail) {
+			printf("Invalid Email!\n");
+			printf("Please Try Again. ");
+			waitingScreen();
+		}
+	} while (!resultEmail);
 
 	member[numMember].age = age;
 	strcpy(member[numMember].ic, ic);
@@ -414,7 +547,6 @@ void forgotPass(struct Member* member) {
 			}
 			
 		}
-
 		
 		if (idExist == 1) {
 			do {
@@ -468,10 +600,8 @@ void forgotPass(struct Member* member) {
 			again = tryAgain(again);
 
 		}
-
 		
 	} while (again == 1);
-
 
 }
 
