@@ -38,7 +38,7 @@ void resetPassword(struct Staff* staff);
 void sendValidationCode(char* email, char* code);
 char* generateValidationCode();
 void manager_view_schedule(struct Staff* staff, struct Manager* manager);
-void manager_reset_pass(struct Manager* manager, char question[MAX_QUESTION_SELECTED][100]);
+void manager_reset_pass(struct Staff* staff, struct Manager* manager);
 void security_Ques();
 void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char questionTitle[MAX_QUESTION_SELECTED][100]);
 
@@ -72,7 +72,7 @@ struct Staff{
     char staff_phone[MAX_PHONE_LENGTH];
     char staff_email[MAX_EMAIL_LENGTH];
     char staff_position[MAX_POSITION_LENGTH];
-    struct Schedule schedule; 
+    struct Schedule schedule;//array schedule 
 };
 
 struct M_SecurityQues {
@@ -106,7 +106,7 @@ main() {
 
 
     FILE* fstaff;
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb");
+    fstaff = fopen("../../TrainTicketingSys/res/staff.bin", "rb");
 
     if (fstaff == NULL) {
         printf("Error Opening File\n");
@@ -185,7 +185,7 @@ main() {
         printf("ID: %s\n", staff[i].staff_id);
     }
 
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
+    fstaff = fopen("../../TrainTicketingSys/res/staff.bin", "wb");
 
     for (int i = 0; i < manager_count; i++) {
         fwrite(&manager[i], sizeof(manager), 1, fstaff);
@@ -421,6 +421,10 @@ void staff_registration(struct Staff* staff) {
     strcpy(staff[staff_count].staff_email, email);
     //copy email and phone
     strcpy(staff[staff_count].staff_position, "STAFF");
+
+
+    //write all equal to 0 or NULL;
+    staff[staff_count].schedule.total_working_hours = 0;
 
 
     printf("\nRegistration successfully\n\n");
@@ -866,7 +870,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
     int again = 0;
     int ans;
     int count = 0;
-
+    
     /*title();*/
     printf("\n------ MANAGER Login ------\n");
 
@@ -908,10 +912,31 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
                     again = 0;
                 }
                     
+                if (count == 3)
+                {
+                    printf("\nYou are failed to log in 3 time!\n");
+                    printf("\n1. RESET PASSWORD\n");
+                    printf("2. EXIT\n");
+                    printf("Do u want to reset the password ? ____   ____");
+                    scanf("%d", &ans);
+
+                    if (ans == 1)
+                    {
+                        manager_reset_pass(staff, manager);
+                        count = 0;
+                        printf("%d\n", again);
+                    }
+                    else
+                    {
+                        printf("\nYou are exit right now\n");
+                        return 0;
+                    }
+
+                }
 
             } while (again == 0);
 
-            if (count == 3)
+           /* if (count == 3)
             {
                 printf("\nYou are failed to log in 3 time!\n");
                 printf("\n1. RESET PASSWORD\n");
@@ -921,7 +946,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 
                 if (ans == 1)
                 {
-                    manager_reset_pass(manager, question);
+                    manager_reset_pass(manager);
                 }
                 else
                 {
@@ -929,7 +954,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
                     return 0;
                 }
 
-            }
+            }*/
 
             //return 0;
         }
@@ -1002,7 +1027,7 @@ void manager_registration(struct Manager* manager) {
     printf("Password: ");
     scanf(" %[^\n]", password);
 
-    for (int i = 0; i < manager; i++) {
+    for (int i = 0; i < manager_count; i++) {
         if (strcmp(manager[i].manager_id, id) == 0) {
             printf("The ID %s already exits.\n", id);
             printf("Please choose a different ID.\n");
@@ -1016,7 +1041,7 @@ void manager_registration(struct Manager* manager) {
         /*again = 0;*/
         success = 1;
 
-        securityQuestion();
+        security_Ques();
 
         for (int i = 0; i < MAX_QUESTION_SELECTED; i++) {
             printf("%d. ", i + 1);
@@ -1046,15 +1071,15 @@ void manager_registration(struct Manager* manager) {
     } while (success != 1);
 
     // copy into structure
-    //for (int i = 0; i < 2; i++) 
-    //{
-       // manager[manager_count].security[i].questionNum = questionSelection[i];
-    //}
+    for (int i = 0; i < 2; i++) 
+    {
+        manager[manager_count].security[i].questionNum = questionSelection[i];
+    }
 
     securityQues_display(questionSelection, question);
 
     for (int i = 0; i < MAX_QUESTION_SELECTED; i++) {
-        printf("%s ?\n", question[i]);
+        printf("%s\n", question[i]);
         printf("Answer: ");
         scanf(" %[^\n]", answer[i]);
         strcpy(manager[manager_count].security[i].securityAns, answer[i]);
@@ -1414,7 +1439,7 @@ void updateManager_information(struct Staff* staff, struct Manager* manager, int
 
 
 // Manager reset password *****
-void manager_reset_pass(struct Manager* manager, char question[MAX_QUESTION_SELECTED][100])
+void manager_reset_pass(struct Staff* staff, struct Manager* manager)
 {
 
     char id[MAX_ID_LENGTH];
@@ -1422,57 +1447,84 @@ void manager_reset_pass(struct Manager* manager, char question[MAX_QUESTION_SELE
     int ans;
     int correctAns = 0;
     char answer[100];
+    char question[MAX_QUESTION_SELECTED][100];
+    int idExist = 0;
+    int choice;
+    int again = 0;
     
-    printf("\n--------------- RESET PASSWORD manager---------------\n");
-    printf("\n|||||||||||||||||||||||||||||||||||||||||||||||\n");
-    printf("| You need to double check the data showe below |\n");
-    printf("|||||||||||||||||||||||||||||||||||||||||||||||||\n");
+    do {
+        again = 0;
+        printf("\n--------------- RESET PASSWORD manager---------------\n");
+        printf("\n|||||||||||||||||||||||||||||||||||||||||||||||\n");
+        printf("| You need to double check the data showe below |\n");
+        printf("|||||||||||||||||||||||||||||||||||||||||||||||||\n");
 
-    printf("\nEnter ID:");
-    scanf(" %[^\n]", id);
+        printf("\nEnter ID:");
+        scanf(" %[^\n]", id);
 
-    for (i = 0; i < manager_count; i++)
-    {
-        if (strcmp(manager[i].manager_id, id) == 0)
+        for (i = 0; i < manager_count; i++)
         {
-            printf("\nName: %s\n", manager[i].manager_name);
-            printf("Email:%s\n", manager[i].manager_email);
-            printf("\nIs you?\n");
-            printf("1. CORRECT, IS ME\n");
-            printf("2. WRONG, NOT ME\n");
-            scanf("%d", &ans);
-
-            if (ans == 1)
+            if (strcmp(manager[i].manager_id, id) == 0)
             {
-                correctAns = 0;
-                for (j = 0; j < MAX_QUESTION_SELECTED; j++)
+                printf("\nName: %s\n", manager[i].manager_name);
+                printf("Email:%s\n", manager[i].manager_email);
+                printf("\nIs you?\n");
+                printf("1. CORRECT, IS ME\n");
+                printf("2. WRONG, NOT ME\n");
+                scanf("%d", &ans);
+                idExist++;
+                if (ans == 1)
                 {
-                    
-                    printf("\n%s:", manager[i].security[i].securityAns);
-                    printf("\nAnswers:");
-                    scanf(" %[^\n]", answer);
-                    if (strcmp(answer, manager[i].security[j].securityAns) == 0) {
-                        correctAns++;
+                    correctAns = 0;
+                    for (j = 0; j < MAX_QUESTION_SELECTED; j++)
+                    {
+                        securityQues_display(manager[i].security[j].questionNum, question);
+                        printf("\n%s:", manager[i].security[i].questionNum);
+                        printf("\nAnswers:");
+                        scanf(" %[^\n]", answer);
+                        if (strcmp(answer, manager[i].security[j].securityAns) == 0) {
+                            correctAns++;
+                        }
+                        else {
+                            printf("Incorrect answer for security question\n");
+                        }
                     }
-                    else {
-                        printf("Incorrect answer for security question\n");
+                    if (correctAns == MAX_QUESTION_SELECTED) {
+                        printf("Please enter your new password: ");
+                        scanf(" %[^\n]", manager[i].manager_password);
+                        printf("Password reset successfully.\n");
+                        return;
+                    }
+                    else
+                    {
+                        printf("You failed to answer one or more security questions correctly.\n");
+                        return;
                     }
                 }
-                if (correctAns == MAX_QUESTION_SELECTED) {
-                    printf("Please enter your new password: ");
-                    scanf(" %[^\n]", manager[i].manager_password);
-                    printf("Password reset successfully.\n");
-                    return;
-                }
-                else 
-{
-                    printf("You failed to answer one or more security questions correctly.\n");
-                    return;
+
+                else if (ans == 2) {
+                    do {
+                        printf("Do you want to exit?\n");
+                        printf("1. Yes\n");
+                        printf("2. No\n");
+                        printf("Enter your choice: ");
+                        scanf("%d", &choice);
+
+                        if (choice == 1)
+                        // add return back to manager menu
+
+                        if (choice == 2) 
+                            again++;
+                        
+
+                    } while (choice != 1 && choice != 2);
                 }
             }
         }
-    }
-    printf("No manager found with the provided ID.\n");
+        if (idExist == 0) {
+            printf("No manager found with the provided ID.\n");
+        }
+    } while (again == 1);
  }
             
 
@@ -1596,8 +1648,8 @@ void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char que
     for (int i = 0; i < 2; i++) {
         switch (questionSelection[i])
         {
-        case1:
-            strcpy(questionTitle[i], " What was the first name of your first pet?");
+        case 1:
+            strcpy(questionTitle[i], "What was the first name of your first pet?");
             break;
         case 2:
             strcpy(questionTitle[i], "What was your childhood nickname?");
@@ -1621,22 +1673,33 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
     //maybe let if the schedule did't have anythin printf("Sorry you can't see the schedule")???
 
     char id[MAX_ID_LENGTH];
+    int success = 0;
 
     printf("\nEnter staff ID to view the particular staff schedule:");
     scanf(" %[^\n]", id);
 
     for (int i = 0; i < staff_count; i++)
     {
-        if (strcmp(staff[i].staff_id, id) == 0)
+        if (strcmp(staff[i].staff_id, id) == 0)           
         {
-            printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
-            printf("BEGIN TIME\tREST TIME\tEND TIME\n");
-            printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
-            printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule.total_working_hours, staff[i].schedule.remaining_minutes);
-            printf("-------------------------------------------------------------------\n");
+            if (staff[i].schedule.total_working_hours != 0) {
+                printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
+                printf("BEGIN TIME\tREST TIME\tEND TIME\n");
+                printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
+                printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule.total_working_hours, staff[i].schedule.remaining_minutes);
+                printf("-------------------------------------------------------------------\n");
+            }
+            else {
+                printf("Empty\n\n");
+            }
 
+            success++;
         }
 
+    }
+
+    if (success == 0) {
+        //add print invalid
     }
 
 }
