@@ -34,18 +34,19 @@ struct {
 	char ID[20];
 	char date[11];
 	int amount;
+	char status;
 	Info trainInfo;
 }records[MAX_RECORDS];
 
 //Global Variable
+SYSTEMTIME t;
 
 //Function Declaration
 int addBooking(Info(*userChoice)[MAX_TRIP][MAX_PAX],const int);
 int bookingHistory();
-int searchBooking();
-void modifyBooking();
+int searchBooking(char *);
 int allBooking();
-void cancelBooking();
+void cancelBooking(int (*));
 void produceList();
 void createDate(int,int,int, char (*date)[MAX_TRIP][11], int);
 void calcPax(Info (*userChoice)[MAX_TRIP][MAX_PAX], int (*pax)[2]);
@@ -82,7 +83,6 @@ void reset(Info (*userChoice)[MAX_TRIP][MAX_PAX]) {
 void title(void) {
 	system("cls");
 	printf("%10s %s %s", "Train", "Ticketing", "System");
-	SYSTEMTIME t;
 	GetLocalTime(&t);
 	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"}};
 	const char month[12][10] = { {"January"}, {"February"}, {"March"}, {"April"}, {"May"}, {"June"}, {"July"}, {"August"}, {"September"}, {"October"}, {"November"}, {"December"}};
@@ -98,13 +98,16 @@ int readfile(FILE** fptr) {
 	int i = 0;
 	while (fscanf(fptr, "%[^|]|", records[i].refNum) != EOF) {
 		fscanf(fptr, "%[^|]|", records[i].ID);
-		fscanf(fptr, "%[^|]|", records[i].date);
+		fscanf(fptr, "%d/", &records[i].trainInfo.prefer.day);
+		fscanf(fptr, "%d/", &records[i].trainInfo.prefer.month);
+		fscanf(fptr, "%d|", &records[i].trainInfo.prefer.year);
 		fscanf(fptr, "%[^|]|", records[i].trainInfo.trainId);
 		fscanf(fptr, "%d|", &records[i].amount);
 		fscanf(fptr, "%f|", &records[i].trainInfo.prefer.time.depart);
 		fscanf(fptr, "%f|", &records[i].trainInfo.prefer.time.arrive);
 		fscanf(fptr, "%[^|]|", records[i].trainInfo.departFrom);
-		fscanf(fptr, "%[^\n]\n", records[i].trainInfo.destination);
+		fscanf(fptr, "%[^|]|", records[i].trainInfo.destination);
+		fscanf(fptr, "%c\n", &records[i].status);
 		++i;
 	}
 	return i;
@@ -113,7 +116,7 @@ int readfile(FILE** fptr) {
 int writefile(FILE** fptr) {
 	int i = 0;
 	while (strcmp(records[i].date, "") != 0) {
-		fprintf(fptr, "%s|%s|%s|%s|%d|%.02f|%.02f|%s|%s\n", records[i].refNum, records[i].ID, records[i].date, records[i].trainInfo.trainId, records[i].amount, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.departFrom, records[i].trainInfo.destination);
+		fprintf(fptr, "%s|%s|%s|%s|%d|%.02f|%.02f|%s|%s|%c\n", records[i].refNum, records[i].ID, records[i].date, records[i].trainInfo.trainId, records[i].amount, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].status);
 		++i;
 	}
 }
@@ -127,6 +130,9 @@ int main(void) {
 	fptr = fopen("../TrainTicketingSys/res/booking.txt", "r");
 	const int recordQty = readfile(fptr);
 	fclose(fptr);
+	for (int i = 0; records[i].trainInfo.prefer.day > 0 && records[i].trainInfo.prefer.month > 0 && records[i].trainInfo.prefer.year > 0; ++i) 
+		createDate(records[i].trainInfo.prefer.day, records[i].trainInfo.prefer.month, records[i].trainInfo.prefer.year, records[i].date, 0);
+
 	reset(userChoice);
 	do{
 	title(NULL);
@@ -154,6 +160,8 @@ int main(void) {
 		case '6':
 			//produceList();
 			break;
+		case '0':
+			return 0;
 		}
 	} while (!(input == '1' || input == '2' || input == '3' || input == '4' || input == '5' || input == '6'));
 	fptr = fopen("../TrainTicketingSys/res/booking.txt", "w");
@@ -169,8 +177,8 @@ int addBooking(Info (*userChoice)[MAX_TRIP][MAX_PAX], const int recordQty) {
 	char dateAdd[MAX_TRIP][11], action = '2', paymentTime[9], input;
 	int pax[2] = {0, 0}, status = 0, j;
 	float fare;
-	(*userChoice)[0][0] = (Info){ "T1001", "KL Sentral",  "Kampar", 50, { 5, 4, 2024,{ 9, 13} } };
-	(*userChoice)[1][0] = (Info){ "T1004", "Kampar", "KL Sentral", 25, { 6, 4, 2024,{ 5, 8} } };
+	(*userChoice)[0][0] = (Info){ "T1001", "KL Sentral",  "Kampar", 50, { 5, 5, 2024,{ 9, 13} } };
+	(*userChoice)[1][0] = (Info){ "T1004", "Kampar", "KL Sentral", 25, { 6, 5, 2024,{ 5, 8} } };
 	do{
 		do {
 			for (int j = 0; j < MAX_TRIP; ++j) {
@@ -498,7 +506,6 @@ int payment(float* price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_
 		case 1:
 			printf("Payment Sucessfully !\n");
 			char month[20], day[20];
-			SYSTEMTIME t;
 			GetLocalTime(&t);
 			itoa(t.wYear, (*time), 10);
 			for (int i = 0; i < 3; ++i) {
@@ -968,7 +975,7 @@ int bookingHistory(char id[20]) {
 			printf("Press any key to return.\n");
 			rewind(stdin);
 			getch();
-			return 1;
+			return 0;
 		}
 		else {
 			do {
@@ -1017,7 +1024,10 @@ int allBooking(char id[20]) {
 
 int searchBooking(char id[20]) {
 	char input;
-	int check = 1;
+	int check = 0;
+	int recordsFound[MAX_RECORDS];
+	for (int i = 0; i < MAX_RECORDS; ++i)
+		recordsFound[i] = -1;
 	do {
 		title();
 		printf("What action you would like to perform ?\n");
@@ -1028,12 +1038,12 @@ int searchBooking(char id[20]) {
 		scanf("%c", &input);
 		switch (input) {
 		case '1':
-			bookingbyDate(id);
+			check = bookingbyDate(id, recordsFound);
 			break;
 		case '2':
 		case '4':
 		case '5':
-			bookingbyString(id, input);
+			check = bookingbyString(id, input, recordsFound);
 			break;
 		case '3':
 			do {
@@ -1046,181 +1056,205 @@ int searchBooking(char id[20]) {
 					scanf("%c", &input);
 				} while (input != '1' && input != '2' && input != '3' && input != '0');
 				if (input == '0')
-					input = '1';
+					input = '4';
 				else
-					check = bookingbyTime(id, input);
-			} while (check == 0 && input != '1');
+					check = bookingbyTime(id, input, recordsFound);
+			} while (check == 0 && input != '4');
+			break;
+		case '0':
+			return 0;
+			break;
 		}
-	} while (input != '0');
-	return 0;
+		if (check == 1) {
+			do {
+				printf("What action you would like to perform ?\n");
+				printf("\t1. Edit particular booking\n\t2. Cancel particular booking\n\t0. Return\n\n");
+				printf("Enter the number : ");
+				rewind(stdin);
+				scanf("%c", &input);
+				switch (input) {
+				case '1':
+					break;
+				case '2':
+					cancelBooking(recordsFound);
+					break;
+				}
+			} while (input != '1' && input != '2' && input != '0');
+		}
+	} while (check == 0);
 }
 
-int bookingbyDate(char id[20]) {
+int bookingbyDate(char id[20], int (*recordsFound)[MAX_RECORDS]) {
 	char input[5], date[1][11];
 	int day, month, year;
 	int j = 0, loop = 0;
 	do {
 		do {
+			j = 0;
+			title();
+			printf("Press 0 for return.\n\n");
 			do {
-				j = 0;
-				title();
-				printf("Press 0 for return.\n\n");
-				do {
-					if (loop == 2)
-						printf("Type the year : %d\n", year);
-					else {
-						printf("Type the year : ");
-						rewind(stdin);
-						scanf("%s", input);
-						year = atoi(input);
-						if ((year < 2000 || year > 2099) && strcmp(input, "0") != 0)
-							printf("Error, please try again.\n");
-						else if (strcmp(input, "0") == 0)
-							return 0;
-					}
-				} while (year == 0 || year < 2000 || year > 2099);
-				do {
-					loop = 0;
-					printf("Type the month : ");
+				if (loop == 2)
+					printf("Type the year : %d\n", year);
+				else {
+					printf("Type the year : ");
 					rewind(stdin);
 					scanf("%s", input);
-					month = atoi(input);
-					if ((month < 1 || month >12) && strcmp(input, "0") != 0)
+					year = atoi(input);
+					if ((year < 2000 || year > 2099) && strcmp(input, "0") != 0)
 						printf("Error, please try again.\n");
-				} while ((month < 1 || month >12) && strcmp(input, "0") != 0);
-				if (strcmp(input, "0") == 0)
-					loop = 1;
-			} while (loop == 1);
+					else if (strcmp(input, "0") == 0)
+						return 0;
+				}
+			} while (year == 0 || year < 2000 || year > 2099);
 			do {
-				printf("Type the day : ");
+				loop = 0;
+				printf("Type the month : ");
 				rewind(stdin);
 				scanf("%s", input);
-				day = atoi(input);
-				if (month % 2 != 0 || month == 8) {
-					if ((day <= 0 || day > 31) && strcmp(input, "0") != 0)
-						day = 0;
-				}
-				else {
-					if ((day <= 0 || day > 31) && strcmp(input, "0") != 0)
-						day = 0;
-				}
-			} while (day == 0 && strcmp(input, "0") != 0);
+				month = atoi(input);
+				if ((month < 1 || month >12) && strcmp(input, "0") != 0)
+					printf("Error, please try again.\n");
+			} while ((month < 1 || month >12) && strcmp(input, "0") != 0);
 			if (strcmp(input, "0") == 0)
-				loop = 2;
-		} while (loop == 2);
-		createDate(day, month, year, date, 0);
-		for (int i = 0; i < 115; i++) {
-			printf("-");
-		}
-		printf("\n");
-		printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\n", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax");
-		for (int i = 0; i < 115; i++) {
-			printf("-");
-		}
-		printf("\n");
-		for (int i = 0; i < MAX_RECORDS; ++i) {
-			if (strcmp(records[i].date, date) == 0 && strcmp(records[i].ID, id) == 0) {
-				printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
-				++j;
+				loop = 1;
+		} while (loop == 1);
+		do {
+			printf("Type the day : ");
+			rewind(stdin);
+			scanf("%s", input);
+			day = atoi(input);
+			if (month % 2 != 0 || month == 8) {
+				if ((day <= 0 || day > 31) && strcmp(input, "0") != 0)
+					day = 0;
 			}
+			else {
+				if ((day <= 0 || day > 31) && strcmp(input, "0") != 0)
+					day = 0;
+			}
+		} while (day == 0 && strcmp(input, "0") != 0);
+		if (strcmp(input, "0") == 0)
+			loop = 2;
+	} while (loop == 2);
+	createDate(day, month, year, date, 0);
+	for (int i = 0; i < 115; i++) {
+		printf("-");
+	}
+	printf("\n");
+	printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\n", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax");
+	for (int i = 0; i < 115; i++) {
+		printf("-");
+	}
+	printf("\n");
+	for (int i = 0; i < MAX_RECORDS; ++i) {
+		if (strcmp(records[i].date, date) == 0 && strcmp(records[i].ID, id) == 0) {
+			printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+			(*recordsFound)[j] = i;
+			++j;
 		}
-		for (int i = 0; i < 115; i++) {
-			printf("-");
-		}
-		printf("\n");
-		if (j == 0) {
-			title();
-			printf("No records found.\n");
-		}
-		printf("Press any key to continue .......\n");
+	}
+	for (int i = 0; i < 115; i++) {
+		printf("-");
+	}
+	printf("\n");
+	if (j == 0) {
+		title();
+		printf("No records found.\n");
+		printf("Press any key to return.\n");
 		rewind(stdin);
 		getch();
-	} while (strcmp(input, "0") != 0);
+		return 0;
+	}
+	else {
+		return 1;
+	}
 }
 
-int bookingbyString(char id[20], char prmt) {
+int bookingbyString(char id[20], char prmt, int (*recordsFound)[MAX_RECORDS]) {
 	char input[3][50];
 	int j = 0;
 	strcpy(input[0], "NULL");
 	strcpy(input[1], "NULL");
 	strcpy(input[2], "NULL");
 	title();
-	do {
-		j = 0;
-		switch (prmt) {
+	j = 0;
+	switch (prmt) {
+	case '2':
+		printf("Press 0 for return.\n\n");
+		printf("Type the ID : ");
+		rewind(stdin);
+		scanf("%s", input[0]);
+		break;
+	case '4':
+		printf("What destination you would like to search ?\n");
+		printf("\t1. KL Sentral\n\t2. Kampar\n\t0. Return\n\n");
+		printf("Enter the number : ");
+		rewind(stdin);
+		scanf("%c", &input[1][0]);
+		switch (input[1][0]) {
+		case '1':
+			strcpy(input[1], "KL Sentral");
+			break;
 		case '2':
-			printf("Press 0 for return.\n\n");
-			printf("Type the ID : ");
-			rewind(stdin);
-			scanf("%s", input[0]);
+			strcpy(input[1], "Kampar");
 			break;
-		case '4':
-			printf("What destination you would like to search ?\n");
-			printf("\t1. KL Sentral\n\t2. Kampar\n\t0. Return\n\n");
-			printf("Enter the number : ");
-			rewind(stdin);
-			scanf("%c", &input[1][0]);
-			switch (input[1][0]) {
-			case '1':
-				strcpy(input[1], "KL Sentral");
-				break;
-			case '2':
-				strcpy(input[1], "Kampar");
-				break;
-			case '0':
-				return 1;
-				break;
-			}
+		case '0':
+			return 0;
 			break;
-		case '5':
-			printf("What departure you would like to search ?\n");
-			printf("\t1. KL Sentral\n\t2. Kampar\n\t0. Return\n\n");
-			printf("Enter the number : ");
-			rewind(stdin);
-			scanf("%c", &input[2][0]);
-			switch (input[2][0]) {
-			case '1':
-				strcpy(input[2], "KL Sentral");
-				break;
-			case '2':
-				strcpy(input[2], "Kampar");
-				break;
-			case '0':
-				return 1;
-				break;
-			}
 		}
-		for (int i = 0; i < 115; i++) {
-			printf("-");
+		break;
+	case '5':
+		printf("What departure you would like to search ?\n");
+		printf("\t1. KL Sentral\n\t2. Kampar\n\t0. Return\n\n");
+		printf("Enter the number : ");
+		rewind(stdin);
+		scanf("%c", &input[2][0]);
+		switch (input[2][0]) {
+		case '1':
+			strcpy(input[2], "KL Sentral");
+			break;
+		case '2':
+			strcpy(input[2], "Kampar");
+			break;
+		case '0':
+			return 0;
+			break;
 		}
-		printf("\n");
-		printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\n", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax");
-		for (int i = 0; i < 115; i++) {
-			printf("-");
+	}
+	for (int i = 0; i < 115; i++) {
+		printf("-");
+	}
+	printf("\n");
+	printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\n", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax");
+	for (int i = 0; i < 115; i++) {
+		printf("-");
+	}
+	printf("\n");
+	for (int i = 0; i < MAX_RECORDS; ++i) {
+		if ((stricmp(records[i].trainInfo.trainId, input[0]) == 0 || stricmp(records[i].trainInfo.departFrom, input[2]) == 0 || stricmp(records[i].trainInfo.destination, input[1]) == 0) && strcmp(records[i].ID, id) == 0) {
+			printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+			(*recordsFound)[j] = i;
+			++j;
 		}
-		printf("\n");
-		for (int i = 0; i < MAX_RECORDS; ++i) {
-			if ((stricmp(records[i].trainInfo.trainId, input[0]) == 0 || stricmp(records[i].trainInfo.departFrom, input[2]) == 0 || stricmp(records[i].trainInfo.destination, input[1]) == 0) && strcmp(records[i].ID, id) == 0) {
-				printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
-				++j;
-			}
-		}
-		for (int i = 0; i < 115; i++) {
-			printf("-");
-		}
-		printf("\n");
-		if (j == 0) {
-			title();
-			printf("No records found.\n");
-			printf("Press any key to return.\n");
-			rewind(stdin);
-			getch();
-			return 1;
-		}
-	} while (strcmp(input[0], "0") != 0 && strcmp(input[1], "0") != 0 && strcmp(input[2], "0") != 0);
+	}
+	for (int i = 0; i < 115; i++) {
+		printf("-");
+	}
+	printf("\n");
+	if (j == 0) {
+		title();
+		printf("No records found.\n");
+		printf("Press any key to return.\n");
+		rewind(stdin);
+		getch();
+		return 0;
+	}
+	else {
+		return 1;
+	}
 }
 
-int bookingbyTime(char id[20], char prmt) {
+int bookingbyTime(char id[20], char prmt, int (*recordsFound)[MAX_RECORDS]) {
 	char input[3];
 	float time[2][2] = { {0,0} ,{0,0} };
 	int ampm[2] = {0, 0};
@@ -1287,6 +1321,7 @@ int bookingbyTime(char id[20], char prmt) {
 		for (int i = 0; i < MAX_RECORDS; ++i) {
 			if (records[i].trainInfo.prefer.time.depart == time[0][0] && strcmp(records[i].ID, id) == 0) {
 				printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+				(*recordsFound)[j] = i;
 				++j;
 			}
 		}
@@ -1297,10 +1332,14 @@ int bookingbyTime(char id[20], char prmt) {
 		if (j == 0) {
 			title();
 			printf("No records found.\n");
+			printf("Press any key to return.\n");
+			rewind(stdin);
+			getch();
+			return 0;
 		}
-		printf("Press any key to return.\n");
-		rewind(stdin);
-		getch();
+		else {
+			return 1;
+		}
 		break;
 	case '2':
 		do {
@@ -1360,6 +1399,7 @@ int bookingbyTime(char id[20], char prmt) {
 		for (int i = 0; i < MAX_RECORDS; ++i) {
 			if (records[i].trainInfo.prefer.time.arrive == time[1][0] && strcmp(records[i].ID, id) == 0) {
 				printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+				(*recordsFound)[j] = i;
 				++j;
 			}
 		}
@@ -1370,10 +1410,14 @@ int bookingbyTime(char id[20], char prmt) {
 		if (j == 0) {
 			title();
 			printf("No records found.\n");
+			printf("Press any key to return.\n");
+			rewind(stdin);
+			getch();
+			return 0;
 		}
-		printf("Press any key to return.\n");
-		rewind(stdin);
-		getch();
+		else {
+			return 1;
+		}
 		break;
 
 	case '3':
@@ -1508,6 +1552,7 @@ int bookingbyTime(char id[20], char prmt) {
 		for (int i = 0; i < MAX_RECORDS; ++i) {
 			if (records[i].trainInfo.prefer.time.arrive == time[1][0] && records[i].trainInfo.prefer.time.depart == time[0][0] && strcmp(records[i].ID, id) == 0) {
 				printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+				(*recordsFound)[j] = i;
 				++j;
 			}
 		}
@@ -1518,11 +1563,60 @@ int bookingbyTime(char id[20], char prmt) {
 		if (j == 0) {
 			title();
 			printf("No records found.\n");
+			printf("Press any key to return.\n");
+			rewind(stdin);
+			getch();
+			return 0;
 		}
-		printf("Press any key to return.\n");
-		rewind(stdin);
-		getch();
-		break;
+		else {
+			return 1;
+		}
 	}
-	return 0;
+}
+
+void cancelBooking(int found[MAX_RECORDS]) {
+	char input[2];
+	int inputInt;
+	int i, isTrue;
+	int j = 1;
+	GetLocalTime(&t);
+	do {
+		printf("You are able to cancel upcoming train\n");
+		printf("What booking you would like to cancel ?\n");
+		printf("Reference Number : \n");
+		for (i = 0; atoi(records[found[i]].refNum) > 0; ++i) {
+			isTrue = 0;
+			if (records[found[i]].trainInfo.prefer.year >= t.wYear && records[found[i]].trainInfo.prefer.month >= t.wMonth) {
+				if (records[found[i]].trainInfo.prefer.month > t.wMonth) {
+					isTrue = 1;
+				}
+				else if (records[found[i]].trainInfo.prefer.day > t.wDay) {
+					isTrue = 1;
+				}
+				else if (records[found[i]].trainInfo.prefer.day == t.wDay){
+					if (records[found[i]].trainInfo.prefer.time.depart > t.wHour)
+						isTrue = 1;
+					else if (records[found[i]].trainInfo.prefer.time.depart == t.wHour && (int)((int)(records[found[i]].trainInfo.prefer.time.depart * 100) % 100) - 30 > t.wMinute) {
+						isTrue = 1;
+					}
+				}
+			}
+			if (isTrue == 1) {
+				printf("\t%d. %s\n", j, records[found[i]].refNum);
+				found[j - 1] = found[i];
+				++j;
+			}
+			else {
+				found[i] = -1;
+			}
+		}
+		printf("Enter the number : ");
+		rewind(stdin);
+		scanf("%s", &input);
+		if (input[0] == '0')
+			return;
+		inputInt = atoi(input);
+	} while (inputInt > i || inputInt == 0);
+	records[found[inputInt - 1]].status = 'C';
+	return;
 }
