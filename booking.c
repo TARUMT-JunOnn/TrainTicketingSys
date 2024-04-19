@@ -40,13 +40,14 @@ struct {
 
 //Global Variable
 SYSTEMTIME t;
+int mem_point;
 
 //Function Declaration
 int addBooking(Info(*userChoice)[MAX_TRIP][MAX_PAX],const int);
-int bookingHistory();
+int bookingHistory(char*);
 int searchBooking(char *);
-int allBooking();
-void cancelBooking(int (*));
+int allBooking(char *, int**);
+int cancelBooking(int (*));
 void produceList();
 void createDate(int,int,int, char (*date)[MAX_TRIP][11], int);
 void calcPax(Info (*userChoice)[MAX_TRIP][MAX_PAX], int (*pax)[2]);
@@ -417,7 +418,6 @@ void editPax(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_TRIP][11], in
 }
 
 int payment(float* price, Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_TRIP][11], int(*pax)[2], char(*time)[9], char memName[20], char memID[20]) {
-	int mem_point;
 	mem_point = 10000;
 	char input;
 	int status = 0;
@@ -964,10 +964,13 @@ void showBooking(Info(*userChoice)[MAX_TRIP][MAX_PAX], char(*date)[MAX_TRIP][11]
 int bookingHistory(char id[20]) {
 	char input;
 	int loop;
+	int recordFound[MAX_RECORDS];
+	for (int i = 0; i < MAX_RECORDS; ++i)
+		recordFound[i] = -1;
 	do{
 		title();
 		printf("Booking history :\n\n");
-		int recordsNum = allBooking(id);
+		int recordsNum = allBooking(id, recordFound);
 		printf("< %d records found >\n", recordsNum);
 		if (recordsNum == 0) {
 			title();
@@ -980,15 +983,17 @@ int bookingHistory(char id[20]) {
 		else {
 			do {
 				printf("What action you would like to perform ?\n");
-				printf("\t1. Search particular booking\n\t0. Return\n\n");
+				printf("\t1. Search particular booking\n\t2. Cancel particular booking\n\t0. Return\n\n");
 				printf("Enter the number : ");
 				rewind(stdin);
 				scanf("%c", &input);
-			} while (input != '1' && input != '0');
+			} while (input != '1' && input != '2' && input != '0');
 			switch (input) {
 			case '1':
 				loop = searchBooking(id);
 				break;
+			case '2':
+				loop = cancelBooking(recordFound);
 			case '0':
 				return 1;
 				break;
@@ -998,20 +1003,30 @@ int bookingHistory(char id[20]) {
 	return 1;
 }
 
-int allBooking(char id[20]) {
+int allBooking(char id[20], int (*recordFound)[MAX_RECORDS]) {
 	int j = 0;
 	for (int i = 0; i < 115; i++) {
 		printf("-");
 	}
 	printf("\n");
-	printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\n","Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax");
+	printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\t %-10s\n","Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax", "Status");
 	for (int i = 0; i < 115; i++) {
 		printf("-");
 	}
 	printf("\n");
 	for (int i = 0; strcmp(records[i].date, "") != 0; ++i) {
 		if (strcmp(records[i].ID, id) == 0) {
-			printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+			printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+			switch (records[i].status) {
+			case 'A':
+				printf("\t %s", "Active");
+				break;
+			case 'C':
+				printf("\t %s", "Cancelled");
+				break;
+			}
+			printf("\n");
+			(*recordFound)[j] = i;
 			++j;
 		}
 	}
@@ -1141,14 +1156,23 @@ int bookingbyDate(char id[20], int (*recordsFound)[MAX_RECORDS]) {
 		printf("-");
 	}
 	printf("\n");
-	printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\n", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax");
+	printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\t %-10s\n","Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax", "Status");
 	for (int i = 0; i < 115; i++) {
 		printf("-");
 	}
 	printf("\n");
 	for (int i = 0; i < MAX_RECORDS; ++i) {
 		if (strcmp(records[i].date, date) == 0 && strcmp(records[i].ID, id) == 0) {
-			printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+			printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+			switch (records[i].status) {
+			case 'A':
+				printf("\t %s", "Active");
+				break;
+			case 'C':
+				printf("\t %s", "Cancelled");
+				break;
+			}
+			printf("\n");
 			(*recordsFound)[j] = i;
 			++j;
 		}
@@ -1225,14 +1249,23 @@ int bookingbyString(char id[20], char prmt, int (*recordsFound)[MAX_RECORDS]) {
 		printf("-");
 	}
 	printf("\n");
-	printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\n", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax");
+	printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\t %-10s\n","Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax", "Status");
 	for (int i = 0; i < 115; i++) {
 		printf("-");
 	}
 	printf("\n");
 	for (int i = 0; i < MAX_RECORDS; ++i) {
 		if ((stricmp(records[i].trainInfo.trainId, input[0]) == 0 || stricmp(records[i].trainInfo.departFrom, input[2]) == 0 || stricmp(records[i].trainInfo.destination, input[1]) == 0) && strcmp(records[i].ID, id) == 0) {
-			printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+			printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+			switch (records[i].status) {
+			case 'A':
+				printf("\t %s", "Active");
+				break;
+			case 'C':
+				printf("\t %s", "Cancelled");
+				break;
+			}
+			printf("\n");
 			(*recordsFound)[j] = i;
 			++j;
 		}
@@ -1313,14 +1346,23 @@ int bookingbyTime(char id[20], char prmt, int (*recordsFound)[MAX_RECORDS]) {
 			printf("-");
 		}
 		printf("\n");
-		printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\n", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax");
+		printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\t %-10s\n","Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax", "Status");
 		for (int i = 0; i < 115; i++) {
 			printf("-");
 		}
 		printf("\n");
 		for (int i = 0; i < MAX_RECORDS; ++i) {
 			if (records[i].trainInfo.prefer.time.depart == time[0][0] && strcmp(records[i].ID, id) == 0) {
-				printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+				printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+				switch (records[i].status) {
+				case 'A':
+					printf("\t %s", "Active");
+					break;
+				case 'C':
+					printf("\t %s", "Cancelled");
+					break;
+				}
+				printf("\n");
 				(*recordsFound)[j] = i;
 				++j;
 			}
@@ -1391,14 +1433,23 @@ int bookingbyTime(char id[20], char prmt, int (*recordsFound)[MAX_RECORDS]) {
 			printf("-");
 		}
 		printf("\n");
-		printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\n", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax");
+		printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\t %-10s\n","Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax", "Status");
 		for (int i = 0; i < 115; i++) {
 			printf("-");
 		}
 		printf("\n");
 		for (int i = 0; i < MAX_RECORDS; ++i) {
 			if (records[i].trainInfo.prefer.time.arrive == time[1][0] && strcmp(records[i].ID, id) == 0) {
-				printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+				printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+				switch (records[i].status) {
+				case 'A':
+					printf("\t %s", "Active");
+					break;
+				case 'C':
+					printf("\t %s", "Cancelled");
+					break;
+				}
+				printf("\n");
 				(*recordsFound)[j] = i;
 				++j;
 			}
@@ -1544,14 +1595,23 @@ int bookingbyTime(char id[20], char prmt, int (*recordsFound)[MAX_RECORDS]) {
 			printf("-");
 		}
 		printf("\n");
-		printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\n", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax");
+		printf("%-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\t %-10s\n","Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax", "Status");
 		for (int i = 0; i < 115; i++) {
 			printf("-");
 		}
 		printf("\n");
 		for (int i = 0; i < MAX_RECORDS; ++i) {
 			if (records[i].trainInfo.prefer.time.arrive == time[1][0] && records[i].trainInfo.prefer.time.depart == time[0][0] && strcmp(records[i].ID, id) == 0) {
-				printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+				printf("%-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d", records[i].refNum, records[i].date, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.trainId, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].amount);
+				switch (records[i].status) {
+				case 'A':
+					printf("\t %s", "Active");
+					break;
+				case 'C':
+					printf("\t %s", "Cancelled");
+					break;
+				}
+				printf("\n");
 				(*recordsFound)[j] = i;
 				++j;
 			}
@@ -1574,7 +1634,7 @@ int bookingbyTime(char id[20], char prmt, int (*recordsFound)[MAX_RECORDS]) {
 	}
 }
 
-void cancelBooking(int found[MAX_RECORDS]) {
+int cancelBooking(int found[MAX_RECORDS]) {
 	char input[2];
 	int inputInt;
 	int i, isTrue;
@@ -1583,7 +1643,15 @@ void cancelBooking(int found[MAX_RECORDS]) {
 	do {
 		printf("You are able to cancel upcoming train\n");
 		printf("What booking you would like to cancel ?\n");
-		printf("Reference Number : \n");
+		for (int i = 0; i < 115; i++) {
+			printf("-");
+		}
+		printf("\n");
+		printf("%-2s\t %-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\n","No.", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax");
+		for (int i = 0; i < 115; i++) {
+			printf("-");
+		}
+		printf("\n");
 		for (i = 0; atoi(records[found[i]].refNum) > 0; ++i) {
 			isTrue = 0;
 			if (records[found[i]].trainInfo.prefer.year >= t.wYear && records[found[i]].trainInfo.prefer.month >= t.wMonth) {
@@ -1601,8 +1669,8 @@ void cancelBooking(int found[MAX_RECORDS]) {
 					}
 				}
 			}
-			if (isTrue == 1) {
-				printf("\t%d. %s\n", j, records[found[i]].refNum);
+			if (isTrue == 1 && records[found[i]].status != 'C') {
+				printf("%d.\t %-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", j, records[found[i]].refNum, records[found[i]].date, records[found[i]].trainInfo.prefer.time.depart, records[found[i]].trainInfo.prefer.time.arrive, records[found[i]].trainInfo.trainId, records[found[i]].trainInfo.departFrom, records[found[i]].trainInfo.destination, records[found[i]].amount);
 				found[j - 1] = found[i];
 				++j;
 			}
@@ -1610,13 +1678,28 @@ void cancelBooking(int found[MAX_RECORDS]) {
 				found[i] = -1;
 			}
 		}
-		printf("Enter the number : ");
-		rewind(stdin);
-		scanf("%s", &input);
-		if (input[0] == '0')
-			return;
-		inputInt = atoi(input);
+		for (int i = 0; i < 115; i++) {
+			printf("-");
+		}
+		printf("\n");
+		if (j != 1) {
+			printf("Enter the number : ");
+			rewind(stdin);
+			scanf("%s", &input);
+			if (input[0] == '0')
+				return;
+			inputInt = atoi(input);
+		}
+		else {
+			title();
+			printf("No booking can cancelled.\n");
+			printf("Press any key to return.\n");
+			rewind(stdin);
+			getch();
+			return ;
+		}
 	} while (inputInt > i || inputInt == 0);
 	records[found[inputInt - 1]].status = 'C';
+	printf("Sucessfully cancel. Amount paid would be return as point.\n");
 	return;
 }
