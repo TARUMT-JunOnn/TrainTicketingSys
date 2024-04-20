@@ -211,7 +211,7 @@ main(void) {
 }
 
 int tryAgain(int again) {
-	int choice, invalidChoice = 0;
+	int choice, invalidChoice;
 
 	do {
 
@@ -282,21 +282,21 @@ void memberMenu(struct Member* member) {
 }
 
 void memberLogin(struct Member* member) {
-	char name[MEMBER_ID], password[MEMBER_PASS];
+	char id[MEMBER_ID], password[MEMBER_PASS];
 	int memberNUM;
-	int loginSuccess = 0, again = 0;
+	int loginSuccess = 0, again;
 	
 	do {
 		again = 0;
 
 		title();
 		printf("ID: ");
-		scanf(" %[^\n]", name);
+		scanf(" %[^\n]", id);
 		printf("Password: ");
 		scanf(" %[^\n]", password);
 
 		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
-			if (strcmp(member[i].id, name) == 0 && strcmp(member[i].pass, password) == 0) {
+			if (strcmp(member[i].id, id) == 0 && strcmp(member[i].pass, password) == 0) {
 				printf("Login Successful. ");
 
 				waitingScreen();
@@ -1000,7 +1000,7 @@ void rewardPoint(struct Member* member, int memberNUM) {
 
 //havent done yet
 void searchMember(struct Member* member) {
-	char* menu[] = { "ID", "Gender", "Age", "Reward Points" };
+	char* menu[] = { "ID", "Gender", "Age", "Reward Points", "Exit"};
 	int choice;
 
 	do {
@@ -1028,7 +1028,8 @@ void searchMember(struct Member* member) {
 			break;
 		case 5:
 			//not exiting program
-			printf("EXITING PROGRAM.....\n");
+			printf("EXITING. ");
+			waitingScreen();
 			break;
 		default:
 			printf("Invalid Choice!\n");
@@ -1510,7 +1511,6 @@ void deleteMember(struct Member* member) {
 					}
 					else 
 						again++;
-						
 					
 				} while (again == 1);
 			}
