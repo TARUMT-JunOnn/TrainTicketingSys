@@ -74,7 +74,7 @@ struct Staff{
     char staff_phone[MAX_PHONE_LENGTH];
     char staff_email[MAX_EMAIL_LENGTH];
     char staff_position[MAX_POSITION_LENGTH];
-    struct Schedule schedule[10];//array schedule !!
+    struct Schedule schedule;
 };
 
 struct M_SecurityQues {
@@ -425,7 +425,9 @@ void staff_registration(struct Staff* staff) {
 
 
     //write all equal to 0 or NULL;
-    staff[staff_count].schedule[10].total_working_hours = 0;
+    
+        staff[staff_count].schedule.total_working_hours = 0; ////!!!!!
+    
 
 
     printf("\nRegistration successfully\n\n");
@@ -439,7 +441,7 @@ void staff_registration(struct Staff* staff) {
 void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum) {
     int choice;
 
-    system("cls");
+    //system("cls");
     do {
         /*title();*/
         printf("\nStaff\n");
@@ -479,15 +481,16 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
 //staff rest schedule 
 void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum)
 {
-    for (int i = 0; i < 10; i++) 
-    {
+    
+    if (staff[staffNum].schedule.total_working_hours != 0) {
         printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[staffNum].staff_name);
         printf("BEGIN TIME\tREST TIME\tEND TIME\n");
-        printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[staffNum].schedule[i].begin_hour, staff[staffNum].schedule[i].begin_minute, staff[staffNum].schedule[i].begin_period, staff[staffNum].schedule[i].rest_time, staff[staffNum].schedule[i].end_hour, staff[staffNum].schedule[i].end_minute, staff[staffNum].schedule[i].end_period);
-        printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[staffNum].schedule[i].total_working_hours, staff[staffNum].schedule[i].remaining_minutes);
+        printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[staffNum].schedule.begin_hour, staff[staffNum].schedule.begin_minute, staff[staffNum].schedule.begin_period, staff[staffNum].schedule.rest_time, staff[staffNum].schedule.end_hour, staff[staffNum].schedule.end_minute, staff[staffNum].schedule.end_period);
+        printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[staffNum].schedule.total_working_hours, staff[staffNum].schedule.remaining_minutes);
         printf("-------------------------------------------------------------------\n");
     }
-           
+    else
+        printf("Sorry\n");
 
 }
 
@@ -1260,17 +1263,17 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 
                 printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
                 printf("\nBEGIN (hh:mm a.m./p.m.): ");
-                scanf("%d:%d %s", &staff[i].schedule[i].begin_hour, &staff[i].schedule[i].begin_minute, staff[i].schedule[i].begin_period);
+                scanf("%d:%d %s", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute, staff[i].schedule.begin_period);
                 printf("\nREST (in minutes): ");
-                scanf("%d", &staff[i].schedule[i].rest_time);
+                scanf("%d", &staff[i].schedule.rest_time);
                 printf("\nEND (hh:mm a.m./p.m.): ");
-                scanf("%d:%d %s", &staff[i].schedule[i].end_hour, &staff[i].schedule[i].end_minute, staff[i].schedule[i].end_period);
+                scanf("%d:%d %s", &staff[i].schedule.end_hour, &staff[i].schedule.end_minute, staff[i].schedule.end_period);
 
 
                 //here testing==============================
-                total_begin_minutes = staff[i].schedule[i].begin_hour * 60 + staff[i].schedule[i].begin_minute;
-                total_end_minutes = staff[i].schedule[i].end_hour * 60 + staff[i].schedule[i].end_minute;
-                total_working_minutes = total_end_minutes - total_begin_minutes - staff[i].schedule[i].rest_time;
+                total_begin_minutes = staff[i].schedule.begin_hour * 60 + staff[i].schedule.begin_minute;
+                total_end_minutes = staff[i].schedule.end_hour * 60 + staff[i].schedule.end_minute;
+                total_working_minutes = total_end_minutes - total_begin_minutes - staff[i].schedule.rest_time;
 
                 // Adjust for overnight working(if end time is before begin time)
                 if (total_end_minutes < total_begin_minutes) {
@@ -1292,12 +1295,12 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 
                     printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
                     printf("BEGIN TIME\tREST TIME\tEND TIME\n");
-                    printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule[i].begin_hour, staff[i].schedule[i].begin_minute, staff[i].schedule[i].begin_period, staff[i].schedule[i].rest_time, staff[i].schedule[i].end_hour, staff[i].schedule[i].end_minute, staff[i].schedule[i].end_period);
+                    printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
                     printf("TOTAL WORKING TIME : %d hours %d minutes (exclude rest time)\n", total_working_hours, remaining_minutes);
                     printf("-------------------------------------------------------------------\n");
 
-                    staff[i].schedule[i].total_working_hours = total_working_hours;
-                    staff[i].schedule[i].remaining_minutes = remaining_minutes;
+                    staff[i].schedule.total_working_hours = total_working_hours;
+                    staff[i].schedule.remaining_minutes = remaining_minutes;
                     // system("cls");
 
                 }
@@ -1693,11 +1696,11 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
     {
         if (strcmp(staff[i].staff_id, id) == 0)           
         {
-            if (staff[i].schedule[i].total_working_hours != 0) {
+            if (staff[i].schedule.total_working_hours != 0) {
                 printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
                 printf("BEGIN TIME\tREST TIME\tEND TIME\n");
-                printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule[i].begin_hour, staff[i].schedule[i].begin_minute, staff[i].schedule[i].begin_period, staff[i].schedule[i].rest_time, staff[i].schedule[i].end_hour, staff[i].schedule[i].end_minute, staff[i].schedule[i].end_period);
-                printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule[i].total_working_hours, staff[i].schedule[i].remaining_minutes);
+                printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
+                printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule.total_working_hours, staff[i].schedule.remaining_minutes);
                 printf("-------------------------------------------------------------------\n");
             }
             else 
