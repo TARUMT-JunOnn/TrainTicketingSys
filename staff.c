@@ -93,8 +93,6 @@ struct Manager{
     struct M_SecurityQues security[MAX_QUESTION_SELECTED]; //nested structure
 };
 
-
-
 int staff_count = 0;
 int manager_count = 0;
 
@@ -581,9 +579,10 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
 
 
 
-//combination of log out&in time selected
+//combination of log out&in time selected !!!!! GOT ERROE
 void staff_logout(struct Staff* staff, int staffNum) {
     int ans, choice;
+    double hours_worked = 0;
     time_t check_in_time = 0;
     time_t check_out_time = 0;
     time_t break_time = 0;
@@ -616,8 +615,7 @@ void staff_logout(struct Staff* staff, int staffNum) {
             printf("---------BREAK TIME------------\n");
             time(&break_time);
             printf("STAFF ID:%s\tBREAK TIME:%s", staff[staffNum].staff_id, ctime(&break_time));
-            // Here you can add logic to update the break time in your schedule
-            // For example, you might store the break time in the staff's schedule array
+            
         }
         else if (choice == 2) {
             // Off work
@@ -626,7 +624,7 @@ void staff_logout(struct Staff* staff, int staffNum) {
             printf("STAFF ID:%s\tCHECK OUT TIME:%s", staff[staffNum].staff_id, ctime(&check_out_time));
 
             // Calculate total working hours
-            double hours_worked = calculate_hours(check_in_time, check_out_time, break_time);
+             hours_worked = calculate_hours(check_in_time, check_out_time, break_time);
 
             printf("Total working hours: %.2f\n", hours_worked);
             if (hours_worked < 8.0) {
@@ -670,11 +668,13 @@ double calculate_hours(time_t check_in_time, time_t check_out_time, time_t break
     work_time_after_break = difftime(check_out_time, break_time);
 
     // Convert the time differences to hours
-     hours_worked_before_break = work_time_before_break / 3600.0;
-     hours_worked_after_break = work_time_after_break / 3600.0;
+    hours_worked_before_break = /*(*/work_time_before_break; /*/ 3600.0) / 10000000.0;*/
+    hours_worked_after_break = /*(*/work_time_after_break; /*/ 3600.0) / 10000000.0;*/
 
     // Calculate the total working hours
     total_hours_worked = hours_worked_before_break + hours_worked_after_break;
+
+    total_hours_worked /= 3600.0;
 
     return total_hours_worked;
 }
