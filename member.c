@@ -112,7 +112,7 @@ main(void) {
 
 	FILE *memberFptr;
 
-	memberFptr = fopen("../../TrainTicketingSys/res/member.bin", "rb");
+	memberFptr = fopen("../TrainTicketingSys/res/member.bin", "rb");
 
 	if (memberFptr == NULL) {
 		printf("Can't Open The File\n");
@@ -198,7 +198,7 @@ main(void) {
 		}
 	} while (choice != 4);
 
-	memberFptr = fopen("../../TrainTicketingSys/res/member.bin", "wb");
+	memberFptr = fopen("../TrainTicketingSys/res/member.bin", "wb");
 
 	for (int i = 0; i < numMember; i++) {
 		fwrite(&member[i], sizeof(member[0]), 1, memberFptr);
