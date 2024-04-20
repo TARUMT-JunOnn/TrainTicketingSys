@@ -578,15 +578,10 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
 
 
 
-
-
-
-
-
 //combination of log out&in time selected
 void staff_logout(struct Staff* staff, int staffNum) {
     int ans, choice;
-    time_t check_in_time = 0; 
+    time_t check_in_time = 0;
     time_t check_out_time = 0;
     time_t break_time = 0;
 
@@ -627,16 +622,8 @@ void staff_logout(struct Staff* staff, int staffNum) {
             printf("---------OFF WORK------------\n");
             printf("STAFF ID:%s\tCHECK OUT TIME:%s", staff[staffNum].staff_id, ctime(&check_out_time));
 
-            // Calculate working hours
-            double hours_worked = 0.0;
-            if (choice == 1) {
-                // Staff took a break
-                hours_worked = difftime(break_time, check_in_time) / 3600.0;
-            }
-            else {
-                // Staff directly checked out
-                hours_worked = difftime(check_out_time, check_in_time) / 3600.0;
-            }
+            // Calculate total working hours
+            double hours_worked = calculate_hours(check_in_time, check_out_time, break_time);
 
             printf("Total working hours: %.2f\n", hours_worked);
             if (hours_worked < 8.0) {
@@ -663,24 +650,32 @@ void staff_logout(struct Staff* staff, int staffNum) {
     }
 }
 
+
 //calculation wrong!
-double calculate_hours(time_t check_in_time, time_t check_out_time)
+double calculate_hours(time_t check_in_time, time_t check_out_time, time_t break_time)
 {
-    // Calculate the time difference in seconds
-    double time_difference = difftime(check_out_time, check_in_time);
+    double work_time_before_break;
+    double work_time_after_break;
+    double hours_worked_before_break;
+    double hours_worked_after_break;
+    double total_hours_worked;
 
-    // Convert the time difference to hours
-    double hours_worked = time_difference / 3600.0;
+    // Calculate the time difference in seconds for the working period before the break
+    work_time_before_break = difftime(break_time, check_in_time);
 
-    // If the time difference is negative (possible if check_out_time < check_in_time),
-    // it means the time span has crossed midnight, so we need to adjust for that
-    if (hours_worked < 0) {
-        // Add 24 hours to the time difference
-        hours_worked += 24.0;
-    }
+    // Calculate the time difference in seconds for the working period after the break
+    work_time_after_break = difftime(check_out_time, break_time);
 
-    return hours_worked;
+    // Convert the time differences to hours
+     hours_worked_before_break = work_time_before_break / 3600.0;
+     hours_worked_after_break = work_time_after_break / 3600.0;
+
+    // Calculate the total working hours
+    total_hours_worked = hours_worked_before_break + hours_worked_after_break;
+
+    return total_hours_worked;
 }
+
 
 
 
