@@ -37,7 +37,7 @@ main()
 	// Read text file into array
 	rewind(stdin);
 	FILE* fp;
-	fp = fopen("schedule.txt", "r");
+	fp = fopen("../TrainTicketingSys/res/schedule.txt", "r");
 	while (fp == NULL)
 	{
 		printf("Failed to read the file");
