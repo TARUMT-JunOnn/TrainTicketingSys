@@ -19,6 +19,8 @@
 #define MAX_LENGTH_IC 15
 #define MAX_LENGTH_GENDER 2
 
+void member();
+
 void title(void);
 int tryAgain(int again);
 void waitingScreen(void);
@@ -106,12 +108,18 @@ void title(void) {
 	printf("\n\n");
 }
 
+
 main(void) {
+	member();
+
+}
+
+void member() {
 	struct Member member[MAX_NUMBER_MEMBER];
 	struct Member member2;
 	int choice;
 
-	FILE *memberFptr;
+	FILE* memberFptr;
 
 	memberFptr = fopen("../TrainTicketingSys/res/member.bin", "rb");
 
@@ -123,7 +131,7 @@ main(void) {
 	fread(&member2, sizeof(member2), 1, memberFptr);
 	while (!feof(memberFptr))
 	{
-	
+
 		strcpy(member[numMember].id, member2.id);
 		strcpy(member[numMember].name, member2.name);
 		strcpy(member[numMember].pass, member2.pass);
@@ -137,7 +145,7 @@ main(void) {
 			member[numMember].security[i].questionNum = member2.security[i].questionNum;
 
 
-		for(int i = 0; i < 3; i++)
+		for (int i = 0; i < 3; i++)
 			strcpy(member[numMember].security[i].answer, member2.security[i].answer);
 
 		numMember++;
@@ -150,28 +158,6 @@ main(void) {
 	for (int i = 0; i < numMember; i++) {
 		printf("%d. %s\n", i + 1, member[i].id);
 	}
-
-	//test data
-	//strcpy(member[numMember].id, "123");
-	//strcpy(member[numMember].pass, "321");
-	//strcpy(member[numMember].name, "Lee");
-	//member[numMember].age = 20;
-	//strcpy(member[numMember].gender, "M");
-	//strcpy(member[numMember].ic, "123-321");
-	//strcpy(member[numMember].phoneNo, "01161188688");
-	//strcpy(member[numMember].email, "lee@gmail.com");
-	//member[numMember].rewardPoints = 0.00;
-	//member[numMember].security[0].questionNum = 1;
-	//member[numMember].security[1].questionNum = 2;
-	//member[numMember].security[2].questionNum = 3;
-	//strcpy(member[numMember].security[0].answer, "1");
-	//strcpy(member[numMember].security[1].answer, "2");
-	//strcpy(member[numMember].security[2].answer, "3");
-	//numMember++;
-
-	//deleteMember(member);
-
-	//searchMember(member);
 
 	do {
 		printf("test\n");
@@ -206,9 +192,6 @@ main(void) {
 	}
 
 	fclose(memberFptr);
-
-	//memberMenu(member);
-
 }
 
 int tryAgain(int again) {
