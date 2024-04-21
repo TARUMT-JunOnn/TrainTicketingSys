@@ -1034,7 +1034,7 @@ void rewardPoint(struct Member* member, int memberNUM) {
 	printf("\n\n");
 	printf("\t\t\t\t\t\t\t\tTerms and conditions\n");
 	printf("\t\t\t\t\t\t\t\t--------------------\n\n");
-	printf("\t\t\t\t-> Customers earn reward points for every eligible purchase made on our system. \n\t\t\t\t   For every RM1 spent, customers receive 100 reward points.\n\n");
+	printf("\t\t\t\t-> Customers earn reward points for every eligible purchase made on our system. \n\t\t\t\t   For every RM1 spent, customers receive 1 reward points.\n\n");
 	printf("\t\t\t\t-> Reward points can be redeemed for discounts when booking train tickets on our system.\n\n");
 	printf("\t\t\t\t-> The conversion rate for reward points is 100 points = RM1.\n\n");
 	printf("\t\t\t\t-> Reward points cannot be exchanged for cash or transferred to another account.\n\n");
