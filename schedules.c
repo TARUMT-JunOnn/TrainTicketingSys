@@ -5,7 +5,6 @@
 #include <time.h>
 #pragma warning(disable:4996)
 #define STRUCTCOUNT 100
-#define THISYEAR 2024
 
 typedef struct
 {
@@ -146,6 +145,7 @@ void DisplaySchedule(void)
 		case 0:
 			time(&timer);
 			now = localtime(&timer);
+			const THISYEAR = now->tm_year + 1900;
 			system("cls");
 			// All Schedule
 			printf("-------------------------------------------------------------------------------------------------------\n");
