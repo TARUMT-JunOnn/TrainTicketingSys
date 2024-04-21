@@ -19,6 +19,8 @@
 #define MAX_LENGTH_IC 15
 #define MAX_LENGTH_GENDER 2
 
+void member();
+
 void title(void);
 int tryAgain(int again);
 void waitingScreen(void);
@@ -48,7 +50,6 @@ void memberMainPage(struct Member* member, int memberNUM);
 //modify and display modules
 void viewProfile(struct Member* member, int memberNUM);
 
-
 void viewSchedule();
 void addBooking();
 void bookingHistory();
@@ -69,6 +70,8 @@ void searchMemberRewardPoints(struct Member* member);
 
 //delete modules
 void deleteMember(struct Member* member);
+
+char passwordStore(char password[]);
 
 struct SecurityQuestion {
 	int questionNum;
@@ -105,12 +108,18 @@ void title(void) {
 	printf("\n\n");
 }
 
+
 main(void) {
+	member();
+
+}
+
+void member() {
 	struct Member member[MAX_NUMBER_MEMBER];
 	struct Member member2;
 	int choice;
 
-	FILE *memberFptr;
+	FILE* memberFptr;
 
 	memberFptr = fopen("../TrainTicketingSys/res/member.bin", "rb");
 
@@ -122,7 +131,7 @@ main(void) {
 	fread(&member2, sizeof(member2), 1, memberFptr);
 	while (!feof(memberFptr))
 	{
-	
+
 		strcpy(member[numMember].id, member2.id);
 		strcpy(member[numMember].name, member2.name);
 		strcpy(member[numMember].pass, member2.pass);
@@ -136,7 +145,7 @@ main(void) {
 			member[numMember].security[i].questionNum = member2.security[i].questionNum;
 
 
-		for(int i = 0; i < 3; i++)
+		for (int i = 0; i < 3; i++)
 			strcpy(member[numMember].security[i].answer, member2.security[i].answer);
 
 		numMember++;
@@ -149,28 +158,6 @@ main(void) {
 	for (int i = 0; i < numMember; i++) {
 		printf("%d. %s\n", i + 1, member[i].id);
 	}
-
-	//test data
-	//strcpy(member[numMember].id, "123");
-	//strcpy(member[numMember].pass, "321");
-	//strcpy(member[numMember].name, "Lee");
-	//member[numMember].age = 20;
-	//strcpy(member[numMember].gender, "M");
-	//strcpy(member[numMember].ic, "123-321");
-	//strcpy(member[numMember].phoneNo, "01161188688");
-	//strcpy(member[numMember].email, "lee@gmail.com");
-	//member[numMember].rewardPoints = 0.00;
-	//member[numMember].security[0].questionNum = 1;
-	//member[numMember].security[1].questionNum = 2;
-	//member[numMember].security[2].questionNum = 3;
-	//strcpy(member[numMember].security[0].answer, "1");
-	//strcpy(member[numMember].security[1].answer, "2");
-	//strcpy(member[numMember].security[2].answer, "3");
-	//numMember++;
-
-	//deleteMember(member);
-
-	//searchMember(member);
 
 	do {
 		printf("test\n");
@@ -205,9 +192,6 @@ main(void) {
 	}
 
 	fclose(memberFptr);
-
-	//memberMenu(member);
-
 }
 
 int tryAgain(int again) {
@@ -290,10 +274,14 @@ void memberLogin(struct Member* member) {
 		again = 0;
 
 		title();
+		printf("---------\n");
+		printf("| Login |\n");
+		printf("---------\n\n");
 		printf("ID: ");
 		scanf(" %[^\n]", id);
-		printf("Password: ");
-		scanf(" %[^\n]", password);
+		printf("\nPassword: ");
+		passwordStore(password);
+		printf("\n\n");
 
 		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
 			if (strcmp(member[i].id, id) == 0 && strcmp(member[i].pass, password) == 0) {
@@ -486,6 +474,32 @@ bool verify_IC(char* gender, char* ic) {
 	return true;
 }
 
+char passwordStore(char password[]) {
+	int i = 0;
+	char ch;
+	while (1) {
+		ch = _getch();
+
+		if (ch == 13)
+			break;
+		else if (ch == 8) {
+			if (i > 0) {
+				i--;
+				password[i] = '\0';
+				printf("\b \b");
+			}
+		}
+		else {
+			password[i] = ch;
+			i++;
+			printf("*");
+		}
+	}
+	password[i] = '\0';
+
+	return password;
+}
+
 void memberRegister(struct Member* member) {
 	
 	char memberID[MEMBER_ID];
@@ -526,11 +540,17 @@ void memberRegister(struct Member* member) {
 		printf("\n");
 
 		passwordFormat();
-
+		
 		printf("Password: ");
-		scanf(" %[^\n]", password);
+
+		passwordStore(password);
+		printf("\n\n");
+
 		printf("Password Confirm: ");
-		scanf(" %[^\n]", passConfirm);
+
+		passwordStore(passConfirm);
+
+		printf("\n\n");
 
 		if (strcmp(password, passConfirm) != 0) {
 			printf("\nNew Password and Confrim Password Are Not Same!\n");
@@ -550,7 +570,6 @@ void memberRegister(struct Member* member) {
 			}
 		}
 
-		
 	} while (again == 1);
 
 	strcpy(member[numMember].id, memberID);
@@ -785,9 +804,11 @@ void forgotPass(struct Member* member) {
 					passwordFormat();
 
 					printf("New Password: ");
-					scanf(" %[^\n]", newPassword);
+					passwordStore(newPassword);
+					printf("\n\n");
 					printf("New Password Confirm: ");
-					scanf(" %[^\n]", newPassConfirm);
+					passwordStore(newPassConfirm);
+					printf("\n\n");
 
 					if (strcmp(newPassword, newPassConfirm) != 0) {
 						printf("\nNew Password and Confrim Password Are Not Same!\n");
@@ -838,9 +859,6 @@ void memberMainPage(struct Member* member, int memberNUM) {
 	do
 	{
 		title();
-		printf("Welcome %s\n", member[memberNUM].id);
-		//remove id and pass
-		printf("Pass: %s", member[memberNUM].pass);
 		printf("Member Menu\n");
 		printf("-----------\n");
 		for (int i = 0; i < sizeof(menu) / sizeof(menu[0]); i++) {
@@ -999,7 +1017,7 @@ void rewardPoint(struct Member* member, int memberNUM) {
 	printf("\n\n");
 	printf("\t\t\t\t\t\t\t\tTerms and conditions\n");
 	printf("\t\t\t\t\t\t\t\t--------------------\n\n");
-	printf("\t\t\t\t-> Customers earn reward points for every eligible purchase made on our system. \n\t\t\t\t   For every RM1 spent, customers receive 100 reward points.\n\n");
+	printf("\t\t\t\t-> Customers earn reward points for every eligible purchase made on our system. \n\t\t\t\t   For every RM1 spent, customers receive 1 reward points.\n\n");
 	printf("\t\t\t\t-> Reward points can be redeemed for discounts when booking train tickets on our system.\n\n");
 	printf("\t\t\t\t-> The conversion rate for reward points is 100 points = RM1.\n\n");
 	printf("\t\t\t\t-> Reward points cannot be exchanged for cash or transferred to another account.\n\n");
