@@ -313,8 +313,6 @@ void memberLogin(struct Member* member) {
 				again = tryAgain(again);			
 		}
 	} while (again == 1);
-	
-
 }
 
 void securityQuestion() {
@@ -934,7 +932,6 @@ void viewProfile(struct Member* member, int memberNUM) {
 						continue;
 					}
 
-
 				} while (again == 1);
 
 				if (strcmp(member[memberNUM].pass, oldPassword) == 0 && strcmp(newPassword, passConfirm) == 0) {
@@ -993,9 +990,24 @@ void cancelBooking() {
 
 //havent done yet
 void rewardPoint(struct Member* member, int memberNUM) {
+	char key[10];
+	title();
+	printf("\t\t\t\t\t\t\t\t   Current Points \n\t\t\t\t\t\t\t\t\t%.2f\n\n", member[memberNUM].rewardPoints);
+	for (int i = 0; i < 155; i++) {
+		printf("%s", "-");
+	}
+	printf("\n\n");
+	printf("\t\t\t\t\t\t\t\tTerms and conditions\n");
+	printf("\t\t\t\t\t\t\t\t--------------------\n\n");
+	printf("\t\t\t\t-> Customers earn reward points for every eligible purchase made on our system. \n\t\t\t\t   For every RM1 spent, customers receive 100 reward points.\n\n");
+	printf("\t\t\t\t-> Reward points can be redeemed for discounts when booking train tickets on our system.\n\n");
+	printf("\t\t\t\t-> The conversion rate for reward points is 100 points = RM1.\n\n");
+	printf("\t\t\t\t-> Reward points cannot be exchanged for cash or transferred to another account.\n\n");
+	printf("\t\t\t\t-> When canceling a booking, the refund will be issued in the form of reward points instead of cash.\n\n");
 
-	printf("Current Points \n%.2f\n", member[memberNUM].rewardPoints);
-	/*printf("1. Terms and conditions");*/
+	printf("\n\t\t\t\tPress Any Key To Continue....\n\t\t\t\t");
+	scanf(" %[^\n]", key);
+
 }
 
 //havent done yet
