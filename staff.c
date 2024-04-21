@@ -263,10 +263,6 @@ void menu(struct Staff* staff, struct Manager* manager)
 void staffMenu(struct Staff* staff, struct Manager* manager)
 {
     int choice;
-    struct tm* hour;
-    char buffer[50];
-    time_t t;
-    time(&t);
 
     system("cls");
     do {
@@ -297,7 +293,7 @@ void staffMenu(struct Staff* staff, struct Manager* manager)
         }
 
     } while (choice != 3);
-    printf("\nYou are Exit %s Right Now!\n", buffer);
+    printf("\nYou are Exit Right Now!\n");
 
 }
 
@@ -470,6 +466,7 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
             break;
         case 6:
             printf("Exiting...\n");
+            break;
         default:
             break;
         }
@@ -488,12 +485,12 @@ void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum)
         printf("-------------------------------------------------------------------\n");
     }
     else
-        printf("Sorry\n");
+        printf("Sorry,You schedule haven't done modified yet.\n");
 
 }
 
 
-//staff update information
+//staff update information !!Logic error
 void staff_information(struct Staff* staff, struct Manager* manager, int staffNum) {
     char name[MAX_NAME_LENGTH];
     char email[MAX_EMAIL_LENGTH];
@@ -501,6 +498,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
     char id[MAX_ID_LENGTH];
     char stop;
     int success = 0, again = 0, choice;
+    char confirm;
 
     do {
         success = 0;
@@ -517,30 +515,34 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
                 printf("Email:%s\n", staff[staffNum].staff_email);
 
 
-                //ask manager to update
-                printf("\n--------------------------\n");
-                printf("----- UPDATE RIGHT NOW -----\n");
-                printf("----------------------------\n");
-                printf("\nName:");
-                scanf(" %[^\n]", name);
-                printf("Phone No:");
-                scanf(" %[^\n]", phone);
-                printf("Email:");
-                scanf(" %[^\n]", email);
+                printf("Confirm? ");
+                scanf("%c", &confirm);
+                rewind(stdin);
+                if (confirm == 'Y' || confirm == 'y') {
+                    printf("\n--------------------------\n");
+                    printf("----- UPDATE RIGHT NOW -----\n");
+                    printf("----------------------------\n");
+                    printf("\nName:");
+                    scanf(" %[^\n]", name);
+                    printf("Phone No:");
+                    scanf(" %[^\n]", phone);
+                    printf("Email:");
+                    scanf(" %[^\n]", email);
 
-                strcpy(staff[staffNum].staff_name, name);
-                strcpy(staff[staffNum].staff_phone, phone);
-                strcpy(staff[staffNum].staff_email, email);
+                    strcpy(staff[staffNum].staff_name, name);
+                    strcpy(staff[staffNum].staff_phone, phone);
+                    strcpy(staff[staffNum].staff_email, email);
 
-                success++;
+                    success++;
 
-
-                printf("\nYou are successful updated.\n");
+                    printf("\nUpdate was done successfully!\n");
+                }
+              
 
                 printf("\n---------------------------\n");
                 printf("------- After Updated -------\n");
                 printf("-----------------------------\n");
-                printf("Manager ID: %s\n", staff[staffNum].staff_id);
+                printf("Staff ID: %s\n", staff[staffNum].staff_id);
                 printf("\nName: %s\n", staff[staffNum].staff_name);
                 printf("Phone No: %s\n", staff[staffNum].staff_phone);
                 printf("Email:%s\n", staff[staffNum].staff_email);
@@ -579,13 +581,15 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
 
 
 
-//combination of log out&in time selected !!!!! GOT ERROE
+//combination of log out&in time selected
 void staff_logout(struct Staff* staff, int staffNum) {
     int ans, choice;
-    double hours_worked = 0;
     time_t check_in_time = 0;
     time_t check_out_time = 0;
     time_t break_time = 0;
+
+    clock_t checkIn = 0, checkOut = 0;
+    double elapsedTime;
 
     printf("\n STAFF WORKING TIME RECORDED\n");
     printf("=======================\n");
@@ -596,102 +600,44 @@ void staff_logout(struct Staff* staff, int staffNum) {
     printf("\n======================\n");
 
     if (ans == 1) {
+        checkIn = clock();
         // Check in
         time(&check_in_time);
         printf("---------CHECK IN------------\n");
         printf("STAFF ID:%s\tCHECK IN TIME:%s", staff[staffNum].staff_id, ctime(&check_in_time));
         printf("Check In succeed");
+
+
     }
     else if (ans == 2) {
+        checkOut = clock();
         // Check out
-        printf("---------CHECK OUT------------\n");
-        printf(" <1> Break time\n");
-        printf(" <2> Off work\n");
-        printf("Enter your choice:");
-        scanf("%d", &choice);
+        time(&check_out_time);
+        printf("----------CHECK OUT------------\n");
+        printf("STAFF ID:%s\tCHECK OUT TIME:%s", staff[staffNum].staff_id, ctime(&check_out_time));
 
-        if (choice == 1) {
-            // Break time
-            printf("---------BREAK TIME------------\n");
-            time(&break_time);
-            printf("STAFF ID:%s\tBREAK TIME:%s", staff[staffNum].staff_id, ctime(&break_time));
-            
+        elapsedTime = (double)(checkOut - checkIn) / CLOCKS_PER_SEC;
+
+
+        if (elapsedTime > 8 * 3600) {
+            printf("You have completed 8 hours of work today.\n");
         }
-        else if (choice == 2) {
-            // Off work
-            time(&check_out_time);
-            printf("---------OFF WORK------------\n");
-            printf("STAFF ID:%s\tCHECK OUT TIME:%s", staff[staffNum].staff_id, ctime(&check_out_time));
-
-            // Calculate total working hours
-             hours_worked = calculate_hours(check_in_time, check_out_time, break_time);
-
-            printf("Total working hours: %.2f\n", hours_worked);
-            if (hours_worked < 8.0) {
-                printf("You have not completed 8 hours of work today.\n");
-                printf("Are you sure you want to check out? (1 for Yes, 0 for No): ");
-                scanf("%d", &choice);
-                if (choice == 1) {
-                    // Exit and return to the menu
-                    printf("Exiting...\n");
-                    // You may want to return to the main menu or exit the program here
-                }
-                else {
-                    // Return to check in and out interface
-                    staff_logout(staff, staffNum);
-                }
-            }
-            else {
-                printf("You have completed 8 hours of work today.\n");
+        else {
+            printf("You have not completed 8 hours of work today.\n");
+            printf("Are you sure you want to check out? (1 for Yes, 0 for No): ");
+            scanf("%d", &choice);
+            if (choice == 1) {
                 // Exit and return to the menu
                 printf("Exiting...\n");
                 // You may want to return to the main menu or exit the program here
             }
+            else {
+                // Return to check in and out interface
+                staff_logout(staff, staffNum);
+            }
         }
     }
 }
-
-
-//calculation wrong!
-double calculate_hours(time_t check_in_time, time_t check_out_time, time_t break_time)
-{
-    double work_time_before_break;
-    double work_time_after_break;
-    double hours_worked_before_break;
-    double hours_worked_after_break;
-    double total_hours_worked;
-
-    // Calculate the time difference in seconds for the working period before the break
-    work_time_before_break = difftime(break_time, check_in_time);
-
-    // Calculate the time difference in seconds for the working period after the break
-    work_time_after_break = difftime(check_out_time, break_time);
-
-    // Convert the time differences to hours
-    hours_worked_before_break = /*(*/work_time_before_break; /*/ 3600.0) / 10000000.0;*/
-    hours_worked_after_break = /*(*/work_time_after_break; /*/ 3600.0) / 10000000.0;*/
-
-    // Calculate the total working hours
-    total_hours_worked = hours_worked_before_break + hours_worked_after_break;
-
-    total_hours_worked /= 3600.0;
-
-    return total_hours_worked;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -873,7 +819,7 @@ void manager_menu(struct Staff* staff, struct Manager* manager)
         }
 
     } while (choice != 3);
-    printf("\nYou are Exit %s Right Now!\n", buffer);
+    printf("\nYou are Exit Right Now!\n");
 }
 
 // Manager Login menu --need to do let manager reset password!***
@@ -1071,7 +1017,7 @@ void manager_registration(struct Manager* manager) {
                 for (int q = 0; q < i; q++) 
                 {
                     if (questionSelection[i] == questionSelection[q]) {
-                        printf("\nThe Selected Security Question Must Be Different From The Previous One.\n");
+                        printf("\nSelect the difference\n");
                         printf("Please Try Again.\n");
                         again++;
                         success = 0;
@@ -1234,9 +1180,6 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 {
     char id[MAX_ID_LENGTH];
     int ans = 0;
-    //int beginTime;
-    //int restTime;
-    //int endTime;
     int successful = 0;
     int choice;
     int again = 0;
@@ -1245,6 +1188,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
     int total_begin_minutes = 0;
     int total_working_hours = 0;
     int remaining_minutes = 0;
+    int reenter = 0;
     
     do
     {
@@ -1260,6 +1204,26 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 
             if (strcmp(staff[i].staff_id, id) == 0)
             {
+                do { ///
+                    reenter = 0;
+                    printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
+                    printf("\nBEGIN (hh:mm a.m./p.m.): ");
+                    if (scanf("%d:%d %s", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute, staff[i].schedule.begin_period)!= 3) 
+                    {
+                        printf("Invalid input format. Please enter time in hh:mm a.m./p.m. format.\n");
+                        reenter++;
+                    }
+                    printf("\nREST (minutes): ");
+                    scanf("%d", &staff[i].schedule.rest_time);
+                    printf("\nEND (hh:mm a.m./p.m.): ");
+                    if (scanf("%d:%d %s", &staff[i].schedule.end_hour, &staff[i].schedule.end_minute, staff[i].schedule.end_period) != 3)
+                    {
+                        printf("Invalid input format. Please enter time in hh:mm a.m./p.m. format.\n");
+                        reenter++;
+                    }
+
+                    
+                } while (reenter != 0);
 
                 printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
                 printf("\nBEGIN (hh:mm a.m./p.m.): ");
