@@ -5,6 +5,7 @@
 #include <time.h>
 #pragma warning(disable:4996)
 #define STRUCTCOUNT 100
+#define THISYEAR 2024
 
 typedef struct
 {
@@ -145,7 +146,6 @@ void DisplaySchedule(void)
 		case 0:
 			time(&timer);
 			now = localtime(&timer);
-			const THISYEAR = now->tm_year + 1900;
 			system("cls");
 			// All Schedule
 			printf("-------------------------------------------------------------------------------------------------------\n");
@@ -264,27 +264,29 @@ void DisplaySchedule(void)
 			strftime(s, 80, "%A", now);
 			if (strcmp(s, "Monday") == 0)
 			{
-				printf("Date: %d/%d/%d\n", day, month, THISYEAR);
+				printf("Date:%d/%d/%d\n", day, month, THISYEAR);
 				printf("%s:\n", s);
 			}
-
-			for (int j = 0; j < 6; j++)
+			else
 			{
-				month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
-				now->tm_mday = day;
-				now->tm_mon = month - 1;
-				now->tm_year = THISYEAR - 1900;
-				mktime(now);
-				strftime(s, 80, "%A", now);
-				if (strcmp(s, "Monday") == 0)
+				for (int j = 0; j < 6; j++)
 				{
-					printf("Date:%d/%d/%d\n", day, month, THISYEAR);
-					printf("%s:\n", s);
+					month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
+					now->tm_mday = day;
+					now->tm_mon = month - 1;
+					now->tm_year = THISYEAR - 1900;
+					mktime(now);
+					strftime(s, 80, "%A", now);
+					if (strcmp(s, "Monday") == 0)
+					{
+						printf("Date:%d/%d/%d\n", day, month, THISYEAR);
+						printf("%s:\n", s);
+					}
 				}
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
 				if (strcmp(schedule[counter].day, s) == 0)
 				{
@@ -309,7 +311,7 @@ void DisplaySchedule(void)
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
 				if (strcmp(schedule[counter].day, s) == 0)
 				{
@@ -336,26 +338,28 @@ void DisplaySchedule(void)
 				printf("Date: %d/%d/%d\n", day, month, THISYEAR);
 				printf("%s:\n", s);
 			}
-
-			for (int j = 0; j < 6; j++)
+			else
 			{
-				month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
-				now->tm_mday = day;
-				now->tm_mon = month - 1;
-				now->tm_year = THISYEAR - 1900;
-				mktime(now);
-				strftime(s, 80, "%A", now);
-				if (strcmp(s, "Tuesday") == 0)
+				for (int j = 0; j < 6; j++)
 				{
-					printf("Date:%d/%d/%d\n", day, month, THISYEAR);
-					printf("%s:\n", s);
+					month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
+					now->tm_mday = day;
+					now->tm_mon = month - 1;
+					now->tm_year = THISYEAR - 1900;
+					mktime(now);
+					strftime(s, 80, "%A", now);
+					if (strcmp(s, "Tuesday") == 0)
+					{
+						printf("Date:%d/%d/%d\n", day, month, THISYEAR);
+						printf("%s:\n", s);
+					}
 				}
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
-				if (strcmp(schedule[counter].day, s) == 0)
+				if (strcmp(schedule[counter].day, "Tuesday") == 0)
 				{
 					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.departureTime, schedule[counter].deptArr.arrivalTime, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 				}
@@ -378,9 +382,9 @@ void DisplaySchedule(void)
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
-				if (strcmp(schedule[counter].day, s) == 0)
+				if (strcmp(schedule[counter].day, "NextTuesday") == 0)
 				{
 					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.departureTime, schedule[counter].deptArr.arrivalTime, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 				}
@@ -405,26 +409,28 @@ void DisplaySchedule(void)
 				printf("Date: %d/%d/%d\n", day, month, THISYEAR);
 				printf("%s:\n", s);
 			}
-
-			for (int j = 0; j < 6; j++)
+			else
 			{
-				month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
-				now->tm_mday = day;
-				now->tm_mon = month - 1;
-				now->tm_year = THISYEAR - 1900;
-				mktime(now);
-				strftime(s, 80, "%A", now);
-				if (strcmp(s, "Wednesday") == 0)
+				for (int j = 0; j < 6; j++)
 				{
-					printf("Date:%d/%d/%d\n", day, month, THISYEAR);
-					printf("%s:\n", s);
+					month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
+					now->tm_mday = day;
+					now->tm_mon = month - 1;
+					now->tm_year = THISYEAR - 1900;
+					mktime(now);
+					strftime(s, 80, "%A", now);
+					if (strcmp(s, "Wednesday") == 0)
+					{
+						printf("Date:%d/%d/%d\n", day, month, THISYEAR);
+						printf("%s:\n", s);
+					}
 				}
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
-				if (strcmp(schedule[counter].day, s) == 0)
+				if (strcmp(schedule[counter].day, "Wednesday") == 0)
 				{
 					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.departureTime, schedule[counter].deptArr.arrivalTime, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 				}
@@ -447,9 +453,9 @@ void DisplaySchedule(void)
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
-				if (strcmp(schedule[counter].day, s) == 0)
+				if (strcmp(schedule[counter].day, "NextWednesday") == 0)
 				{
 					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.departureTime, schedule[counter].deptArr.arrivalTime, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 				}
@@ -474,26 +480,28 @@ void DisplaySchedule(void)
 				printf("Date: %d/%d/%d\n", day, month, THISYEAR);
 				printf("%s:\n", s);
 			}
-
-			for (int j = 0; j < 6; j++)
+			else
 			{
-				month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
-				now->tm_mday = day;
-				now->tm_mon = month - 1;
-				now->tm_year = THISYEAR - 1900;
-				mktime(now);
-				strftime(s, 80, "%A", now);
-				if (strcmp(s, "Thursday") == 0)
+				for (int j = 0; j < 6; j++)
 				{
-					printf("Date:%d/%d/%d\n", day, month, THISYEAR);
-					printf("%s:\n", s);
+					month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
+					now->tm_mday = day;
+					now->tm_mon = month - 1;
+					now->tm_year = THISYEAR - 1900;
+					mktime(now);
+					strftime(s, 80, "%A", now);
+					if (strcmp(s, "Thursday") == 0)
+					{
+						printf("Date:%d/%d/%d\n", day, month, THISYEAR);
+						printf("%s:\n", s);
+					}
 				}
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
-				if (strcmp(schedule[counter].day, s) == 0)
+				if (strcmp(schedule[counter].day, "Thursday") == 0)
 				{
 					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.departureTime, schedule[counter].deptArr.arrivalTime, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 				}
@@ -516,9 +524,9 @@ void DisplaySchedule(void)
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
-				if (strcmp(schedule[counter].day, s) == 0)
+				if (strcmp(schedule[counter].day, "NextThursday") == 0)
 				{
 					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.departureTime, schedule[counter].deptArr.arrivalTime, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 				}
@@ -543,26 +551,28 @@ void DisplaySchedule(void)
 				printf("Date: %d/%d/%d\n", day, month, THISYEAR);
 				printf("%s:\n", s);
 			}
-
-			for (int j = 0; j < 6; j++)
+			else
 			{
-				month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
-				now->tm_mday = day;
-				now->tm_mon = month - 1;
-				now->tm_year = THISYEAR - 1900;
-				mktime(now);
-				strftime(s, 80, "%A", now);
-				if (strcmp(s, "Friday") == 0)
+				for (int j = 0; j < 6; j++)
 				{
-					printf("Date:%d/%d/%d\n", day, month, THISYEAR);
-					printf("%s:\n", s);
+					month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
+					now->tm_mday = day;
+					now->tm_mon = month - 1;
+					now->tm_year = THISYEAR - 1900;
+					mktime(now);
+					strftime(s, 80, "%A", now);
+					if (strcmp(s, "Friday") == 0)
+					{
+						printf("Date:%d/%d/%d\n", day, month, THISYEAR);
+						printf("%s:\n", s);
+					}
 				}
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
-				if (strcmp(schedule[counter].day, s) == 0)
+				if (strcmp(schedule[counter].day, "Friday") == 0)
 				{
 					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.departureTime, schedule[counter].deptArr.arrivalTime, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 				}
@@ -585,9 +595,9 @@ void DisplaySchedule(void)
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
-				if (strcmp(schedule[counter].day, s) == 0)
+				if (strcmp(schedule[counter].day, "NextFriday") == 0)
 				{
 					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.departureTime, schedule[counter].deptArr.arrivalTime, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 				}
@@ -612,26 +622,28 @@ void DisplaySchedule(void)
 				printf("Date: %d/%d/%d\n", day, month, THISYEAR);
 				printf("%s:\n", s);
 			}
-
-			for (int j = 0; j < 6; j++)
+			else
 			{
-				month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
-				now->tm_mday = day;
-				now->tm_mon = month - 1;
-				now->tm_year = THISYEAR - 1900;
-				mktime(now);
-				strftime(s, 80, "%A", now);
-				if (strcmp(s, "Saturday") == 0)
+				for (int j = 0; j < 6; j++)
 				{
-					printf("Date:%d/%d/%d\n", day, month, THISYEAR);
-					printf("%s:\n", s);
+					month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
+					now->tm_mday = day;
+					now->tm_mon = month - 1;
+					now->tm_year = THISYEAR - 1900;
+					mktime(now);
+					strftime(s, 80, "%A", now);
+					if (strcmp(s, "Saturday") == 0)
+					{
+						printf("Date:%d/%d/%d\n", day, month, THISYEAR);
+						printf("%s:\n", s);
+					}
 				}
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
-				if (strcmp(schedule[counter].day, s) == 0)
+				if (strcmp(schedule[counter].day, "Saturday") == 0)
 				{
 					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.departureTime, schedule[counter].deptArr.arrivalTime, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 				}
@@ -654,9 +666,9 @@ void DisplaySchedule(void)
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
-				if (strcmp(schedule[counter].day, s) == 0)
+				if (strcmp(schedule[counter].day, "NextSaturday") == 0)
 				{
 					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.departureTime, schedule[counter].deptArr.arrivalTime, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 				}
@@ -678,29 +690,31 @@ void DisplaySchedule(void)
 			strftime(s, 80, "%A", now);
 			if (strcmp(s, "Sunday") == 0)
 			{
-				printf("Date: %d/%d/%d\n", day, month, THISYEAR);
+				printf("Date:%d/%d/%d\n", day, month, THISYEAR);
 				printf("%s:\n", s);
 			}
-
-			for (int j = 0; j < 6; j++)
+			else
 			{
-				month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
-				now->tm_mday = day;
-				now->tm_mon = month - 1;
-				now->tm_year = THISYEAR - 1900;
-				mktime(now);
-				strftime(s, 80, "%A", now);
-				if (strcmp(s, "Sunday") == 0)
+				for (int j = 0; j < 6; j++)
 				{
-					printf("Date:%d/%d/%d\n", day, month, THISYEAR);
-					printf("%s:\n", s);
+					month_day(THISYEAR, (now->tm_yday) + 1, &month, &day);
+					now->tm_mday = day;
+					now->tm_mon = month - 1;
+					now->tm_year = THISYEAR - 1900;
+					mktime(now);
+					strftime(s, 80, "%A", now);
+					if (strcmp(s, "Sunday") == 0)
+					{
+						printf("Date:%d/%d/%d\n", day, month, THISYEAR);
+						printf("%s:\n", s);
+					}
 				}
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
-				if (strcmp(schedule[counter].day, s) == 0)
+				if (strcmp(schedule[counter].day, "Sunday") == 0)
 				{
 					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.departureTime, schedule[counter].deptArr.arrivalTime, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 				}
@@ -723,9 +737,9 @@ void DisplaySchedule(void)
 			}
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
 			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
+			for (counter = 0; counter < STRUCTCOUNT; counter++)
 			{
-				if (strcmp(schedule[counter].day, s) == 0)
+				if (strcmp(schedule[counter].day, "NextSunday") == 0)
 				{
 					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.departureTime, schedule[counter].deptArr.arrivalTime, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 				}
@@ -758,8 +772,7 @@ void ModifySchedule(void)
 		printf("-------------------\n");
 		printf("Do you want: \n");
 		printf("1. | Modify by entering day\n");
-		printf("2. | Modify by entering date\n");
-		printf("3. | Return to schedule menu.\n");
+		printf("2. | Return to schedule menu.\n");
 		printf("Choose one > ");
 		rewind(stdin);
 		scanf("%d", &modifyChoice);
@@ -1106,11 +1119,6 @@ void ModifySchedule(void)
 			break;
 
 		case 2:
-			printf("Enter a date you would like to modify for.\n");
-			printf("Notes: You can only modify for schedules for upcoming two weeks.\n");
-			break;
-
-		case 3:
 			system("cls");
 			printf("Returning to schedule menu...\n");
 			Sleep(1500);
@@ -1122,7 +1130,7 @@ void ModifySchedule(void)
 			Sleep(1000);
 			break;
 		}
-	} while (modifyChoice != 3);
+	} while (modifyChoice != 2);
 }
 
 // Convert date to day
@@ -1145,46 +1153,302 @@ void month_day(int year, int yearday, int* pmonth, int* pday)
 // Add schedule module
 void AddSchedule(void)
 {
+	printf("[Add Schedule Tool]\n");
+	printf("-------------------\n");
 
 }
 
 // Search schedule module
 void SearchSchedule(void)
 {
+	int choice, choice2;
 	system("cls");
-	printf("[Schedule Searching Tool]\n");
-	printf("-------------------------\n");
-	printf("\n");
-	printf("You wish to search schedule by: \n");
-	printf("1. | Date\n");
-	printf("2. | Month\n");
-
-	int searchDay, searchMonth, searchYear;
-	time_t dateNow;
-	struct tm* searchDate;
-	char searchResult[80];
-
-
-	time(&dateNow);
-	searchDate = localtime(&dateNow);
-
-	printf("Enter the date you wish to search for by: \n");
-	printf("Month: ");
-	rewind(stdin);
-	scanf("%d", &searchMonth);
-	printf("Day  : ");
-	rewind(stdin);
-	scanf("%d", &searchDay);
-	printf("Year : ");
-	rewind(stdin);
-	scanf("%d", &searchYear);
-
-	searchDate->tm_mday = searchDay;
-	searchDate->tm_mon = searchMonth - 1;
-	searchDate->tm_year = searchYear - 1900;
-	mktime(searchDate);
-	strftime(searchResult, 80, "%A", searchDate);
-	printf("%d/%d/%d", searchDay, searchMonth, searchYear);
-	printf("\n%s\n", searchResult);
-	Sleep(5000);
+	do
+	{
+		printf("[Schedule Searching Tool]\n");
+		printf("-------------------------\n");
+		printf("1. | This week schedule\n");
+		printf("2. | Next week schedule\n");
+		printf("3. | Return to schedule menu.\n");
+		printf("Choice > ");
+		rewind(stdin);
+		scanf("%d", &choice);
+		system("cls");
+		switch (choice)
+		{
+		case 1:
+			do
+			{
+				printf("You are searching for this week schedule\n");
+				printf("1. | Monday Schedule\n");
+				printf("2. | Tuesday Schedule\n");
+				printf("3. | Wednesday Schedule\n");
+				printf("4. | Thursday Schedule\n");
+				printf("5. | Friday Schedule\n");
+				printf("6. | Saturday Schedule\n");
+				printf("7. | Sunday Schedule\n");
+				printf("8. | Return to last page.\n");
+				rewind(stdin);
+				scanf("%d", &choice2);
+				switch (choice2)
+				{
+				case 1:
+					system("cls");
+					printf("\n\nMonday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "Monday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 2:
+					system("cls");
+					printf("\n\nTuesday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "Tuesday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 3:
+					system("cls");
+					printf("\n\nWednesday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "Wednesday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 4:
+					system("cls");
+					printf("\n\nThursday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "Thursday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 5:
+					system("cls");
+					printf("\n\nFriday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "Friday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 6:
+					system("cls");
+					printf("\n\nSaturday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "Saturday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 7:
+					system("cls");
+					printf("\n\nSunday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "Sunday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 8:
+					system("cls");
+					printf("Returning to last page...\n");
+					Sleep(1000);
+					break;
+				default:
+					system("cls");
+					printf("Invalid value. Again.\n");
+					break;
+				}
+			} while (choice2 != 8);
+			break;
+		case 2:
+			do
+			{
+				printf("You are searching for next week schedule\n");
+				printf("1. | Monday Schedule\n");
+				printf("2. | Tuesday Schedule\n");
+				printf("3. | Wednesday Schedule\n");
+				printf("4. | Thursday Schedule\n");
+				printf("5. | Friday Schedule\n");
+				printf("6. | Saturday Schedule\n");
+				printf("7. | Sunday Schedule\n");
+				printf("8. | Return to last page.\n");
+				rewind(stdin);
+				scanf("%d", &choice2);
+				switch (choice2)
+				{
+				case 1:
+					system("cls");
+					printf("\n\nNext Monday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "NextMonday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 2:
+					system("cls");
+					printf("\n\nNext Tuesday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "NextTuesday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 3:
+					system("cls");
+					printf("\n\nNext Wednesday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "NextWednesday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 4:
+					system("cls");
+					printf("\n\nNext Thursday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "NextThursday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 5:
+					system("cls");
+					printf("\n\nNext Friday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "NextFriday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 6:
+					system("cls");
+					printf("\n\nNext Saturday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "NextSaturday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 7:
+					system("cls");
+					printf("\n\nNext Sunday");
+					printf("\n-------------------------------------------------------------------------------------------------------\n");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+					for (int i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].day, "NextSunday") == 0)
+						{
+							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.departureTime, schedule[i].deptArr.arrivalTime, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+						}
+					}
+					printf("\n\n");
+					break;
+				case 8:
+					system("cls");
+					printf("Returning to last page...\n");
+					Sleep(1000);
+					break;
+				default:
+					system("cls");
+					printf("Invalid value. Again.\n");
+					break;
+				}
+			} while (choice2 != 8);
+			break;
+		case 3:
+			system("cls");
+			printf("Returning to schedule menu...\n");
+			Sleep(1000);
+			break;
+		default:
+			break;
+		}
+	} while (choice != 3);
 }
