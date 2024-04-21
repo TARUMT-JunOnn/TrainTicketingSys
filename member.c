@@ -48,7 +48,6 @@ void memberMainPage(struct Member* member, int memberNUM);
 //modify and display modules
 void viewProfile(struct Member* member, int memberNUM);
 
-
 void viewSchedule();
 void addBooking();
 void bookingHistory();
@@ -69,6 +68,8 @@ void searchMemberRewardPoints(struct Member* member);
 
 //delete modules
 void deleteMember(struct Member* member);
+
+char passwordStore(char password[]);
 
 struct SecurityQuestion {
 	int questionNum;
@@ -290,10 +291,14 @@ void memberLogin(struct Member* member) {
 		again = 0;
 
 		title();
+		printf("---------\n");
+		printf("| Login |\n");
+		printf("---------\n\n");
 		printf("ID: ");
 		scanf(" %[^\n]", id);
-		printf("Password: ");
-		scanf(" %[^\n]", password);
+		printf("\nPassword: ");
+		passwordStore(password);
+		printf("\n\n");
 
 		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
 			if (strcmp(member[i].id, id) == 0 && strcmp(member[i].pass, password) == 0) {
@@ -486,6 +491,32 @@ bool verify_IC(char* gender, char* ic) {
 	return true;
 }
 
+char passwordStore(char password[]) {
+	int i = 0;
+	char ch;
+	while (1) {
+		ch = _getch();
+
+		if (ch == 13)
+			break;
+		else if (ch == 8) {
+			if (i > 0) {
+				i--;
+				password[i] = '\0';
+				printf("\b \b");
+			}
+		}
+		else {
+			password[i] = ch;
+			i++;
+			printf("*");
+		}
+	}
+	password[i] = '\0';
+
+	return password;
+}
+
 void memberRegister(struct Member* member) {
 	
 	char memberID[MEMBER_ID];
@@ -526,11 +557,17 @@ void memberRegister(struct Member* member) {
 		printf("\n");
 
 		passwordFormat();
-
+		
 		printf("Password: ");
-		scanf(" %[^\n]", password);
+
+		passwordStore(password);
+		printf("\n\n");
+
 		printf("Password Confirm: ");
-		scanf(" %[^\n]", passConfirm);
+
+		passwordStore(passConfirm);
+
+		printf("\n\n");
 
 		if (strcmp(password, passConfirm) != 0) {
 			printf("\nNew Password and Confrim Password Are Not Same!\n");
@@ -550,7 +587,6 @@ void memberRegister(struct Member* member) {
 			}
 		}
 
-		
 	} while (again == 1);
 
 	strcpy(member[numMember].id, memberID);
@@ -785,9 +821,11 @@ void forgotPass(struct Member* member) {
 					passwordFormat();
 
 					printf("New Password: ");
-					scanf(" %[^\n]", newPassword);
+					passwordStore(newPassword);
+					printf("\n\n");
 					printf("New Password Confirm: ");
-					scanf(" %[^\n]", newPassConfirm);
+					passwordStore(newPassConfirm);
+					printf("\n\n");
 
 					if (strcmp(newPassword, newPassConfirm) != 0) {
 						printf("\nNew Password and Confrim Password Are Not Same!\n");
@@ -838,9 +876,6 @@ void memberMainPage(struct Member* member, int memberNUM) {
 	do
 	{
 		title();
-		printf("Welcome %s\n", member[memberNUM].id);
-		//remove id and pass
-		printf("Pass: %s", member[memberNUM].pass);
 		printf("Member Menu\n");
 		printf("-----------\n");
 		for (int i = 0; i < sizeof(menu) / sizeof(menu[0]); i++) {
