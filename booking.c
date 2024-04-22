@@ -1,4 +1,4 @@
-﻿#include<stdio.h>
+#include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<math.h>
@@ -82,13 +82,19 @@ void reset(Info *userChoice) {
 }
 
 //Same with all module
+void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
+	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
+	strcpy((*dayReturn), day[numOfWeek]);
+}
+
 void title(void) {
+	char day[10];
 	system("cls");
 	printf("%10s %s %s", "Train", "Ticketing", "System");
 	GetLocalTime(&t);
-	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"}};
+	dayOfWeek(t.wDayOfWeek, &day);
 	const char month[12][10] = { {"January"}, {"February"}, {"March"}, {"April"}, {"May"}, {"June"}, {"July"}, {"August"}, {"September"}, {"October"}, {"November"}, {"December"}};
-	printf("%104s %02d %s %d %02d:%02d:%02d", day[t.wDayOfWeek], t.wDay, month[t.wMonth - 1], t.wYear, t.wHour, t.wMinute, t.wSecond);
+	printf("%104s %02d %s %d %02d:%02d:%02d", day, t.wDay, month[t.wMonth - 1], t.wYear, t.wHour, t.wMinute, t.wSecond);
 	printf("\n");
 	for (int i = 0; i < 155; i++) {
 		printf("%s", "-");
@@ -98,40 +104,39 @@ void title(void) {
 
 int readfile(FILE** fptr) {
 	int i = 0;
-	while (fscanf(fptr, "%[^|]|", records[i].refNum) != EOF) {
-		fscanf(fptr, "%[^|]|", records[i].ID);
-		fscanf(fptr, "%d/", &records[i].trainInfo.prefer.day);
-		fscanf(fptr, "%d/", &records[i].trainInfo.prefer.month);
-		fscanf(fptr, "%d|", &records[i].trainInfo.prefer.year);
-		fscanf(fptr, "%[^|]|", records[i].trainInfo.trainId);
-		fscanf(fptr, "%d|", &records[i].amount);
-		fscanf(fptr, "%f|", &records[i].trainInfo.prefer.time.depart);
-		fscanf(fptr, "%f|", &records[i].trainInfo.prefer.time.arrive);
-		fscanf(fptr, "%[^|]|", records[i].trainInfo.departFrom);
-		fscanf(fptr, "%[^|]|", records[i].trainInfo.destination);
-		fscanf(fptr, "%c\n", &records[i].status);
+	*fptr = fopen("../TrainTicketingSys/res/booking.txt", "r");
+	while (fscanf(*fptr, "%[^|]|", records[i].refNum) != EOF) {
+		fscanf(*fptr, "%[^|]|", records[i].ID);
+		fscanf(*fptr, "%d/", &records[i].trainInfo.prefer.day);
+		fscanf(*fptr, "%d/", &records[i].trainInfo.prefer.month);
+		fscanf(*fptr, "%d|", &records[i].trainInfo.prefer.year);
+		fscanf(*fptr, "%[^|]|", records[i].trainInfo.trainId);
+		fscanf(*fptr, "%d|", &records[i].amount);
+		fscanf(*fptr, "%f|", &records[i].trainInfo.prefer.time.depart);
+		fscanf(*fptr, "%f|", &records[i].trainInfo.prefer.time.arrive);
+		fscanf(*fptr, "%[^|]|", records[i].trainInfo.departFrom);
+		fscanf(*fptr, "%[^|]|", records[i].trainInfo.destination);
+		fscanf(*fptr, "%c\n", &records[i].status);
 		++i;
 	}
+	fclose(*fptr);
 	return i;
 }
 
 int writefile(FILE** fptr) {
 	int i = 0;
+	*fptr = fopen("../TrainTicketingSys/res/booking.txt", "w");
 	while (strcmp(records[i].date, "") != 0) {
-		fprintf(fptr, "%s|%s|%s|%s|%d|%.02f|%.02f|%s|%s|%c\n", records[i].refNum, records[i].ID, records[i].date, records[i].trainInfo.trainId, records[i].amount, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].status);
+		fprintf(*fptr, "%s|%s|%s|%s|%d|%.02f|%.02f|%s|%s|%c\n", records[i].refNum, records[i].ID, records[i].date, records[i].trainInfo.trainId, records[i].amount, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].status);
 		++i;
 	}
 }
 
 //Main Function
-int main(void) {
+int bookingMain(const int recordQty) {
 	Info userChoice[MAX_TRIP][MAX_PAX];
 	char input;
 	int statAdd;
-	FILE* fptr;
-	fptr = fopen("../TrainTicketingSys/res/booking.txt", "r");
-	const int recordQty = readfile(fptr);
-	fclose(fptr);
 	for (int i = 0; records[i].trainInfo.prefer.day > 0 && records[i].trainInfo.prefer.month > 0 && records[i].trainInfo.prefer.year > 0; ++i) 
 		createDate(records[i].trainInfo.prefer.day, records[i].trainInfo.prefer.month, records[i].trainInfo.prefer.year, records[i].date, 0);
 
@@ -167,9 +172,6 @@ int main(void) {
 			return 0;
 		}
 	} while (!(input == '1' || input == '2' || input == '3' || input == '4' || input == '5' || input == '6'));
-	fptr = fopen("../TrainTicketingSys/res/booking.txt", "w");
-	writefile(fptr);
-	fclose(fptr);
 }
 
 int addBooking(Info *userChoice, const int recordQty) {
