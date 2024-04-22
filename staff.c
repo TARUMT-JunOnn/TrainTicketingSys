@@ -315,7 +315,7 @@ void staff_login(struct Staff* staff, struct Manager* manager)
 
     do
     {
-        count = 0;
+        
         loginSuccess = 0;
         printf("\nEnter your staff ID: ");
         scanf(" %[^\n]", id);
@@ -379,7 +379,7 @@ void staff_login(struct Staff* staff, struct Manager* manager)
 
 
         }
-    } while (again == 1);
+    } while (again == 1 && loginSuccess ==0 );
     // system("cls");
 }
 
@@ -539,7 +539,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
         printf("Email:%s\n", staff[staffNum].staff_email);
 
 
-        printf("\nConfirm? ");
+        printf("\nConfirm?(Y/N): ");
         scanf(" %c", &confirm);
 
         if (confirm == 'Y' || confirm == 'y') {
@@ -1492,6 +1492,7 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
     int choice;
     int again = 0;
     int questionNum[MAX_QUESTION_SELECTED];
+    char enterAgain;
 
     do {
         again = 0;
@@ -1524,32 +1525,37 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
 
                     securityQues_display(questionNum, question);
 
-                    for (int j = 0; j < MAX_QUESTION_SELECTED; j++) {
-                        printf("\n%s:", question[j]);
-                        printf("\nAnswers:");
-                        scanf(" %[^\n]", answer[j]);
-                    }
+                    do {
 
-                    for (int j = 0; j < MAX_QUESTION_SELECTED; j++) {
-                        if (strcmp(answer[j], manager[i].security[j].securityAns) == 0) {
-                            correctAns++;
+                        for (int j = 0; j < MAX_QUESTION_SELECTED; j++) {
+                            printf("\n%s:", question[j]);
+                            printf("\nAnswers:");
+                            scanf(" %[^\n]", answer[j]);
                         }
-                    }
+
+                        for (int j = 0; j < MAX_QUESTION_SELECTED; j++) {
+                            if (strcmp(answer[j], manager[i].security[j].securityAns) == 0) {
+                                correctAns++;
+                            }
+                        }
 
 
-                    if (correctAns == MAX_QUESTION_SELECTED) {
-                        printf("Please enter your new password: ");
-                        scanf(" %[^\n]", manager[i].manager_password);
-                        printf("Password reset successfully.\n");
-                        return;
+                        if (correctAns == MAX_QUESTION_SELECTED) {
+                            printf("Please enter your new password: ");
+                            scanf(" %[^\n]", manager[i].manager_password);
+                            printf("Password reset successfully.\n");
+                            return;
+                        }
+                        else
+                        {
+                            printf("You failed to answer one or more security questions correctly.\n");
+                            printf("Do u want to enter the answers for security password again?(Y/N):\n");
+                            scanf(" %c", &enterAgain);
+                            return;
+                        }
+                    } while (enterAgain == 'Y' || enterAgain == 'y');
                     }
-                    else
-                    {
-                        printf("You failed to answer one or more security questions correctly.\n");
-                        return;
-                    }
-                }
-
+                
                 else if (ans == 2) {
                     do {
                         printf("Do you want to exit?\n");
