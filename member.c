@@ -22,7 +22,6 @@
 
 void member();
 
-void title(void);
 int tryAgain(int again);
 void waitingScreen(void);
 void memberMenu(struct Member* member);
@@ -94,43 +93,20 @@ struct Member {
 
 int numMember = 0;
 
-void title(void) {
-	system("cls");
-	printf("%10s %s %s", "Train", "Ticketing", "System");
-	SYSTEMTIME t;
-	GetLocalTime(&t);
-	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
-	const char month[12][10] = { {"January"}, {"February"}, {"March"}, {"April"}, {"May"}, {"June"}, {"July"}, {"August"}, {"September"}, {"October"}, {"November"}, {"December"} };
-	printf("%104s %02d %s %d %02d:%02d:%02d", day[t.wDayOfWeek], t.wDay, month[t.wMonth - 1], t.wYear, t.wHour, t.wMinute, t.wSecond);
-	printf("\n");
-	for (int i = 0; i < 155; i++) {
-		printf("%s", "-");
-	}
-	printf("\n\n");
-}
-
-
-main(void) {
-	member();
-
-}
-
-void member() {
+void member(FILE** memberFptr) {
 	struct Member member[MAX_NUMBER_MEMBER];
 	struct Member member2;
 	int choice;
 
-	FILE* memberFptr;
+	*memberFptr = fopen("../TrainTicketingSys/res/member.bin", "rb");
 
-	memberFptr = fopen("../TrainTicketingSys/res/member.bin", "rb");
-
-	if (memberFptr == NULL) {
+	if (*memberFptr == NULL) {
 		printf("Can't Open The File\n");
 		exit(-1);
 	}
 
-	fread(&member2, sizeof(member2), 1, memberFptr);
-	while (!feof(memberFptr))
+	fread(&member2, sizeof(member2), 1, *memberFptr);
+	while (!feof(*memberFptr))
 	{
 
 		strcpy(member[numMember].id, member2.id);
@@ -150,10 +126,10 @@ void member() {
 			strcpy(member[numMember].security[i].answer, member2.security[i].answer);
 
 		numMember++;
-		fread(&member2, sizeof(member2), 1, memberFptr);
+		fread(&member2, sizeof(member2), 1, *memberFptr);
 	}
 
-	fclose(memberFptr);
+	fclose(*memberFptr);
 
 	//test to display all data
 	for (int i = 0; i < numMember; i++) {
@@ -186,13 +162,13 @@ void member() {
 		}
 	} while (choice != 4);
 
-	memberFptr = fopen("../TrainTicketingSys/res/member.bin", "wb");
+	*memberFptr = fopen("../TrainTicketingSys/res/member.bin", "wb");
 
 	for (int i = 0; i < numMember; i++) {
-		fwrite(&member[i], sizeof(member[0]), 1, memberFptr);
+		fwrite(&member[i], sizeof(member[0]), 1, *memberFptr);
 	}
 
-	fclose(memberFptr);
+	fclose(*memberFptr);
 }
 
 int tryAgain(int again) {
@@ -1045,18 +1021,6 @@ void viewProfile(struct Member* member, int memberNUM) {
 
 void viewSchedule() {
 		
-}
-
-void addBooking() {
-
-}
-
-void bookingHistory() {
-
-}
-
-void cancelBooking() {
-
 }
 
 //havent done yet
