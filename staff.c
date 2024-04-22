@@ -477,8 +477,17 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
             break;
         }
         if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5) {
-            printf("\nSelect again? (Y||N) : ");
-            scanf(" %c", &select);
+            do {
+                printf("\nSelect again? (Y||N) : ");
+                scanf(" %c", &select);
+
+                if (toupper(select) != 'Y' && toupper(select) != 'N')
+                {
+                    printf("Invalide select.");
+                }
+
+            } while (toupper(select) != 'Y' && toupper(select) != 'N');
+
         }
 
     } while (toupper(select) == 'Y');
@@ -516,7 +525,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
         again = 0;
 
         /*title();*/
-                /*title();*/
+
                 // Before edit --change the versio view
         printf("---------------------------\n");
         printf("------ Before Update ------\n");
@@ -569,8 +578,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
 
                 /*title();*/
                 printf("\n--------------------------\n");
-                printf("ID of staff %s not found!!\n", staff[staffNum].staff_name);
-                printf("DO you want to enter again?");
+                printf("DO you want to update again?");
                 printf("\n1. Yes\n");
                 printf("2. No\n");
                 printf("Enter you choice:");
@@ -737,6 +745,8 @@ void resetPassword(struct Staff* staff)
         }
         else {
             printf("Authentication failed.\n");
+            printf("You need to register first !\n\n");
+            return staff_registration(staff);
         }
         /* return;*/
 
@@ -804,7 +814,7 @@ void manager_menu(struct Staff* staff, struct Manager* manager)
     time_t t;
     time(&t);
 
-    // system("cls");
+    
     do {
         /*title();*/
         printf("\n------ MANAGER MENU ------\n");
@@ -977,11 +987,22 @@ void manager_main_page(struct Staff* staff, struct Manager* manager, int manager
         default:
             break;
         }
-        printf("\nSelect again? (Y||N) : ");
-        scanf(" %c", &select);
+        if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5) {
+            do{
+                printf("\nSelect again? (Y||N) : ");
+                scanf(" %c", &select);
+
+                if(toupper(select) != 'Y' && toupper(select) != 'N')
+                {
+                    printf("Invalide select.");
+                }
+
+            } while (toupper(select) != 'Y' && toupper(select) != 'N');
+            
+        }
 
     } while (toupper(select) == 'Y');
-    printf("Invalide select.");
+    
 }
 
 // Manager registration !**** got error
@@ -1217,6 +1238,9 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
     do
     {
         ans = 0;
+        successful = 0;
+        again = 0;
+        reenter = 0;
         /*title();*/
 
         printf("\n------- Particular staff rest schedule -------\n");
@@ -1232,21 +1256,39 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                 do { ///
                     reenter = 0;
                     printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
-                    printf("\nBEGIN (hh:mm a.m./p.m.): ");
-                    if (scanf("%d:%d %s", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute, staff[i].schedule.begin_period) != 3)
+                    printf("\nBEGIN (hh:mm - 24H format): ");
+                 
+                    if (scanf("%d:%d", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute) != 2)
                     {
-                        printf("Invalid input format. Please enter time in hh:mm a.m./p.m. format.\n");
+                        printf("Invalid input format. Please enter time in hh:mm - 24H format.\n");
                         reenter++;
                     }
                     if (reenter == 0) {
                         printf("\nREST (minutes): ");
                         scanf("%d", &staff[i].schedule.rest_time);
-                        printf("\nEND (hh:mm a.m./p.m.): ");
-                        if (scanf("%d:%d %s", &staff[i].schedule.end_hour, &staff[i].schedule.end_minute, staff[i].schedule.end_period) != 3)
-                        {
-                            printf("Invalid input format. Please enter time in hh:mm a.m./p.m. format.\n");
-                            reenter++;
-                        }
+                       
+                        
+                        do {
+                            printf("\nEND (hh:mm - 24H format): ");
+
+                            if (scanf("%d:%d", &staff[i].schedule.end_hour, &staff[i].schedule.end_minute) != 2)
+                            {
+                                printf("Invalid input format. Please enter time in hh:mm - 24H format.\n");
+                                reenter++;
+                            }
+
+                            total_begin_minutes = staff[i].schedule.begin_hour * 60 + staff[i].schedule.begin_minute;
+                            total_end_minutes = staff[i].schedule.end_hour * 60 + staff[i].schedule.end_minute;
+                            
+
+                            if (staff[i].schedule.begin_hour >= 16 && staff[i].schedule.end_hour < staff[i].schedule.begin_hour) {
+                                total_end_minutes = total_end_minutes + 1440;
+                            }
+                            total_working_minutes = total_end_minutes - total_begin_minutes - staff[i].schedule.rest_time;
+                            
+                        } while (total_working_minutes < 480 );
+                        
+                        
                     }
 
 
@@ -1264,9 +1306,9 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 
 
                    //here testing==============================
-                total_begin_minutes = staff[i].schedule.begin_hour * 60 + staff[i].schedule.begin_minute;
+                /*total_begin_minutes = staff[i].schedule.begin_hour * 60 + staff[i].schedule.begin_minute;
                 total_end_minutes = staff[i].schedule.end_hour * 60 + staff[i].schedule.end_minute;
-                total_working_minutes = total_end_minutes - total_begin_minutes - staff[i].schedule.rest_time;
+                total_working_minutes = total_end_minutes - total_begin_minutes - staff[i].schedule.rest_time;*/
 
                 // Adjust for overnight working(if end time is before begin time)
                 if (total_end_minutes < total_begin_minutes) {
@@ -1288,7 +1330,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 
                     printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
                     printf("BEGIN TIME\tREST TIME\tEND TIME\n");
-                    printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
+                    printf("%02d:%02d\t%d\t%02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
                     printf("TOTAL WORKING TIME : %d hours %d minutes (exclude rest time)\n", total_working_hours, remaining_minutes);
                     printf("-------------------------------------------------------------------\n");
 
@@ -1302,7 +1344,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                     printf("---------------------------------------------\n");
                     printf("| STAFF END WORKING TIME MUST ENOUGH 8 HOUR |\n");
                     printf("---------------------------------------------\n");
-                    ans++;
+                    //ans++;
                 }
 
 
@@ -1628,7 +1670,7 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
             if (staff[i].schedule.total_working_hours != 0) {
                 printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
                 printf("BEGIN TIME\tREST TIME\tEND TIME\n");
-                printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
+                printf("%02d:%02d\t%d\t%02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
                 printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule.total_working_hours, staff[i].schedule.remaining_minutes);
                 printf("-------------------------------------------------------------------\n");
             }
