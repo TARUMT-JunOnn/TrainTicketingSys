@@ -365,6 +365,7 @@ void staff_login(struct Staff* staff, struct Manager* manager)
                 if (ans == 1) 
                 {
                     resetPassword(staff);
+                    count = 0;
                 }
                 else
                 {
@@ -440,6 +441,7 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
 
     //system("cls");
     do {
+        select = 'Y';
         /*title();*/
         printf("\nStaff\n");
         printf("------\n");
@@ -469,6 +471,7 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
             break;
         case 6:
             printf("Exiting...\n");
+            select = 'N';
             break;
         default:
             break;
