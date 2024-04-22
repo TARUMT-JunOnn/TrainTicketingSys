@@ -315,6 +315,8 @@ void staff_login(struct Staff* staff, struct Manager* manager)
 
     do
     {
+        count = 0;
+        loginSuccess = 0;
         printf("\nEnter your staff ID: ");
         scanf(" %[^\n]", id);
         printf("Enter your staff password: ");
@@ -474,6 +476,8 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
             select = 'N';
             break;
         default:
+            select = 'Y';
+            printf("\nPlease try again\n");
             break;
         }
         if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5) {
@@ -901,7 +905,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
                     printf("\nYou are failed to log in 3 time!\n");
                     printf("\n1. RESET PASSWORD\n");
                     printf("2. EXIT\n");
-                    printf("Do u want to reset the password ? ____   ____");
+                    printf("Do u want to reset the password ?");
                     scanf("%d", &ans);
 
                     if (ans == 1)
@@ -920,27 +924,6 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 
             } while (again == 0);
 
-            /* if (count == 3)
-             {
-                 printf("\nYou are failed to log in 3 time!\n");
-                 printf("\n1. RESET PASSWORD\n");
-                 printf("2. EXIT\n");
-                 printf("Do u want to reset the password ? ____   ____");
-                 scanf("%d", &ans);
-
-                 if (ans == 1)
-                 {
-                     manager_reset_pass(manager);
-                 }
-                 else
-                 {
-                     printf("\nYou are exit right now\n");
-                     return 0;
-                 }
-
-             }*/
-
-             //return 0;
         }
     } while (again == 1);
 
@@ -983,8 +966,11 @@ void manager_main_page(struct Staff* staff, struct Manager* manager, int manager
             updateManager_information(staff, manager, managerNum);
             break;
         case 6:
+            select = 'N';
             break;
         default:
+            select = 'Y';
+            printf("\nPlease try again\n");
             break;
         }
         if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5) {
