@@ -821,6 +821,7 @@ void manager_menu(struct Staff* staff, struct Manager* manager)
     
     do {
         /*title();*/
+
         printf("\n------ MANAGER MENU ------\n");
         printf("-------------------------\n");
         printf("1. Login\n");
@@ -864,6 +865,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 
     do
     {
+        loginSuccess = 0;
         printf("\nEnter your manager ID: ");
         scanf(" %[^\n]", id);
         printf("Enter your manager password: ");
@@ -899,6 +901,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
                 else {
                     again = 0;
                 }
+            } while (again == 0);
 
                 if (count == 3)
                 {
@@ -912,7 +915,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
                     {
                         manager_reset_pass(staff, manager);
                         count = 0;
-                        printf("%d\n", again);
+                        return 0;
                     }
                     else
                     {
@@ -922,10 +925,10 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 
                 }
 
-            } while (again == 0);
+            //} while (again == 0);
 
         }
-    } while (again == 1);
+    } while (again == 1 && loginSuccess ==0);
 
 }
 
@@ -1551,7 +1554,8 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
                             printf("You failed to answer one or more security questions correctly.\n");
                             printf("Do u want to enter the answers for security password again?(Y/N):\n");
                             scanf(" %c", &enterAgain);
-                            return;
+                            
+                            // got error if the mananger enter is not n/y is other char...
                         }
                     } while (enterAgain == 'Y' || enterAgain == 'y');
                     }
