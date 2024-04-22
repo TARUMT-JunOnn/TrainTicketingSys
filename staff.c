@@ -1228,76 +1228,83 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 
             if (strcmp(staff[i].staff_id, id) == 0)
             {
-                do { ///
-                    reenter = 0;
-                    printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
-                    printf("\nBEGIN (hh:mm a.m./p.m.): ");
-                    if (scanf("%d:%d %s", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute, staff[i].schedule.begin_period)!= 3) 
-                    {
-                        printf("Invalid input format. Please enter time in hh:mm a.m./p.m. format.\n");
-                        reenter++;
+                
+                    do { ///
+                        reenter = 0;
+                        printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
+                        printf("\nBEGIN (hh:mm a.m./p.m.): ");
+                        if (scanf("%d:%d %s", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute, staff[i].schedule.begin_period) != 3)
+                        {
+                            printf("Invalid input format. Please enter time in hh:mm a.m./p.m. format.\n");
+                            reenter++;
+                        }
+                        if (reenter == 0) {
+                            printf("\nREST (minutes): ");
+                            scanf("%d", &staff[i].schedule.rest_time);
+                            printf("\nEND (hh:mm a.m./p.m.): ");
+                            if (scanf("%d:%d %s", &staff[i].schedule.end_hour, &staff[i].schedule.end_minute, staff[i].schedule.end_period) != 3)
+                            {
+                                printf("Invalid input format. Please enter time in hh:mm a.m./p.m. format.\n");
+                                reenter++;
+                            }
+                        }
+
+
+
+
+                    } while (reenter != 0);
+
+                    /*   printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
+                       printf("\nBEGIN (hh:mm a.m./p.m.): ");
+                       scanf("%d:%d %s", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute, staff[i].schedule.begin_period);
+                       printf("\nREST (in minutes): ");
+                       scanf("%d", &staff[i].schedule.rest_time);
+                       printf("\nEND (hh:mm a.m./p.m.): ");
+                       scanf("%d:%d %s", &staff[i].schedule.end_hour, &staff[i].schedule.end_minute, staff[i].schedule.end_period);*/
+
+
+                       //here testing==============================
+                    total_begin_minutes = staff[i].schedule.begin_hour * 60 + staff[i].schedule.begin_minute;
+                    total_end_minutes = staff[i].schedule.end_hour * 60 + staff[i].schedule.end_minute;
+                    total_working_minutes = total_end_minutes - total_begin_minutes - staff[i].schedule.rest_time;
+
+                    // Adjust for overnight working(if end time is before begin time)
+                    if (total_end_minutes < total_begin_minutes) {
+                        total_working_minutes = (24 * 60 - total_begin_minutes) + total_end_minutes;
                     }
-                    printf("\nREST (minutes): ");
-                    scanf("%d", &staff[i].schedule.rest_time);
-                    printf("\nEND (hh:mm a.m./p.m.): ");
-                    if (scanf("%d:%d %s", &staff[i].schedule.end_hour, &staff[i].schedule.end_minute, staff[i].schedule.end_period) != 3)
-                    {
-                        printf("Invalid input format. Please enter time in hh:mm a.m./p.m. format.\n");
-                        reenter++;
+                    else {
+                        total_working_minutes = total_end_minutes - total_begin_minutes;
                     }
 
-                    
-                } while (reenter != 0);
+                    if (total_working_minutes >= 8 * 60) {
 
-             /*   printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
-                printf("\nBEGIN (hh:mm a.m./p.m.): ");
-                scanf("%d:%d %s", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute, staff[i].schedule.begin_period);
-                printf("\nREST (in minutes): ");
-                scanf("%d", &staff[i].schedule.rest_time);
-                printf("\nEND (hh:mm a.m./p.m.): ");
-                scanf("%d:%d %s", &staff[i].schedule.end_hour, &staff[i].schedule.end_minute, staff[i].schedule.end_period);*/
+                        // Calculate total working hours and minutes
+                        total_working_hours = total_working_minutes / 60;
+                        remaining_minutes = total_working_minutes % 60;
 
+                        printf("\n---------------------------------------------\n");
+                        printf("| WORKING TIME UPDATED SUCCESSFULLY |\n");
+                        printf("---------------------------------------------\n");
 
-                //here testing==============================
-                total_begin_minutes = staff[i].schedule.begin_hour * 60 + staff[i].schedule.begin_minute;
-                total_end_minutes = staff[i].schedule.end_hour * 60 + staff[i].schedule.end_minute;
-                total_working_minutes = total_end_minutes - total_begin_minutes - staff[i].schedule.rest_time;
+                        printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
+                        printf("BEGIN TIME\tREST TIME\tEND TIME\n");
+                        printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
+                        printf("TOTAL WORKING TIME : %d hours %d minutes (exclude rest time)\n", total_working_hours, remaining_minutes);
+                        printf("-------------------------------------------------------------------\n");
 
-                // Adjust for overnight working(if end time is before begin time)
-                if (total_end_minutes < total_begin_minutes) {
-                    total_working_minutes = (24 * 60 - total_begin_minutes) + total_end_minutes;
-                }
-                else {
-                    total_working_minutes = total_end_minutes - total_begin_minutes;
-                }
+                        staff[i].schedule.total_working_hours = total_working_hours;
+                        staff[i].schedule.remaining_minutes = remaining_minutes;
+                        // system("cls");
 
-                if (total_working_minutes >= 8 * 60) {
+                    }
+                    else
+                    {
+                        printf("---------------------------------------------\n");
+                        printf("| STAFF END WORKING TIME MUST ENOUGH 8 HOUR |\n");
+                        printf("---------------------------------------------\n");
+                        ans++;
+                    }
 
-                    // Calculate total working hours and minutes
-                    total_working_hours = total_working_minutes / 60;
-                    remaining_minutes = total_working_minutes % 60;
-
-                    printf("\n---------------------------------------------\n");
-                    printf("| WORKING TIME UPDATED SUCCESSFULLY |\n");
-                    printf("---------------------------------------------\n");
-
-                    printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
-                    printf("BEGIN TIME\tREST TIME\tEND TIME\n");
-                    printf("%02d:%02d %s\t%d\t%02d:%02d\t%s\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.begin_period, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute, staff[i].schedule.end_period);
-                    printf("TOTAL WORKING TIME : %d hours %d minutes (exclude rest time)\n", total_working_hours, remaining_minutes);
-                    printf("-------------------------------------------------------------------\n");
-
-                    staff[i].schedule.total_working_hours = total_working_hours;
-                    staff[i].schedule.remaining_minutes = remaining_minutes;
-                    // system("cls");
-
-                }
-                else 
-                {
-                    printf("---------------------------------------------\n");
-                    printf("| STAFF END WORKING TIME MUST ENOUGH 8 HOUR |\n");
-                    printf("---------------------------------------------\n");
-                }
 
                 successful++;
 
@@ -1305,7 +1312,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 
         }
 
-        if (successful == 0) 
+        if (successful == 0 && ans == 0) 
         {
             do
             {
@@ -1341,8 +1348,10 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                 printf("Enter you choice:");
                 scanf("%d", &choice);
 
-                if (choice == 1)
+                if (choice == 1) {
                     again++;
+                    ans++;
+                }
                 else if (choice == 2) {
                     return 0;
                    // system("cls");
@@ -1354,7 +1363,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
         }
 
     } while (ans == 1);
-        }
+ }
 
 
 //Manager update information
