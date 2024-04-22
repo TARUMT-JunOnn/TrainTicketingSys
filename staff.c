@@ -203,7 +203,7 @@ main() {
 
 //heading all pages
 void title(void) {
-    system("cls");
+   // system("cls");
     printf("%10s %s %s", "Train", "Ticketing", "System");
     time_t t;
     time(&t);
@@ -227,7 +227,7 @@ void menu(struct Staff* staff, struct Manager* manager)
     hour = localtime(&t);
     strftime(buffer, 50, "%X", hour);
 
-    system("cls");
+    //system("cls");
     do {
         /*title();*/
         printf("------ EMPLOYEE MENU ------\n");
@@ -265,7 +265,7 @@ void staffMenu(struct Staff* staff, struct Manager* manager)
 {
     int choice;
 
-    system("cls");
+   //system("cls");
     do {
         /*title();*/
         printf("\n------ STAFF MENU ------\n");
@@ -345,7 +345,7 @@ void staff_login(struct Staff* staff, struct Manager* manager)
                 }
                 else if (ans == 2) {
                     return 0;
-                    system("cls");
+                    //system("cls");
                 }
                 else
                     again = 0;
@@ -376,7 +376,7 @@ void staff_login(struct Staff* staff, struct Manager* manager)
 
         }
     } while (again ==1);
-    system("cls");
+   // system("cls");
 }
 
 //staff registration menu 
@@ -428,7 +428,7 @@ void staff_registration(struct Staff* staff) {
     printf("\nRegistration successfully\n\n");
 
     staff_count++;
-    system("cls"); // This make some notification can't detect.
+   // system("cls"); // This make some notification can't detect.
 }
 
 
@@ -472,7 +472,7 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
         default:
             break;
         }
-        printf("Select again? (Y||N) : ");
+        printf("\nSelect again? (Y||N) : ");
         scanf(" %c", &select);
 
     } while (toupper(select) == 'Y');
@@ -574,7 +574,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
                     again++;
                 else if (choice == 2) {
                     return 0;
-                    system("cls");
+                    //system("cls");
                 }
 
                 else
@@ -798,7 +798,7 @@ void manager_menu(struct Staff* staff, struct Manager* manager)
     time_t t;
     time(&t);
 
-    system("cls");
+   // system("cls");
     do {
         /*title();*/
         printf("\n------ MANAGER MENU ------\n");
@@ -874,7 +874,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
                 }
                 else if (ans == 2) {
                     return 0;
-                    system("cls");
+                   // system("cls");
                 }
                 else {
                     again = 0;
@@ -935,7 +935,7 @@ void manager_main_page(struct Staff* staff, struct Manager* manager, int manager
     int choice;
     char select;
     
-    system("cls");
+   // system("cls");
     do {
         /*title();*/
         printf("\nManager\n");
@@ -975,6 +975,7 @@ void manager_main_page(struct Staff* staff, struct Manager* manager, int manager
         scanf(" %c", &select);
 
     } while (toupper(select) == 'Y');
+    printf("Invalide select.");
 }
 
 // Manager registration !**** got error
@@ -1092,7 +1093,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
     int again = 0;
     int done = 1;
     int choice;
-    system("cls");
+   // system("cls");
 
     do
     {
@@ -1147,7 +1148,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
                     {
                         printf("\nEXIT FROM REMOVE STAFF MENU.\n");
                         return 0;
-                        system("cls");
+                        //system("cls");
                     }
 
                     else
@@ -1177,7 +1178,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
                 again++;
                     else if (choice == 2) {
                         return 0;
-                        system("cls");
+                        //system("cls");
                     }
                 else
                 again = 0;
@@ -1338,7 +1339,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                     again++;
                 else if (choice == 2) {
                     return 0;
-                    system("cls");
+                   // system("cls");
                 }
                 else
                     again = 0;
@@ -1401,7 +1402,7 @@ void updateManager_information(struct Staff* staff, struct Manager* manager, int
                     printf("Email:%s\n", manager[managerNum].manager_email);
                     printf("\n---------------------------\n");
 
-                     system("cls");
+                    // system("cls");
 
             if (success == 0) {
                 do {
