@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include<string.h>
+#include <ctype.h>
 #pragma warning (disable : 4996);
 
 #define MAX_STAFF 40
@@ -472,8 +473,10 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
         default:
             break;
         }
-        printf("\nSelect again? (Y||N) : ");
-        scanf(" %c", &select);
+        if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5) {
+            printf("\nSelect again? (Y||N) : ");
+            scanf(" %c", &select);
+        }
 
     } while (toupper(select) == 'Y');
 }
@@ -490,7 +493,7 @@ void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum)
         printf("-------------------------------------------------------------------\n");
     }
     else
-        printf("Sorry,You schedule haven't done modified yet.\n");
+        printf("Sorry,Your schedule haven't done modified yet.\n");
 
 }
 
@@ -1243,13 +1246,13 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                     
                 } while (reenter != 0);
 
-                printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
+             /*   printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
                 printf("\nBEGIN (hh:mm a.m./p.m.): ");
                 scanf("%d:%d %s", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute, staff[i].schedule.begin_period);
                 printf("\nREST (in minutes): ");
                 scanf("%d", &staff[i].schedule.rest_time);
                 printf("\nEND (hh:mm a.m./p.m.): ");
-                scanf("%d:%d %s", &staff[i].schedule.end_hour, &staff[i].schedule.end_minute, staff[i].schedule.end_period);
+                scanf("%d:%d %s", &staff[i].schedule.end_hour, &staff[i].schedule.end_minute, staff[i].schedule.end_period);*/
 
 
                 //here testing==============================
@@ -1443,11 +1446,12 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
     int i, j;
     int ans;
     int correctAns = 0;
-    char answer[50];
+    char answer[50][2];
     char question[MAX_QUESTION_SELECTED][50];
     int idExist = 0;
     int choice;
     int again = 0;
+    int questionNum[MAX_QUESTION_SELECTED];
     
     do {
         again = 0;
@@ -1473,23 +1477,30 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
                 if (ans == 1)
                 {
                     correctAns = 0;
-                    for (j = 0; j < MAX_QUESTION_SELECTED; j++)
-                    {
-                        securityQues_display(manager[i].security[j].questionNum, question);
-                        printf("\n%s:", manager[i].security[j].questionNum);
-                        printf("\nAnswers:");
-                        scanf(" %[^\n]", answer);
-                        if (strcmp(answer, manager[i].security[j].securityAns) == 0) {
-                            correctAns++;
+                  
+                    for (int j = 0; j < MAX_QUESTION_SELECTED; j++) 
+                        questionNum[j] = manager[i].security[j].questionNum;
+                    
+
+                        securityQues_display(questionNum, question);
+
+                        for (int j = 0; j < MAX_QUESTION_SELECTED; j++) {
+                            printf("\n%s:", question[j]);
+                            printf("\nAnswers:");
+                            scanf(" %[^\n]", answer[j]);
                         }
-                        else {
-                            printf("Incorrect answer for security question\n");
+
+                        for (int j = 0; j < MAX_QUESTION_SELECTED; j++) {
+                            if (strcmp(answer[j], manager[i].security[j].securityAns) == 0) {
+                                correctAns++;
+                            }
                         }
-                    }
+                       
+                  
                     if (correctAns == MAX_QUESTION_SELECTED) {
                         printf("Please enter your new password: ");
                         scanf(" %[^\n]", manager[i].manager_password);
-                        printf("Password reset successfully.\n");
+                        printf("Password reset successfully.\n");   
                         return;
                     }
                     else
@@ -1554,7 +1565,7 @@ void security_Ques()
 void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char questionTitle[MAX_QUESTION_SELECTED][50])
 {
     for (int i = 0; i < 2; i++) {
-        switch (questionSelection[i]) //got bug
+        switch (questionSelection[i])
         {
         case 1:
             strcpy(questionTitle[i], "What was the first name of your first pet?");
@@ -1572,6 +1583,18 @@ void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char que
             strcpy(questionTitle[i], "What is your mother's maiden name?");
             break;
         }
+
+  /*      if (questionSelection[i] == 1) 
+            strcpy(questionTitle[i], "What was the first name of your first pet?");
+        else if (questionSelection[i] == 2)
+            strcpy(questionTitle[i], "What was your childhood nickname?");
+        else if (questionSelection[i] == 3)
+            strcpy(questionTitle[i], "What are the favorite food as a child?");
+        else if (questionSelection[i] == 4)
+            strcpy(questionTitle[i], "In what city were you born?");
+        else 
+            strcpy(questionTitle[i], "What is your mother's maiden name?");*/
+
     }
 }
 
