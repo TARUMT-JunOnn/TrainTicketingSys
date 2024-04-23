@@ -82,9 +82,11 @@ void reset(Info *userChoice) {
 }
 
 //Same with all module
-int readfile(FILE** fptr) {
+int readBookingFile(FILE** fptr) {
 	int i = 0;
 	*fptr = fopen("../TrainTicketingSys/res/booking.txt", "r");
+	if (!*fptr) 
+		return -1;
 	while (fscanf(*fptr, "%[^|]|", records[i].refNum) != EOF) {
 		fscanf(*fptr, "%[^|]|", records[i].ID);
 		fscanf(*fptr, "%d/", &records[i].trainInfo.prefer.day);

@@ -29,10 +29,32 @@ void title(void) {
 	printf("\n\n");
 }
 
-int main(void) {
+int readFile() {
 	FILE* fptr[4];
-	member(&fptr[0]);
-	bookingMain(readfile(&fptr[3]));
-	writefile(&fptr[3]);
-	fclose(fptr[3]);
+	int status;
+	for (int i = 0; i < 4; i++) {
+		switch (i) {
+		case 0:
+			status = readMemberFile(&fptr[i]);
+			break;
+		case 1:
+			status = readStaffFile(&fptr[i]);
+			break;
+		case 2:
+			status = readScheduleFile(&fptr[i]);
+			break;
+		case 3:
+			status = readBookingFile(&fptr[i]);
+			break;
+		}
+		if (status == -1)
+			return status;
+	}
+}
+
+int main(void) {
+	if (readFile() == -1) {
+		printf("Unable open file");
+		return 0;
+	}
 }

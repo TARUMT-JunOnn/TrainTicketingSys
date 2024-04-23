@@ -161,7 +161,7 @@ void member(FILE** memberFptr) {
 			printf("Please Try Again\n");
 		}
 	} while (choice != 4);
-
+	//write
 	*memberFptr = fopen("../TrainTicketingSys/res/member.bin", "wb");
 
 	for (int i = 0; i < numMember; i++) {
