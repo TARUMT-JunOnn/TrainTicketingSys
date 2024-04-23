@@ -18,33 +18,33 @@
 
 
 
-void employeeMenu();
-void staffMenu();
-void staff_login();
-void staff_registration();
-void staff_main_page(int staffNum);
-void staff_schedule(int staffNum);
-void staff_information(int staffNum);
-void staff_logout(int staffNum);
+int employeeMenu();
+int staffMenu();
+int staff_login();
+int staff_registration();
+int staff_main_page(int staffNum);
+int staff_schedule(int staffNum);
+int staff_information(int staffNum);
+int staff_logout(int staffNum);
 // manager
-void manager_menu();
-void manager_login();
-void manager_registration(struct Manager* manager);
-void manager_main_page(int managerNum);
-void delete_Acc();
-//void modify_staffInformation();
-void modifyEmpRestSchedule();
-void updateManager_information(int managerNum);
-void resetPassword();
+int manager_menu();
+int manager_login();
+int manager_registration(struct Manager* manager);
+int manager_main_page(int managerNum);
+int delete_Acc();
+//int modify_staffInformation();
+int modifyEmpRestSchedule();
+int updateManager_information(int managerNum);
+int resetPassword();
 void sendValidationCode(char* email, char* code);
 char* generateValidationCode();
-void manager_view_schedule();
-void manager_reset_pass();
-void security_Ques();
-void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char questionTitle[MAX_QUESTION_SELECTED][50]);
+int manager_view_schedule();
+int manager_reset_pass();
+int security_Ques();
+int securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char questionTitle[MAX_QUESTION_SELECTED][50]);
 //
 double calculate_hours(time_t check_in_time, time_t check_out_time);
-void dispalyAll(int managerNum);
+int dispalyAll(int managerNum);
 
 
 // Predefined employee and manager IDs and passwords
@@ -275,9 +275,10 @@ int readStaffFile(FILE** fstaff) {
 
 
 // Main menu
-void employeeMenu()
+int employeeMenu()
 {
-    int choice;
+    char choice;
+    int choiceInt;
     struct tm* hour;
     char buffer[50];
     time_t t;
@@ -288,22 +289,24 @@ void employeeMenu()
 
     //system("cls");
     do {
-        /*title();*/
+        title();
         printf("------ EMPLOYEE MENU ------\n");
         printf("-------------------------\n");
         printf("1. Staff\n");
         printf("2. Manager\n");
-        printf("3. Exit Program\n");
-        scanf("%d", &choice);
-
+        printf("3. Exit\n");
+        scanf(" %c", &choice);
         switch (choice) {
-        case 1:
-            staffMenu();
+        case '1':
+            return choice - 48;
+            break; 
+        case '2':
+            return choice - 48;
             break;
-        case 2:
-            manager_menu();
-            break;
-        case 3:
+        case '3':
+            printf("\nYou are Log Out %s Right Now!\n", buffer);
+            system("pause");
+            return 0;
             break;
         default:
             //got error when loop
@@ -312,17 +315,14 @@ void employeeMenu()
             //only can validate numeric answer
             //if enter character or string, it will be error
         }
-
-    } while (choice != 3);
-    printf("\nYou are Log Out %s Right Now!\n", buffer);
-
+    } while (choice != '1' && choice != '2' && choice != 3);
 
 }
 
 // staff Menu!
-void staffMenu()
+int staffMenu()
 {
-    int choice;
+    int choice, status;
 
     //system("cls");
     do {
@@ -336,10 +336,10 @@ void staffMenu()
 
         switch (choice) {
         case 1:
-            staff_login();
+            status = staff_login();
             break;
         case 2:
-            staff_registration(staff);
+            status = staff_registration(staff);
             break;
         case 3:
             printf("Exiting....\n");
@@ -359,7 +359,7 @@ void staffMenu()
 
 
 // Staff Login menu
-void staff_login()
+int staff_login()
 {
     char id[MAX_ID_LENGTH];
     char password[MAX_PASS_LENGTH];
@@ -440,7 +440,7 @@ void staff_login()
 }
 
 //staff registration menu 
-void staff_registration() {
+int staff_registration() {
     char id[MAX_ID_LENGTH];
     char name[MAX_NAME_LENGTH];
     char password[MAX_PASS_LENGTH];
@@ -493,7 +493,7 @@ void staff_registration() {
 
 
 // Staff Choice menu //got error
-void staff_main_page(int staffNum) {
+int staff_main_page(int staffNum) {
     int choice;
     char select;
 
@@ -543,7 +543,7 @@ void staff_main_page(int staffNum) {
 }
 
 //staff rest schedule 
-void staff_schedule(int staffNum)
+int staff_schedule(int staffNum)
 {
 
     if (staff[staffNum].schedule.total_working_hours != 0) {
@@ -560,7 +560,7 @@ void staff_schedule(int staffNum)
 
 
 //staff update information !!Logic error
-void staff_information(int staffNum) {
+int staff_information(int staffNum) {
     char name[MAX_NAME_LENGTH];
     char email[MAX_EMAIL_LENGTH];
     char phone[MAX_PHONE_LENGTH];
@@ -654,7 +654,7 @@ void staff_information(int staffNum) {
 
 
 //combination of log out&in time selected
-void staff_logout(int staffNum) {
+int staff_logout(int staffNum) {
     int ans, choice;
     time_t check_in_time = 0;
     time_t check_out_time = 0;
@@ -714,7 +714,7 @@ void staff_logout(int staffNum) {
 
 
 // Staff reset password **
-void resetPassword()
+int resetPassword()
 {
     char id[MAX_ID_LENGTH];
     char phone[MAX_PHONE_LENGTH];
@@ -854,7 +854,7 @@ char* generateValidationCode() {
 
 
 // Manager menu
-void manager_menu()
+int manager_menu()
 {
     int choice;
     struct tm* hour;
@@ -895,7 +895,7 @@ void manager_menu()
 }
 
 // Manager Login menu --need to do let manager reset password!***
-void manager_login() {
+int manager_login() {
     char id[MAX_ID_LENGTH];
     char password[MAX_PASS_LENGTH];
     int loginSuccess = 0;
@@ -995,7 +995,7 @@ void manager_login() {
 }
 
 //Manager Choice menu 
-void manager_main_page(int managerNum) {
+int manager_main_page(int managerNum) {
     int choice;
     char select;
 
@@ -1043,7 +1043,7 @@ void manager_main_page(int managerNum) {
 }
 
 // Manager registration !**** got error
-void manager_registration(struct Manager* manager) {
+int manager_registration(struct Manager* manager) {
     char id[MAX_ID_LENGTH];
     char name[MAX_NAME_LENGTH];
     char password[MAX_PASS_LENGTH];
@@ -1148,7 +1148,7 @@ void manager_registration(struct Manager* manager) {
 }
 
 //Manager delete/remove staff acc 
-void delete_Acc(int managerNum)
+int delete_Acc(int managerNum)
 {
     int confirm;
     char answers;
@@ -1259,7 +1259,7 @@ void delete_Acc(int managerNum)
 
 
 //manager modify particular staff / entire staff rest schedule !*
-void modifyEmpRestSchedule()
+int modifyEmpRestSchedule()
 {
     char id[MAX_ID_LENGTH];
     int ans = 0;
@@ -1426,7 +1426,7 @@ void modifyEmpRestSchedule()
 
 
 //Manager update information
-void updateManager_information(int managerNum) {
+int updateManager_information(int managerNum) {
     char name[MAX_NAME_LENGTH];
     char email[MAX_EMAIL_LENGTH];
     char phone[MAX_PHONE_LENGTH];
@@ -1510,7 +1510,7 @@ void updateManager_information(int managerNum) {
 
 
 // Manager reset password *****
-void manager_reset_pass()
+int manager_reset_pass()
 {
 
     char id[MAX_ID_LENGTH];
@@ -1613,7 +1613,7 @@ void manager_reset_pass()
 
 
 // Security question 
-void security_Ques()
+int security_Ques()
 {
 
     printf("\n------------- Security Question -------------\n");
@@ -1633,7 +1633,7 @@ void security_Ques()
 
 
 //got arrow when reset passw
-void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char questionTitle[MAX_QUESTION_SELECTED][50])
+int securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char questionTitle[MAX_QUESTION_SELECTED][50])
 {
     for (int i = 0; i < 2; i++) {
         switch (questionSelection[i])
@@ -1670,7 +1670,7 @@ void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char que
 }
 
 // Manager view staff schedule
-void manager_view_schedule()
+int manager_view_schedule()
 {
     //maybe let if the schedule did't have anythin printf("Sorry you can't see the schedule")???
 
@@ -1710,7 +1710,7 @@ void manager_view_schedule()
 
 
 //Display all staff record
-void dispalyAll(int staffNum)
+int dispalyAll(int staffNum)
 {
 
     printf("\n----------- RECORD OF STAFF -----------\n");

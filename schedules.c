@@ -152,6 +152,42 @@ void countDate(int followingNum, int *day, int *month, int *year, char (*dayOW)[
 //	} while (menuChoice != 5);
 //}
 
+void allSchedule(int followingDay, int day, int month, int year, char weekday[80]) {
+	struct date toMaxWeek[14];
+	char s[14][80];
+	for (int i = 0; i < 14; i++) {
+		countDate(i, &toMaxWeek[i].day, &toMaxWeek[i].month, &toMaxWeek[i].year, &toMaxWeek[i].weekday);
+		printf("-------------------------------------------------------------------------------------------------------\n");
+		printf("This Week Schedule: \n");
+		printf("-------------------------------------------------------------------------------------------------------\n");
+		for (int j = 0; j < 14; j++)
+		{
+			if (j == 7) {
+				printf("Next Week Schedule: \n");
+				printf("-------------------------------------------------------------------------------------------------------\n");
+			}
+			printf("Date: %d/%d/%d\n", toMaxWeek[j].day, toMaxWeek[j].month, toMaxWeek[j].year);
+			if (j < 7)
+				printf("%s:\n", toMaxWeek[j].weekday);
+			else {
+				printf("%s %s:\n", "Next", toMaxWeek[j].weekday);
+				strcpy(s[j], "Next");
+				strcat(s[j], toMaxWeek[j].weekday);
+			}
+			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+			for (int counter = 0; counter < STRUCTCOUNT; counter++)
+			{
+				if (strcmp(schedule[counter].day, s[j]) == 0)
+				{
+					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.time.depart, schedule[counter].deptArr.time.arrive, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
+				}
+			}
+			printf("\n-------------------------------------------------------------------------------------------------------\n");
+		}
+	}
+}
+
 // Display schedule module
 int DisplaySchedule(struct date *toMaxWeek)
 {
@@ -189,36 +225,7 @@ int DisplaySchedule(struct date *toMaxWeek)
 		switch (choice)
 		{
 		case 0:
-			system("cls");
-			// All Schedule
-			printf("-------------------------------------------------------------------------------------------------------\n");
-			printf("This Week Schedule: \n");
-			printf("-------------------------------------------------------------------------------------------------------\n");
-			for (int j = 0; j < 14; j++)
-			{
-				if (j == 7) {
-					printf("Next Week Schedule: \n");
-					printf("-------------------------------------------------------------------------------------------------------\n");
-				}
-				printf("Date: %d/%d/%d\n", (*(toMaxWeek + j)).day, (*(toMaxWeek + j)).month, (*(toMaxWeek + j)).year);
-				if(j < 7)
-					printf("%s:\n", (*(toMaxWeek + j)).weekday);
-				else {
-					printf("%s %s:\n", "Next", (*(toMaxWeek + j)).weekday);
-					strcpy(s[j], "Next");
-					strcat(s[j], (*(toMaxWeek + j)).weekday);
-				}
-				printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-				printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-				for (counter = 0; counter < STRUCTCOUNT; counter++)
-				{
-					if (strcmp(schedule[counter].day, s[j]) == 0)
-					{
-						printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.time.depart, schedule[counter].deptArr.time.arrive, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
-					}
-				}
-				printf("\n-------------------------------------------------------------------------------------------------------\n");
-			}
+			allSchedule();
 			break;
 		case 1:
 		case 2:

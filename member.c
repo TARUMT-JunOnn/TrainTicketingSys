@@ -37,7 +37,7 @@ bool verify_password(char* pass);
 bool verify_email(char* email);
 bool verify_phone_no(char* phoneNo);
 bool verify_IC(char gender, char* ic);
-void memberRegister(struct Member* member);
+int memberRegister(struct Member* member);
 
 //password recovery modules
 void forgotPass(struct Member* member);
@@ -213,6 +213,7 @@ void waitingScreen(void) {
 int memberMenu() {
 	char *menu[] = {"Login", "Registration", "Forgot Password", "Exit Program",};
 	char choice[LENGTH_CHOICE];
+
 	do {
 
 	title();
@@ -226,18 +227,19 @@ int memberMenu() {
 	printf("Please Enter Your Choice: ");
 	scanf(" %[^\n]", choice);
 
-	if (strcmp(choice, "1") == 0) 
-		return memberLogin(member);
+	if (strcmp(choice, "1") == 0)
+		return atoi(choice);
 	
 	else if (strcmp(choice, "2") == 0) 
-		memberRegister(member);
+		return atoi(choice);
 	
 	else if (strcmp(choice, "3") == 0) 
-		forgotPass(member, numMember);
+		return atoi(choice);
 	
 	else if (strcmp(choice, "4") == 0) {
-		printf("EXITING PROGRAM. ");
+		printf("EXITING. ");
 		waitingScreen();
+		return 0;
 	}
 	
 	else{
@@ -483,7 +485,7 @@ char passwordStore(char password[]) {
 	return password;
 }
 
-void memberRegister(struct Member* member) {
+int memberRegister(struct Member* member) {
 	
 	char memberID[MEMBER_ID];
 	char numID[5];
@@ -706,7 +708,6 @@ void memberRegister(struct Member* member) {
 		}
 	} while (!resultEmail);
 
-
 	strcpy(member[numMember].name, name);
 	member[numMember].age = age;
 	strcpy(member[numMember].ic, ic);
@@ -719,8 +720,6 @@ void memberRegister(struct Member* member) {
 	waitingScreen();
 
 	numMember++;
-
-
 }
 
 void forgotPass(struct Member* member) {
@@ -857,17 +856,20 @@ int memberMainPage(struct Member* member, int memberNUM) {
 		if (strcmp(choice, "1") == 0)
 			viewProfile(member, memberNUM);
 
-		//else if (strcmp(choice, "2") == 0)
-		//	viewSchedule();
+		else if (strcmp(choice, "2") == 0)
+			return atoi(choice);
 
 		else if (strcmp(choice, "3") == 0)
-			return 1;
+			return atoi(choice);
 		
-		//else if (strcmp(choice, "4") == 0) 
-		//	bookingHistory();
-		//
-		//else if (strcmp(choice, "5") == 0) 
+		else if (strcmp(choice, "4") == 0) 
+			return atoi(choice);
+			/*bookingHistory();*/
+		
+		else if (strcmp(choice, "5") == 0) 
+				return atoi(choice);
 		//	cancelBooking();
+		
 
 		else if (strcmp(choice, "6") == 0)
 			rewardPoint(member, memberNUM);
