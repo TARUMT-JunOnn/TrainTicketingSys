@@ -1529,18 +1529,20 @@ void deleteMember(struct Member* member) {
 					scanf("%d", &confirmation);
 
 					if (confirmation == 1) {
-						strcpy(member[i].id, member[i + 1].id);
-						strcpy(member[i].pass, member[i + 1].pass);
-						member[i].age = member[i + 1].age;
-						strcpy(member[i].gender, member[i + 1].gender);
-						strcpy(member[i].ic, member[i + 1].ic);
-						strcpy(member[i].phoneNo, member[i + 1].phoneNo);
-						strcpy(member[i].email, member[i + 1].email);
-						member[i].rewardPoints = member[i + 1].rewardPoints;
+						for (i; i < numMember; i++) {
+							strcpy(member[i].id, member[i + 1].id);
+							strcpy(member[i].pass, member[i + 1].pass);
+							member[i].age = member[i + 1].age;
+							strcpy(member[i].gender, member[i + 1].gender);
+							strcpy(member[i].ic, member[i + 1].ic);
+							strcpy(member[i].phoneNo, member[i + 1].phoneNo);
+							strcpy(member[i].email, member[i + 1].email);
+							member[i].rewardPoints = member[i + 1].rewardPoints;
 
-						for (int x = 0; x < 3; x++) {
-							member[i].security[x].questionNum = member[i + 1].security[x].questionNum;
-							strcpy(member[i].security[x].answer, member[i + 1].security[x].answer);
+							for (int x = 0; x < 3; x++) {
+								member[i].security[x].questionNum = member[i + 1].security[x].questionNum;
+								strcpy(member[i].security[x].answer, member[i + 1].security[x].answer);
+							}
 						}
 						numMember--;
 						title();
