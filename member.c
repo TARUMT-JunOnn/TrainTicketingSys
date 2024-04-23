@@ -857,17 +857,17 @@ int memberMainPage(struct Member* member, int memberNUM) {
 		if (strcmp(choice, "1") == 0)
 			viewProfile(member, memberNUM);
 
-		else if (strcmp(choice, "2") == 0)
-			viewSchedule();
+		//else if (strcmp(choice, "2") == 0)
+		//	viewSchedule();
 
 		else if (strcmp(choice, "3") == 0)
 			return 1;
 		
-		else if (strcmp(choice, "4") == 0) 
-			bookingHistory();
-		
-		else if (strcmp(choice, "5") == 0) 
-			cancelBooking();
+		//else if (strcmp(choice, "4") == 0) 
+		//	bookingHistory();
+		//
+		//else if (strcmp(choice, "5") == 0) 
+		//	cancelBooking();
 
 		else if (strcmp(choice, "6") == 0)
 			rewardPoint(member, memberNUM);

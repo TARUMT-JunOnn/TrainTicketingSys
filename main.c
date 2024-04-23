@@ -58,3 +58,28 @@ int main(void) {
 		return -1;
 	}
 }
+
+void menu(void) {
+	int choice;
+
+	printf("Menu\n");
+	printf("-----\n");
+	printf("1. Employee\n");
+	printf("2. Member\n");
+	printf("0. Exit\n");
+	scanf("%d", &choice);
+
+	switch (choice) {
+	case 1:
+		employeeMenu();
+		break;	
+	case 2:
+		memberMenu();
+		break;
+	case 0: 
+		exit(-1);
+	
+		
+	}
+
+}

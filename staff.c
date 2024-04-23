@@ -18,7 +18,7 @@
 
 
 
-void menu();
+void employeeMenu();
 void staffMenu();
 void staff_login();
 void staff_registration();
@@ -275,7 +275,7 @@ int readStaffFile(FILE** fstaff) {
 
 
 // Main menu
-void menu()
+void employeeMenu()
 {
     int choice;
     struct tm* hour;
