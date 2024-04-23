@@ -627,6 +627,7 @@ void staff_logout(struct Staff* staff, int staffNum) {
     printf("\nSTAFF WORKING TIME RECORDED\n");
     printf("=================================\n\n");
     printf("1. CHECK IN\n");
+
     printf("2. CHECK OUT\n");
     printf("Enter your choice:");
     scanf("%d", &ans);
@@ -663,18 +664,27 @@ void staff_logout(struct Staff* staff, int staffNum) {
             printf("\nToday check in time %s\n", ctime(&staff[staffNum].check_in_time));
             printf("Today check out time %s\n", ctime(&staff[staffNum].check_out_time));
             printf("You have not completed 8 hours of work today.\n");
-            printf("\nAre you sure you want to check out? (1 for Yes, 0 for No): ");
-            scanf("%d", &choice);
-            if (choice == 1) {
-                // Exit and return to the menu
-                printf("Exiting...\n");
-                
-                // You may want to return to the main menu or exit the program here
-            }
-            else {
-                // Return to check in and out interface
-                staff_logout(staff, staffNum);
-            }
+            do {
+                printf("\nAre you sure you want to check out? (1 for Yes, 0 for No): ");
+                scanf("%d", &choice);
+                if (choice == 1) {
+                    // Exit and return to the menu
+                    printf("Exiting...\n");
+
+                    // You may want to return to the main menu or exit the program here
+                }
+                else if (choice == 2)
+                {
+                    // Return to check in and out interface
+                    staff_logout(staff, staffNum);
+                }
+                else 
+                {
+                    printf("\nFailed to select...\n");
+                    printf("Please select again!\n");
+                }
+
+            } while (choice != 1 && choice != 2);
         }
     }
 }
@@ -1243,7 +1253,9 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 
                 do { ///
                     reenter = 0;
-                    printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
+                    printf("----------- EDIT STAFF WORKING TIME -----------\n");
+                    printf("------------------------------------------------\n");
+                    printf("\nSTAFF NAME :%s\n", staff[i].staff_name);
                     printf("\nBEGIN (hh:mm - 24H format): ");
                  
                     if (scanf("%d:%d", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute) != 2)
@@ -1284,21 +1296,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 
                 } while (reenter != 0);
 
-                /*   printf("\nEDIT %s WORKING TIME\n", staff[i].staff_name);
-                   printf("\nBEGIN (hh:mm a.m./p.m.): ");
-                   scanf("%d:%d %s", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute, staff[i].schedule.begin_period);
-                   printf("\nREST (in minutes): ");
-                   scanf("%d", &staff[i].schedule.rest_time);
-                   printf("\nEND (hh:mm a.m./p.m.): ");
-                   scanf("%d:%d %s", &staff[i].schedule.end_hour, &staff[i].schedule.end_minute, staff[i].schedule.end_period);*/
 
-
-                   //here testing==============================
-                /*total_begin_minutes = staff[i].schedule.begin_hour * 60 + staff[i].schedule.begin_minute;
-                total_end_minutes = staff[i].schedule.end_hour * 60 + staff[i].schedule.end_minute;
-                total_working_minutes = total_end_minutes - total_begin_minutes - staff[i].schedule.rest_time;*/
-
-                // Adjust for overnight working(if end time is before begin time)
                 if (total_end_minutes < total_begin_minutes) {
                     total_working_minutes = (24 * 60 - total_begin_minutes) + total_end_minutes;
                 }
@@ -1317,8 +1315,8 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                     printf("---------------------------------------------\n");
 
                     printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
-                    printf("BEGIN TIME\tREST TIME\tEND TIME\n");
-                    printf("%02d:%02d\t%d\t%02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
+                    printf("BEGIN TIME\t\tREST TIME\t\tEND TIME\n");
+                    printf("%02d:%02d\t\t\t  %d\t\t\t  %02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
                     printf("TOTAL WORKING TIME : %d hours %d minutes (exclude rest time)\n", total_working_hours, remaining_minutes);
                     printf("-------------------------------------------------------------------\n");
 
