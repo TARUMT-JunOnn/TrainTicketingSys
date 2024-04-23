@@ -32,6 +32,7 @@ void memberLogin(struct Member* member);
 //security question
 void securityQuestion();
 void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]);
+int questioSelected(int questionSelection[3]);
 
 //registration validation
 void passwordFormat(void);
@@ -300,6 +301,53 @@ void securityQuestion() {
 		printf("\nPlease Choose 3 Security Questions\n");
 }
 
+int questioSelected(int questionSelection[3]) {
+	int i = 0, success = 0;
+
+	do {
+		success = 1;
+		securityQuestion();
+
+		do {
+			printf("%d. ", i + 1);
+			scanf("%d", &questionSelection[i]);
+
+			if (questionSelection[i] > 6 || questionSelection[i] < 1) {
+				printf("\nInvalid Choice!\n");
+				printf("Please Enter Number 1 - 6. ");
+
+				waitingScreen();
+
+				i = 0;
+				success = 0;
+
+			}
+			else {
+				i++;
+			}
+			if (i > 1 && success == 1) {
+				for (int y = 0; y < i - 1; y++) {
+
+					if (questionSelection[y] == questionSelection[i - 1]) {
+						printf("\nThe Selected Security Question Must Be Different From The Previous One.\n");
+						printf("Please Try Again. ");
+
+						waitingScreen();
+						i = 0;
+						success = 0;
+
+					}
+
+				}
+
+			}
+		} while (i < 3 && success == 1);
+
+	} while (i < 3 && success == 0);
+
+	return questionSelection;
+}
+
 void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]) {
 	for (int i = 0; i < 3; i++) {
 
@@ -459,12 +507,11 @@ bool verify_IC(char* gender, char* ic) {
 char passwordStore(char password[]) {
 	int i = 0;
 	char ch;
-	while (1) {
+
+	do {
 		ch = _getch();
 
-		if (ch == 13)
-			break;
-		else if (ch == 8) {
+		if (ch == 8) {
 			if (i > 0) {
 				i--;
 				password[i] = '\0';
@@ -472,11 +519,14 @@ char passwordStore(char password[]) {
 			}
 		}
 		else {
-			password[i] = ch;
-			i++;
-			printf("*");
+			if (ch != 13) {
+				password[i] = ch;
+				i++;
+				printf("*");
+			}
 		}
-	}
+
+	} while (ch != 13);
 	password[i] = '\0';
 
 	return password;
@@ -491,7 +541,7 @@ void memberRegister(struct Member* member) {
 	char name[MEMBER_LENGTH_NAME], password[MEMBER_PASS], passConfirm[MEMBER_PASS], ic[MAX_LENGTH_IC], gender[MAX_LENGTH_GENDER], phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
 	int age;
 	int again;
-	int questionSelection[MAX_NUM_QUESTION], success;
+	int questionSelection[MAX_NUM_QUESTION];
 	char question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
 
 	for (int i = 0; i < numMember + 1; i++) {
@@ -557,42 +607,7 @@ void memberRegister(struct Member* member) {
 	strcpy(member[numMember].id, memberID);
 	strcpy(member[numMember].pass, password);
 
-	do {
-		again = 0;
-		success = 1;
-
-		securityQuestion();
-
-		for (int i = 0; i < MAX_NUM_QUESTION; i++) {
-			printf("%d. ", i + 1);
-			scanf("%d", &questionSelection[i]);
-
-			if (questionSelection[i] > 6 || questionSelection[i] < 1) {
-				printf("\nInvalid Choice!\n");
-				printf("Please Enter Number 1 - 6. ");
-
-				waitingScreen();
-				
-				success = 0;
-				break;
-			}
-			if (i > 0) {
-				for (int x = 0; x < i; x++) {
-					if (questionSelection[i] == questionSelection[x]) {
-						printf("\nThe Selected Security Question Must Be Different From The Previous One.\n");
-						printf("Please Try Again. ");
-
-						waitingScreen();
-						again++;
-						success = 0;
-						break;
-					}
-				}
-				if (again == 1)
-					break;
-			}
-		}
-	} while(success != 1);
+	questioSelected(questionSelection);
 
 	for (int i = 0; i < 3; i++) {
 		member[numMember].security[i].questionNum = questionSelection[i];
@@ -741,23 +756,7 @@ void forgotPass(struct Member* member) {
 		}
 		
 		if (idExist == 1) {
-			do {
-				again = 0;
-				securityQuestion();
-
-				for (int i = 0; i < MAX_NUM_QUESTION; i++) {
-					printf("%d. ", i + 1);
-					scanf("%d", &questionSelection[i]);
-
-					if (questionSelection[i] > 6 || questionSelection[i] < 1) {
-						printf("Invalid Choice!\n");
-						printf("Please Enter Number 1 - 6 !\n");
-						again = 1;
-						break;
-					}
-
-				}
-			} while (again == 1);
+			questioSelected(questionSelection);
 
 			questionTitle(questionSelection, question);
 
@@ -1530,18 +1529,20 @@ void deleteMember(struct Member* member) {
 					scanf("%d", &confirmation);
 
 					if (confirmation == 1) {
-						strcpy(member[i].id, member[i + 1].id);
-						strcpy(member[i].pass, member[i + 1].pass);
-						member[i].age = member[i + 1].age;
-						strcpy(member[i].gender, member[i + 1].gender);
-						strcpy(member[i].ic, member[i + 1].ic);
-						strcpy(member[i].phoneNo, member[i + 1].phoneNo);
-						strcpy(member[i].email, member[i + 1].email);
-						member[i].rewardPoints = member[i + 1].rewardPoints;
+						for (i; i < numMember; i++) {
+							strcpy(member[i].id, member[i + 1].id);
+							strcpy(member[i].pass, member[i + 1].pass);
+							member[i].age = member[i + 1].age;
+							strcpy(member[i].gender, member[i + 1].gender);
+							strcpy(member[i].ic, member[i + 1].ic);
+							strcpy(member[i].phoneNo, member[i + 1].phoneNo);
+							strcpy(member[i].email, member[i + 1].email);
+							member[i].rewardPoints = member[i + 1].rewardPoints;
 
-						for (int x = 0; x < 3; x++) {
-							member[i].security[x].questionNum = member[i + 1].security[x].questionNum;
-							strcpy(member[i].security[x].answer, member[i + 1].security[x].answer);
+							for (int x = 0; x < 3; x++) {
+								member[i].security[x].questionNum = member[i + 1].security[x].questionNum;
+								strcpy(member[i].security[x].answer, member[i + 1].security[x].answer);
+							}
 						}
 						numMember--;
 						title();
