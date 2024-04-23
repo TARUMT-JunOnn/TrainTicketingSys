@@ -55,6 +55,6 @@ int readFile() {
 int main(void) {
 	if (readFile() == -1) {
 		printf("Unable open file");
-		return 0;
+		return -1;
 	}
 }

@@ -20,14 +20,12 @@
 #define MAX_LENGTH_GENDER 2
 #define LENGTH_CHOICE 10
 
-void member();
-
 int tryAgain(int again);
 void waitingScreen(void);
-void memberMenu(struct Member* member);
+int memberMenu(struct Member* member);
 
 //member Login
-void memberLogin(struct Member* member);
+int memberLogin(struct Member* member);
 
 //security question
 void securityQuestion();
@@ -45,7 +43,7 @@ void memberRegister(struct Member* member);
 void forgotPass(struct Member* member);
 
 //memberMenu
-void memberMainPage(struct Member* member, int memberNUM);
+int memberMainPage(struct Member* member, int memberNUM);
 
 //modify and display modules
 void viewProfile(struct Member* member, int memberNUM);
@@ -90,13 +88,12 @@ struct Member {
 	float rewardPoints;
 	struct SecurityQuestion security[MAX_NUM_QUESTION];
 };
+struct Member member[MAX_NUMBER_MEMBER];
+struct Member member2;
 
 int numMember = 0;
 
-void member(FILE** memberFptr) {
-	struct Member member[MAX_NUMBER_MEMBER];
-	struct Member member2;
-	int choice;
+void readMemberFile(FILE** memberFptr) {
 
 	*memberFptr = fopen("../TrainTicketingSys/res/member.bin", "rb");
 
@@ -130,7 +127,20 @@ void member(FILE** memberFptr) {
 	}
 
 	fclose(*memberFptr);
+}
 
+int writeMemberFile(FILE** memberFptr) {
+	*memberFptr = fopen("../TrainTicketingSys/res/member.bin", "wb");
+
+	for (int i = 0; i < numMember; i++) {
+		fwrite(&member[i], sizeof(member[0]), 1, *memberFptr);
+	}
+
+	fclose(*memberFptr);
+}
+
+void memberMain(){
+	int choice;
 	//test to display all data
 	for (int i = 0; i < numMember; i++) {
 		printf("%d. %s\n", i + 1, member[i].id);
@@ -161,14 +171,6 @@ void member(FILE** memberFptr) {
 			printf("Please Try Again\n");
 		}
 	} while (choice != 4);
-	//write
-	*memberFptr = fopen("../TrainTicketingSys/res/member.bin", "wb");
-
-	for (int i = 0; i < numMember; i++) {
-		fwrite(&member[i], sizeof(member[0]), 1, *memberFptr);
-	}
-
-	fclose(*memberFptr);
 }
 
 int tryAgain(int again) {
@@ -208,8 +210,8 @@ void waitingScreen(void) {
 	}
 }
 
-void memberMenu(struct Member* member) {
-	char *menu[] = {"Login", "Registration", "Forgot Password", "Exit Program"};
+int memberMenu() {
+	char *menu[] = {"Login", "Registration", "Forgot Password", "Exit Program",};
 	char choice[LENGTH_CHOICE];
 	do {
 
@@ -225,7 +227,7 @@ void memberMenu(struct Member* member) {
 	scanf(" %[^\n]", choice);
 
 	if (strcmp(choice, "1") == 0) 
-		memberLogin(member);
+		return memberLogin(member);
 	
 	else if (strcmp(choice, "2") == 0) 
 		memberRegister(member);
@@ -247,7 +249,7 @@ void memberMenu(struct Member* member) {
 	} while (strcmp(choice, "4") !=0);
 }
 
-void memberLogin(struct Member* member) {
+int memberLogin(struct Member* member) {
 	char id[MEMBER_ID], password[MEMBER_PASS];
 	int memberNUM;
 	int loginSuccess = 0, again;
@@ -272,7 +274,7 @@ void memberLogin(struct Member* member) {
 				waitingScreen();
 				
 				memberNUM = i;
-				memberMainPage(member, memberNUM);
+				return memberMainPage(member, memberNUM);
 				loginSuccess++;
 			}
 		}
@@ -461,7 +463,6 @@ char passwordStore(char password[]) {
 	char ch;
 	while (1) {
 		ch = _getch();
-
 		if (ch == 13)
 			break;
 		else if (ch == 8) {
@@ -719,6 +720,7 @@ void memberRegister(struct Member* member) {
 
 	numMember++;
 
+
 }
 
 void forgotPass(struct Member* member) {
@@ -833,7 +835,7 @@ void forgotPass(struct Member* member) {
 
 }
 
-void memberMainPage(struct Member* member, int memberNUM) {
+int memberMainPage(struct Member* member, int memberNUM) {
 	char choice[LENGTH_CHOICE];
 	char* menu[] = { "Display Profile", "View Schedule", "Add Booking",
 					"Display Booking History", "Cancel Booking", "Reward Points", "Exit" };
@@ -852,14 +854,14 @@ void memberMainPage(struct Member* member, int memberNUM) {
 		printf("Enter Your Choice: ");
 		scanf(" %[^\n]", choice);
 
-		if (strcmp(choice, "1") == 0) 
+		if (strcmp(choice, "1") == 0)
 			viewProfile(member, memberNUM);
-		
-		else if (strcmp(choice, "2") == 0) 
+
+		else if (strcmp(choice, "2") == 0)
 			viewSchedule();
-		
-		else if (strcmp(choice, "3") == 0) 
-			addBooking();
+
+		else if (strcmp(choice, "3") == 0)
+			return 1;
 		
 		else if (strcmp(choice, "4") == 0) 
 			bookingHistory();

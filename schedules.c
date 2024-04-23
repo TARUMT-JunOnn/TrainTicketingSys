@@ -28,14 +28,23 @@ Schedule schedule[STRUCTCOUNT];
 
 
 int month_day(int year, int yearday, int* pmonth, int* pday);
-void DisplaySchedule(void);
+ int DisplaySchedule(void);
 void ModifySchedule(void);
 void AddSchedule(void);
 void SearchSchedule(void);
 
-void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
-	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
-	strcpy((*dayReturn), day[numOfWeek]);
+int readScheduleFile(FILE** fp) {
+	*fp = fopen("../TrainTicketingSys/res/schedule.txt", "r");
+	while (*fp == NULL)
+	{
+		return -1;
+	}
+	int i = 0;
+	while (fscanf(*fp, "%s %f %f %[^|]|%[^|]|%[^|]|%d\n", schedule[i].day, &schedule[i].deptArr.time.depart, &schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, &schedule[i].seats) != EOF)
+	{
+		i++;
+	}
+	fclose(*fp);
 }
 
 void countDate(int followingNum, int *day, int *month, int *year, char (*dayOW)[80]) {
@@ -64,99 +73,87 @@ void countDate(int followingNum, int *day, int *month, int *year, char (*dayOW)[
 	strftime((*dayOW), 80, "%A", now);
 }
 
-main()
-{
-	int menuChoice;
-	time_t currentTime;
-	char* currentTimeInString;
-	struct date toMaxWeek[MAX_DAY];
-	currentTime = time(NULL);
-
-	// Read text file into array
-	rewind(stdin);
-	FILE* fp;
-	fp = fopen("../TrainTicketingSys/res/schedule.txt", "r");
-	while (fp == NULL)
-	{
-		printf("Failed to read the file");
-		exit(-1);
-	}
-	int i = 0;
-	while (fscanf(fp, "%s %f %f %[^|]|%[^|]|%[^|]|%d\n", schedule[i].day, &schedule[i].deptArr.time.depart, &schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, &schedule[i].seats) != EOF)
-	{
-		i++;
-	}
-	fclose(fp);
-	for (int i = 0; i < 14; i++) {
-		countDate(i, &toMaxWeek[i].day, &toMaxWeek[i].month, &toMaxWeek[i].year, &toMaxWeek[i].weekday);
-	}
-
-
-	do
-	{
-		system("cls");
-		if (currentTime == ((time_t)-1))
-		{
-			printf("Failed to get the current time.\n");
-		}
-		else
-		{
-			currentTimeInString = ctime(&currentTime);
-			if (currentTimeInString == NULL)
-			{
-				printf("Failed to convert the current time.\n");
-			}
-			else
-			{
-				printf("Current time: %s", currentTimeInString);
-			}
-		}
-		printf("-----------------------------------------------------------------------------------------\n");
-		printf("SCHEDULE: \n");
-		printf("-----------------------------------------------------------------------------------------\n");
-		printf("\nWhat you want to do? \n");
-		printf("1. | Display Schedule\n");
-		printf("2. | Modify Schedule\n");
-		printf("3. | Add Schedule\n");
-		printf("4. | Search Schedule\n");
-		printf("5. | Return to Main Menu\n");
-		printf("Choose One > ");
-		rewind(stdin);
-		scanf("%d", &menuChoice);
-
-		switch (menuChoice)
-		{
-		case 1:
-			DisplaySchedule(&toMaxWeek);
-			break;
-
-		case 2:
-			ModifySchedule(currentTime);
-			break;
-
-		case 3:
-			AddSchedule();
-			break;
-
-		case 4:
-			SearchSchedule();
-			break;
-
-		case 5:
-			printf("Returning to Main Menu\n");
-			break;
-
-		default:
-			system("cls");
-			printf("Invalid value.\n");
-			printf("Enter Again.\n\n");
-			Sleep(1000);
-		}
-	} while (menuChoice != 5);
-}
+//main()
+//{
+//	int menuChoice;
+//	time_t currentTime;
+//	char* currentTimeInString;
+//	struct date toMaxWeek[MAX_DAY];
+//	currentTime = time(NULL);
+//
+//	// Read text file into array
+//	rewind(stdin);
+//
+//	for (int i = 0; i < 14; i++) {
+//		countDate(i, &toMaxWeek[i].day, &toMaxWeek[i].month, &toMaxWeek[i].year, &toMaxWeek[i].weekday);
+//	}
+//
+//
+//	do
+//	{
+//		system("cls");
+//		if (currentTime == ((time_t)-1))
+//		{
+//			printf("Failed to get the current time.\n");
+//		}
+//		else
+//		{
+//			currentTimeInString = ctime(&currentTime);
+//			if (currentTimeInString == NULL)
+//			{
+//				printf("Failed to convert the current time.\n");
+//			}
+//			else
+//			{
+//				printf("Current time: %s", currentTimeInString);
+//			}
+//		}
+//		printf("-----------------------------------------------------------------------------------------\n");
+//		printf("SCHEDULE: \n");
+//		printf("-----------------------------------------------------------------------------------------\n");
+//		printf("\nWhat you want to do? \n");
+//		printf("1. | Display Schedule\n");
+//		printf("2. | Modify Schedule\n");
+//		printf("3. | Add Schedule\n");
+//		printf("4. | Search Schedule\n");
+//		printf("5. | Return to Main Menu\n");
+//		printf("Choose One > ");
+//		rewind(stdin);
+//		scanf("%d", &menuChoice);
+//
+//		switch (menuChoice)
+//		{
+//		case 1:
+//			DisplaySchedule(&toMaxWeek);
+//			break;
+//
+//		case 2:
+//			ModifySchedule(currentTime);
+//			break;
+//
+//		case 3:
+//			AddSchedule();
+//			break;
+//
+//		case 4:
+//			SearchSchedule();
+//			break;
+//
+//		case 5:
+//			printf("Returning to Main Menu\n");
+//			break;
+//
+//		default:
+//			system("cls");
+//			printf("Invalid value.\n");
+//			printf("Enter Again.\n\n");
+//			Sleep(1000);
+//		}
+//	} while (menuChoice != 5);
+//}
 
 // Display schedule module
-void DisplaySchedule(struct date *toMaxWeek)
+int DisplaySchedule(struct date *toMaxWeek)
 {
 	int counter = 0;
 	int choice;
@@ -277,6 +274,7 @@ void DisplaySchedule(struct date *toMaxWeek)
 
 		case 8:
 			printf("\nReturn to schedule menu.\n");
+			return 8;
 			break;
 
 		default:

@@ -18,33 +18,33 @@
 
 
 
-void menu(struct Staff* staff, struct Manager* manager);
-void staffMenu(struct Staff* staff, struct Manager* manager);
-void staff_login(struct Staff* staff, struct Manager* manager);
-void staff_registration(struct Staff* staff);
-void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum);
-void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum);
-void staff_information(struct Staff* staff, struct Manager* manager, int staffNum);
-void staff_logout(struct Staff* staff, int staffNum);
+void menu();
+void staffMenu();
+void staff_login();
+void staff_registration();
+void staff_main_page(int staffNum);
+void staff_schedule(int staffNum);
+void staff_information(int staffNum);
+void staff_logout(int staffNum);
 // manager
-void manager_menu(struct Staff* staff, struct Manager* manager);
-void manager_login(struct Staff* staff, struct Manager* manager);
+void manager_menu();
+void manager_login();
 void manager_registration(struct Manager* manager);
-void manager_main_page(struct Staff* staff, struct Manager* manager, int managerNum);
-void delete_Acc(struct Staff* staff, struct Manager* manager);
-//void modify_staffInformation(struct Staff* staff, struct Manager* manager);
-void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager);
-void updateManager_information(struct Staff* staff, struct Manager* manager, int managerNum);
-void resetPassword(struct Staff* staff);
+void manager_main_page(int managerNum);
+void delete_Acc();
+//void modify_staffInformation();
+void modifyEmpRestSchedule();
+void updateManager_information(int managerNum);
+void resetPassword();
 void sendValidationCode(char* email, char* code);
 char* generateValidationCode();
-void manager_view_schedule(struct Staff* staff, struct Manager* manager);
-void manager_reset_pass(struct Staff* staff, struct Manager* manager);
+void manager_view_schedule();
+void manager_reset_pass();
 void security_Ques();
 void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char questionTitle[MAX_QUESTION_SELECTED][50]);
 //
 double calculate_hours(time_t check_in_time, time_t check_out_time);
-void dispalyAll(struct Staff* staff, struct Manager* manager, int managerNum);
+void dispalyAll(int managerNum);
 
 
 // Predefined employee and manager IDs and passwords
@@ -95,23 +95,18 @@ struct Manager {
     struct M_SecurityQues security[MAX_QUESTION_SELECTED]; //nested structure
 };
 
-int staff_count = 0;
-int manager_count = 0;
-
-
-main() {
     struct Staff staff[MAX_STAFF];
     struct Staff staff2;
     struct Manager manager[MAX_MANAGER];
 
+int staff_count = 0;
+int manager_count = 0;
 
+int readStaffFile(FILE** fstaff) {
+    *fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb");
 
-    FILE* fstaff;
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb");
-
-    if (fstaff == NULL) {
-        printf("Error Opening File\n");
-        exit(-1);
+    if (*fstaff == NULL) {
+        return -1;
     }
 
     //strcpy(staff[0].staff_id, "lgw123");
@@ -126,11 +121,11 @@ main() {
     //strcpy(manager[0].manager_email, "ali@ail.com");
     //strcpy(manager[0].manager_position, "MANAGER");
 
-    //fwrite(&staff[0], sizeof(staff), 1, fstaff);
-    //fwrite(&manager[0], sizeof(manager), 1, fstaff);
+    //fwrite(&staff[0], sizeof(staff), 1, *fstaff);
+    //fwrite(&manager[0], sizeof(manager), 1, *fstaff);
 
-    fread(&staff2, sizeof(staff2), 1, fstaff);
-    while (!feof(fstaff))
+    fread(&staff2, sizeof(staff2), 1, *fstaff);
+    while (!feof(*fstaff))
     {
         if (strcmp(staff2.staff_position, "STAFF") == 0)
         {
@@ -152,7 +147,7 @@ main() {
             strcpy(manager[manager_count].manager_position, staff2.staff_position);
             manager_count++;
         }
-        fread(&staff2, sizeof(staff2), 1, fstaff);
+        fread(&staff2, sizeof(staff2), 1, *fstaff);
     }
     //write new information to file.
     //strcpy(staff[1].staff_id, "staff1");
@@ -172,52 +167,115 @@ main() {
     }
 
 
-    fclose(fstaff);
-
-    menu(staff, manager);
-
-    //print all manager and staff account
-
-    for (int i = 0; i < staff_count; i++) {
-        printf("ID: %s\n", staff[i].staff_id);
-    }
-
-    for (int i = 0; i < manager_count; i++) {
-        printf("ID: %s\n", staff[i].staff_id);
-    }
-
-    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
-
-    for (int i = 0; i < manager_count; i++) {
-        fwrite(&manager[i], sizeof(manager), 1, fstaff);
-    }
-
-    for (int i = 0; i < staff_count; i++) {
-        fwrite(&staff[i], sizeof(staff), 1, fstaff);
-    }
-
-    fclose(fstaff);
-    return 0;
-
+    fclose(*fstaff);
 }
 
 
-//heading all pages
-void title(void) {
-    // system("cls");
-    printf("%10s %s %s", "Train", "Ticketing", "System");
-    time_t t;
-    time(&t);
-    printf("%125s", ctime(&t));
-    for (int i = 0; i < 155; i++) {
-        printf("%s", "-");
-    }
-    printf("\n\n");
-}
+//main() {
+//    struct Staff staff[MAX_STAFF];
+//    struct Staff staff2;
+//    struct Manager manager[MAX_MANAGER];
+//
+//
+//
+//    FILE* fstaff;
+//    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb");
+//
+//    if (fstaff == NULL) {
+//        printf("Error Opening File\n");
+//        exit(-1);
+//    }
+//
+//    //strcpy(staff[0].staff_id, "lgw123");
+//    //strcpy(staff[0].staff_password, "321");
+//    //strcpy(staff[0].staff_phone, "01231323");
+//    //strcpy(staff[0].staff_email, "lee@gmail.com");
+//    //strcpy(staff[0].staff_position, "STAFF");
+//
+//    //strcpy(manager[0].manager_id, "ALi");
+//    //strcpy(manager[0].manager_password, "773");
+//    //strcpy(manager[0].manager_phone, "12312");
+//    //strcpy(manager[0].manager_email, "ali@ail.com");
+//    //strcpy(manager[0].manager_position, "MANAGER");
+//
+//    //fwrite(&staff[0], sizeof(staff), 1, fstaff);
+//    //fwrite(&manager[0], sizeof(manager), 1, fstaff);
+//
+//    fread(&staff2, sizeof(staff2), 1, fstaff);
+//    while (!feof(fstaff))
+//    {
+//        if (strcmp(staff2.staff_position, "STAFF") == 0)
+//        {
+//            strcpy(staff[staff_count].staff_id, staff2.staff_id);
+//            strcpy(staff[staff_count].staff_password, staff2.staff_password);
+//            strcpy(staff[staff_count].staff_phone, staff2.staff_phone);
+//            strcpy(staff[staff_count].staff_email, staff2.staff_email);
+//            strcpy(staff[staff_count].staff_position, staff2.staff_position);
+//
+//            staff_count++;
+//        }
+//
+//        if (strcmp(staff2.staff_position, "MANAGER") == 0)
+//        {
+//            strcpy(manager[manager_count].manager_id, staff2.staff_id);
+//            strcpy(manager[manager_count].manager_password, staff2.staff_password);
+//            strcpy(manager[manager_count].manager_phone, staff2.staff_phone);
+//            strcpy(manager[manager_count].manager_email, staff2.staff_email);
+//            strcpy(manager[manager_count].manager_position, staff2.staff_position);
+//            manager_count++;
+//        }
+//        fread(&staff2, sizeof(staff2), 1, fstaff);
+//    }
+//    //write new information to file.
+//    //strcpy(staff[1].staff_id, "staff1");
+//    //strcpy(staff[1].staff_password, "321");
+//    //strcpy(staff[1].staff_phone, "01231323");
+//    //strcpy(staff[1].staff_email, "lee@gmail.com");
+//    //strcpy(staff[1].staff_position, "STAFF");
+//    //staff_count++;
+//
+//  //test file read 
+//    for (int i = 0; i < staff_count; i++) {
+//        printf("ID: %s\n", staff[i].staff_id);
+//    }
+//
+//    for (int i = 0; i < manager_count; i++) {
+//        printf("ID: %s\n", staff[i].staff_id);
+//    }
+//
+//
+//    fclose(fstaff);
+//
+//    menu();
+//
+//    //print all manager and staff account
+//
+//    for (int i = 0; i < staff_count; i++) {
+//        printf("ID: %s\n", staff[i].staff_id);
+//    }
+//
+//    for (int i = 0; i < manager_count; i++) {
+//        printf("ID: %s\n", staff[i].staff_id);
+//    }
+//
+//    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
+//
+//    for (int i = 0; i < manager_count; i++) {
+//        fwrite(&manager[i], sizeof(manager), 1, fstaff);
+//    }
+//
+//    for (int i = 0; i < staff_count; i++) {
+//        fwrite(&staff[i], sizeof(staff), 1, fstaff);
+//    }
+//
+//    fclose(fstaff);
+//    return 0;
+//
+//}
 
 
 // Main menu
-void menu(struct Staff* staff, struct Manager* manager)
+void menu()
 {
     int choice;
     struct tm* hour;
@@ -240,10 +298,10 @@ void menu(struct Staff* staff, struct Manager* manager)
 
         switch (choice) {
         case 1:
-            staffMenu(staff, manager);
+            staffMenu();
             break;
         case 2:
-            manager_menu(staff, manager);
+            manager_menu();
             break;
         case 3:
             break;
@@ -262,7 +320,7 @@ void menu(struct Staff* staff, struct Manager* manager)
 }
 
 // staff Menu!
-void staffMenu(struct Staff* staff, struct Manager* manager)
+void staffMenu()
 {
     int choice;
 
@@ -278,7 +336,7 @@ void staffMenu(struct Staff* staff, struct Manager* manager)
 
         switch (choice) {
         case 1:
-            staff_login(staff, manager);
+            staff_login();
             break;
         case 2:
             staff_registration(staff);
@@ -301,7 +359,7 @@ void staffMenu(struct Staff* staff, struct Manager* manager)
 
 
 // Staff Login menu
-void staff_login(struct Staff* staff, struct Manager* manager)
+void staff_login()
 {
     char id[MAX_ID_LENGTH];
     char password[MAX_PASS_LENGTH];
@@ -324,7 +382,7 @@ void staff_login(struct Staff* staff, struct Manager* manager)
             if (strcmp(staff[i].staff_id, id) == 0 && strcmp(staff[i].staff_password, password) == 0)
             {
                 printf("Login successful...\n");
-                staff_main_page(staff, manager, i);
+                staff_main_page(i);
                 loginSuccess++;
             }
         }
@@ -382,7 +440,7 @@ void staff_login(struct Staff* staff, struct Manager* manager)
 }
 
 //staff registration menu 
-void staff_registration(struct Staff* staff) {
+void staff_registration() {
     char id[MAX_ID_LENGTH];
     char name[MAX_NAME_LENGTH];
     char password[MAX_PASS_LENGTH];
@@ -435,7 +493,7 @@ void staff_registration(struct Staff* staff) {
 
 
 // Staff Choice menu //got error
-void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum) {
+void staff_main_page(int staffNum) {
     int choice;
     char select;
 
@@ -457,10 +515,10 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
 
         switch (choice) {
         case 1:
-            staff_schedule(staff, manager, staffNum);
+            staff_schedule(staffNum);
             break;
         case 2:
-            staff_information(staff, manager, staffNum);
+            staff_information(staffNum);
             break;
         case 3:
             break;
@@ -485,7 +543,7 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
 }
 
 //staff rest schedule 
-void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum)
+void staff_schedule(int staffNum)
 {
 
     if (staff[staffNum].schedule.total_working_hours != 0) {
@@ -502,7 +560,7 @@ void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum)
 
 
 //staff update information !!Logic error
-void staff_information(struct Staff* staff, struct Manager* manager, int staffNum) {
+void staff_information(int staffNum) {
     char name[MAX_NAME_LENGTH];
     char email[MAX_EMAIL_LENGTH];
     char phone[MAX_PHONE_LENGTH];
@@ -596,7 +654,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
 
 
 //combination of log out&in time selected
-void staff_logout(struct Staff* staff, int staffNum) {
+void staff_logout(int staffNum) {
     int ans, choice;
     time_t check_in_time = 0;
     time_t check_out_time = 0;
@@ -656,7 +714,7 @@ void staff_logout(struct Staff* staff, int staffNum) {
 
 
 // Staff reset password **
-void resetPassword(struct Staff* staff)
+void resetPassword()
 {
     char id[MAX_ID_LENGTH];
     char phone[MAX_PHONE_LENGTH];
@@ -796,7 +854,7 @@ char* generateValidationCode() {
 
 
 // Manager menu
-void manager_menu(struct Staff* staff, struct Manager* manager)
+void manager_menu()
 {
     int choice;
     struct tm* hour;
@@ -817,7 +875,7 @@ void manager_menu(struct Staff* staff, struct Manager* manager)
 
         switch (choice) {
         case 1:
-            manager_login(staff, manager);
+            manager_login();
             break;
         case 2:
             manager_registration(manager);
@@ -837,7 +895,7 @@ void manager_menu(struct Staff* staff, struct Manager* manager)
 }
 
 // Manager Login menu --need to do let manager reset password!***
-void manager_login(struct Staff* staff, struct Manager* manager) {
+void manager_login() {
     char id[MAX_ID_LENGTH];
     char password[MAX_PASS_LENGTH];
     int loginSuccess = 0;
@@ -857,7 +915,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
         for (int i = 0; i < MAX_MANAGER; i++) {
             if (strcmp(manager[i].manager_id, id) == 0 && strcmp(manager[i].manager_password, password) == 0) {
                 printf("\nLogin successful...\n");
-                manager_main_page(staff, manager, i);
+                manager_main_page(i);
                 loginSuccess++;
             }
         }
@@ -896,7 +954,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 
                     if (ans == 1)
                     {
-                        manager_reset_pass(staff, manager);
+                        manager_reset_pass();
                         count = 0;
                         printf("%d\n", again);
                     }
@@ -937,7 +995,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 }
 
 //Manager Choice menu 
-void manager_main_page(struct Staff* staff, struct Manager* manager, int managerNum) {
+void manager_main_page(int managerNum) {
     int choice;
     char select;
 
@@ -957,20 +1015,20 @@ void manager_main_page(struct Staff* staff, struct Manager* manager, int manager
 
         switch (choice) {
         case 1:
-            modifyEmpRestSchedule(staff, manager);
+            modifyEmpRestSchedule();
             break;
         case 2:
-            manager_view_schedule(staff, manager);
+            manager_view_schedule();
             break;
         case 3:
-            delete_Acc(staff, manager, managerNum);
+            delete_Acc(managerNum);
             break;
         case 4:
-            dispalyAll(staff, manager, managerNum);
+            dispalyAll(managerNum);
             break;
         case 5:
-            //modify_staffInformation(staff, manager); --become manager update themself information
-            updateManager_information(staff, manager, managerNum);
+            //modify_staffInformation(); --become manager update themself information
+            updateManager_information(managerNum);
             break;
         case 6:
             break;
@@ -1090,7 +1148,7 @@ void manager_registration(struct Manager* manager) {
 }
 
 //Manager delete/remove staff acc 
-void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
+void delete_Acc(int managerNum)
 {
     int confirm;
     char answers;
@@ -1168,13 +1226,14 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
 
         if (deleted == 0) {
             printf("INVALID ");
-            return manager_main_page(staff, manager, managerNum);
+            return manager_main_page(managerNum);
             //got bug
             //havent done yet
         }
         if (deleted == 1) {
             do {
                 printf("Do you want to continue");
+                printf("\n1. Yes\n");
                 printf("\n1. Yes\n");
                 printf("2. No\n");
                 printf("Enter you choice:");
@@ -1200,7 +1259,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
 
 
 //manager modify particular staff / entire staff rest schedule !*
-void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
+void modifyEmpRestSchedule()
 {
     char id[MAX_ID_LENGTH];
     int ans = 0;
@@ -1367,7 +1426,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 
 
 //Manager update information
-void updateManager_information(struct Staff* staff, struct Manager* manager, int managerNum) {
+void updateManager_information(int managerNum) {
     char name[MAX_NAME_LENGTH];
     char email[MAX_EMAIL_LENGTH];
     char phone[MAX_PHONE_LENGTH];
@@ -1451,7 +1510,7 @@ void updateManager_information(struct Staff* staff, struct Manager* manager, int
 
 
 // Manager reset password *****
-void manager_reset_pass(struct Staff* staff, struct Manager* manager)
+void manager_reset_pass()
 {
 
     char id[MAX_ID_LENGTH];
@@ -1532,7 +1591,7 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
 
                         if (choice == 1)
                             // add return back to manager menu
-                            return manager_menu(staff, manager);
+                            return manager_menu();
 
                         if (choice == 2)
                             again++;
@@ -1611,7 +1670,7 @@ void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char que
 }
 
 // Manager view staff schedule
-void manager_view_schedule(struct Staff* staff, struct Manager* manager)
+void manager_view_schedule()
 {
     //maybe let if the schedule did't have anythin printf("Sorry you can't see the schedule")???
 
@@ -1651,7 +1710,7 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
 
 
 //Display all staff record
-void dispalyAll(struct Staff* staff, struct Manager* manager, int staffNum)
+void dispalyAll(int staffNum)
 {
 
     printf("\n----------- RECORD OF STAFF -----------\n");
