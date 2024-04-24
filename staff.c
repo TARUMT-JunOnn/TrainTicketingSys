@@ -321,7 +321,7 @@ int staff_login(struct Staff* staff, struct Manager* manager)
     int again = 0;
 
     title();
-    printf("------ STAFF Login ------\n");
+    printf("------ STAFF LOGIN ------\n");
 
     do
     {
@@ -638,8 +638,6 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
 }
 
 
-
-
 //combination of log out&in time selected
 int staff_logout(struct Staff* staff, int staffNum, struct Manager* manager) {
     int ans, choice;
@@ -743,7 +741,7 @@ int resetPassword(struct Staff* staff)
     printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
     printf("| You need to double check the data showe below |\n");
     printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-
+    Sleep(1000);
 
     printf("\nEnter ID:");
     scanf(" %[^\n]", id);
@@ -926,7 +924,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
     int count = 0;
 
     title();
-    printf("\n------ MANAGER Login ------\n");
+    printf("\n------ MANAGER LOGIN ------\n");
 
     do
     {
@@ -1010,7 +1008,7 @@ void manager_main_page(struct Staff* staff, struct Manager* manager, int manager
         title();
         printf("\nManager\n");
         printf("------\n");
-        printf("1. Modify staff rest schedule\n");
+        printf("1. Modify staff working schedule\n");
         printf("2. View staff working schedule\n");
         printf("3. Remove staff\n");
         printf("4. Display All staff record\n");
@@ -1434,13 +1432,14 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
             do
             {
                 ans = 0;
-                printf("Invalid -- Wrong ID --\n");
-                printf("DO you want to enter again?");
-                printf("\n1. Yes\n");
-                printf("2. No\n");
-                printf("Enter you choice:");
+                printf("| Invalid ---- Wrong ID  ---- |\n");
+                printf("------------------------------|\n");
+                printf("| Do you want to enter again? |");
+                printf("\n1. Yes                      |\n");
+                printf("2. No                         |\n");
+                printf("Enter you choice:             |");
                 scanf("%d", &choice);
-                printf("---------------------------\n");
+                printf("|-----------------------------|\n");
                 if (choice == 1)
                     ans++;
                 else if (choice == 2)
@@ -1602,7 +1601,7 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
         printf("\n|||||||||||||||||||||||||||||||||||||||||||||||\n");
         printf("| You need to double check the data showe below |\n");
         printf("|||||||||||||||||||||||||||||||||||||||||||||||||\n");
-
+        printf("\n------------------------------------------------------\n");
         printf("\nEnter ID:");
         scanf(" %[^\n]", id);
 
