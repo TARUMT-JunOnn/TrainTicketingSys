@@ -74,10 +74,18 @@ void deleteMember(struct Member* member);
 
 char passwordStore(char password[]);
 
+void loginHistory(struct Member* member);
+
 struct SecurityQuestion {
 	int questionNum;
 	char answer[100];
 };
+
+typedef struct {
+	long int diff;
+	char loginTimeDate[100];
+	char logoutTimeDate[100];
+}LoginOutRecords;
 
 struct Member {
 	char id[MEMBER_ID];
@@ -89,7 +97,9 @@ struct Member {
 	char phoneNo[MAX_PHONE_NUM];
 	char email[MAX_LENGTH_EMAIL];
 	float rewardPoints;
+	int numLoginRecords;
 	struct SecurityQuestion security[MAX_NUM_QUESTION];
+	LoginOutRecords logInOutTime[20];
 };
 
 int numMember = 0;
@@ -125,6 +135,14 @@ void member(FILE** memberFptr) {
 
 		for (int i = 0; i < 3; i++)
 			strcpy(member[numMember].security[i].answer, member2.security[i].answer);
+
+		member[numMember].numLoginRecords = member2.numLoginRecords;
+
+		for (int i = 0; i < member[numMember].numLoginRecords; i++) {
+			strcpy(member[numMember].logInOutTime[i].loginTimeDate, member2.logInOutTime[i].loginTimeDate);
+			strcpy(member[numMember].logInOutTime[i].logoutTimeDate, member2.logInOutTime[i].logoutTimeDate);
+			member[numMember].logInOutTime[i].diff = member2.logInOutTime[i].diff;
+		}
 
 		numMember++;
 		fread(&member2, sizeof(member2), 1, *memberFptr);
@@ -273,7 +291,25 @@ void memberLogin(struct Member* member) {
 				waitingScreen();
 				
 				memberNUM = i;
+
+				time_t now = time(NULL);
+
+				struct tm* logInTime = localtime(&now);
+
+				strftime(member[memberNUM].logInOutTime[member[memberNUM].numLoginRecords].loginTimeDate, 100, "%x - %I:%M%p", logInTime);
+
 				memberMainPage(member, memberNUM);
+
+				time_t now2 = time(NULL);
+
+				struct tm* logOutTime = localtime(&now2);
+
+				strftime(member[memberNUM].logInOutTime[member[memberNUM].numLoginRecords].logoutTimeDate, 100, "%x - %I:%M%p", logOutTime);
+
+				member[memberNUM].logInOutTime[member[memberNUM].numLoginRecords].diff = now2 - now;
+
+				member[memberNUM].numLoginRecords++;
+
 				loginSuccess++;
 			}
 		}
@@ -728,6 +764,7 @@ void memberRegister(struct Member* member) {
 	strcpy(member[numMember].phoneNo, phone);
 	strcpy(member[numMember].email, email);
 	member[numMember].rewardPoints = 0.00;
+	member[numMember].numLoginRecords = 0;
 
 	printf("\nInformation Added. ");
 	waitingScreen();
@@ -1572,3 +1609,52 @@ void deleteMember(struct Member* member) {
 	} while (again == 1);
 }
 
+void loginHistory(struct Member* member) {
+	int recordsExist = 0;
+	char key[10];
+	char id[MEMBER_ID];
+	char name[MEMBER_LENGTH_NAME];
+	int logInTime;
+
+	title();
+
+	for (int i = 0; i < numMember; i++) {
+		for (int j = 0; j < member[i].numLoginRecords; j++) {
+			if (member[i].logInOutTime[j].diff != 0) {
+				recordsExist++;
+			}
+
+		}
+	}
+
+	if (recordsExist != 0) {
+		printf("-------------------------------------------------------------------------------------------------------------------------\n");
+		printf("| ID         | NAME                 | Log In Date Time          | Log Out Date Time         | Duratoion                 |\n");
+		printf("-------------------------------------------------------------------------------------------------------------------------\n");
+
+		for (int i = 0; i < numMember; i++) {
+			for (int j = 0; j < member[i].numLoginRecords; j++) {
+
+
+
+				int hours = member[i].logInOutTime[j].diff / 3600;
+
+				int remainingSecs = member[i].logInOutTime[j].diff % 3600;
+
+				int minutes = remainingSecs / 60;
+
+				int seconds = remainingSecs % 60;
+
+				printf("| %-10s | %-20s | %-25s | %-25s | %d Hours %d Mins %d Sec      |\n", member[i].id, member[i].name, member[i].logInOutTime[j].loginTimeDate, member[i].logInOutTime[j].logoutTimeDate, hours, minutes, seconds);
+				printf("-------------------------------------------------------------------------------------------------------------------------\n");
+			}
+		}
+		printf("Press any key to continue....");
+		scanf(" %[^\n]", key);
+	}
+	else {
+		printf("No Member Login Records. ");
+		waitingScreen();
+
+	}
+}
