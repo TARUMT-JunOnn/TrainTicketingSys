@@ -79,6 +79,8 @@ int menu(void) {
 			break;
 		}
 	} while (status == 0);
+
+	//add default or something to validate
 	return status + identifier;
 }
 
@@ -120,6 +122,7 @@ int subMenu(int input) {
 			break;
 		case 22:
 			memberRegister();
+			//got error
 			return 0;
 			break;
 		case 23:

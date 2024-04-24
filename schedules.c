@@ -225,7 +225,7 @@ int DisplaySchedule(struct date *toMaxWeek)
 		switch (choice)
 		{
 		case 0:
-			allSchedule();
+		/*	allSchedule();*/
 			break;
 		case 1:
 		case 2:

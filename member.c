@@ -270,7 +270,7 @@ int memberLogin(struct Member* member) {
 		passwordStore(password);
 		printf("\n\n");
 
-		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
+		for (int i = 0; i < numMember; i++) {
 			if (strcmp(member[i].id, id) == 0 && strcmp(member[i].pass, password) == 0) {
 				printf("Login Successful. ");
 
@@ -285,7 +285,10 @@ int memberLogin(struct Member* member) {
 		if (loginSuccess == 0) {
 
 				printf("Invalid ID or Password\n");
-				again = tryAgain(again);			
+				again = tryAgain(again);
+				if (again == 0) 
+					return memberMenu();
+				
 		}
 	} while (again == 1);
 }
@@ -746,7 +749,7 @@ void forgotPass(struct Member* member) {
 		printf("ID: ");
 		scanf(" %[^\n]", id);
 		
-		for (int i = 0; i < MAX_NUMBER_MEMBER; i++) {
+		for (int i = 0; i < numMember; i++) {
 			if (strcmp(member[i].id, id) == 0) {
 				num = i;
 				idExist++;
@@ -826,6 +829,8 @@ void forgotPass(struct Member* member) {
 				
 			again = tryAgain(again);
 
+			if (again == 0)
+				return memberMenu();
 		}
 		
 	} while (again == 1);
