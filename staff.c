@@ -455,7 +455,7 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
         select = 'Y';
         /*title();*/
         printf("\nStaff\n");
-        printf("------\n");
+        printf("-------\n");
         printf("1. Employee working schedule\n");
         printf("2. Update Information\n");
         // printf("3. Tickets available\n");
@@ -631,7 +631,7 @@ void staff_logout(struct Staff* staff, int staffNum) {
     printf("2. CHECK OUT\n");
     printf("Enter your choice:");
     scanf("%d", &ans);
-    printf("================================\n\n");
+    printf("==================================\n\n");
 
     if (ans == 1) {
         checkIn = clock();
@@ -648,7 +648,7 @@ void staff_logout(struct Staff* staff, int staffNum) {
         checkOut = clock();
         // Check out
         time(&staff[staffNum].check_out_time);
-        printf("-------------------- CHECK OUT --------------------\n");
+        printf("-------------------- CHECK OUT ---------------------\n");
         printf("STAFF ID:%s\tCHECK OUT TIME:%s", staff[staffNum].staff_id, ctime(&staff[staffNum].check_out_time));
         printf("----------------------------------------------------\n");
 
@@ -705,7 +705,7 @@ int resetPassword(struct Staff* staff)
 
     printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
     printf("| You need to double check the data showe below |\n");
-    printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+    printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 
 
     printf("\nEnter ID:");
@@ -831,7 +831,7 @@ void manager_menu(struct Staff* staff, struct Manager* manager)
         /*title();*/
 
         printf("\n------ MANAGER MENU ------\n");
-        printf("-------------------------\n");
+        printf("----------------------------\n");
         printf("1. Login\n");
         printf("2. Registration\n");
         printf("3. Exit\n");
@@ -1002,8 +1002,10 @@ void manager_main_page(struct Staff* staff, struct Manager* manager, int manager
     
 }
 
+
 // Manager registration 
-void manager_registration(struct Manager* manager) {
+void manager_registration(struct Manager* manager)
+{
     char id[MAX_ID_LENGTH];
     char name[MAX_NAME_LENGTH];
     char password[MAX_PASS_LENGTH];
@@ -1027,8 +1029,10 @@ void manager_registration(struct Manager* manager) {
     printf("Password: ");
     scanf(" %[^\n]", password);
 
-    for (int i = 0; i < manager_count; i++) {
-        if (strcmp(manager[i].manager_id, id) == 0) {
+    for (int i = 0; i < manager_count; i++) 
+    {
+        if (strcmp(manager[i].manager_id, id) == 0)
+        {
             printf("The ID %s already exits.\n", id);
             printf("Please choose a different ID.\n");
             return 0;
@@ -1036,38 +1040,50 @@ void manager_registration(struct Manager* manager) {
     }
 
     again = 0;
-    // here testing ---------------------------------------
-    do {
-        /*again = 0;*/
-        success = 1;
+    //  ---------------------------------------
+    do 
+    {
+        
+            /*again = 0;*/
+            success = 1;
+        do {
+            security_Ques();
 
-        security_Ques();
+            for (int i = 0; i < MAX_QUESTION_SELECTED; i++)
+            {
+                printf("%d. ", i + 1);
+                scanf("%d", &questionSelection[i]);
 
-        for (int i = 0; i < MAX_QUESTION_SELECTED; i++) {
-            printf("%d. ", i + 1);
-            scanf("%d", &questionSelection[i]);
-
-            if (questionSelection[i] > 5 || questionSelection[i] < 1) {
-                printf("Invalid Choice!\n");
-                printf("Please Enter Number 1 - 5!\n");
-                success = 0;
-                break; // maybe can changes
-            }
-            if (i > 0) {
-                for (int q = 0; q < i && questionSelection[i] != questionSelection[q]; q++)
+                do
                 {
-                    if (questionSelection[i] == questionSelection[q]) {
-                        printf("\nSelect the difference\n");
-                        printf("Please Try Again.\n");
-                        again++;
+                    if (questionSelection[i] > 5 || questionSelection[i] < 1)
+                    {
+                        printf("Invalid Choice!\n");
+                        printf("Please Enter Number 1 - 5!\n");
                         success = 0;
-                        
+                        //break; 
                     }
-                }
-                if (again == 1)
-                    break;
+                } while (questionSelection[i] > 5 || questionSelection[i] < 1);
+
+
+                if (i > 0)
+                {
+                    for (int q = 0; q < i; q++)
+                    {
+                        if (questionSelection[i] == questionSelection[q])
+                        {
+                            printf("\nSelect the difference security question\n");
+                            printf("Please Try Again.\n");
+                            again++;
+                            success = 0;
+
+                        }
+                    }
+
             }
-        }
+           
+            }
+        } while (again == 1);
     } while (success != 1);
 
     // copy into structure
@@ -1557,14 +1573,25 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
                         }
                         else
                         {
-                            printf("You failed to answer one or more security questions correctly.\n");
-                            printf("Do u want to enter the answers for security password again?(Y/N):\n");
-                            scanf(" %c", &enterAgain);
-                            
-                           
+                            do {
+                                printf("You failed to answer one or more security questions correctly.\n");
+                                printf("Do u want to enter the answers for security password again?(Y/N):\n");
+                                scanf(" %c", &enterAgain);
+                                if (toupper(enterAgain) != 'N' && toupper(enterAgain) != 'Y')
+                                {
+                                    printf("\nInvalid selection - Answers in Y/N only\n\n");
+                                }
+                                else {
+                                    printf("------------------------------------------------------------\n");
+                                   
+                                }
+                                    
+                            } while (toupper(enterAgain) != 'N' && toupper(enterAgain) != 'Y');
+
+
                         }
                     } while (enterAgain == 'Y' || enterAgain == 'y');
-                    }
+                }
                 
                 else if (ans == 2) {
                     do {
@@ -1687,7 +1714,7 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
 void dispalyAll(struct Staff* staff, struct Manager* manager, int staffNum)
 {
 
-    printf("\n----------- RECORD OF STAFF -----------\n");
+    printf("\n----------- RECORD OF STAFF ------------\n");
     printf("\nStaff Name\tPhone No\tEmail\n");
 
     for (int i = 0; i < staff_count; i++)
