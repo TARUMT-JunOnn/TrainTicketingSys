@@ -4,6 +4,7 @@
 #include <time.h>
 #include<string.h>
 #include <ctype.h>
+#include <Windows.h>
 #pragma warning (disable : 4996);
 
 #define MAX_STAFF 40
@@ -25,7 +26,7 @@ void staff_registration(struct Staff* staff);
 void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum);
 void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum);
 void staff_information(struct Staff* staff, struct Manager* manager, int staffNum);
-void staff_logout(struct Staff* staff, int staffNum);
+void staff_logout(struct Staff* staff, int staffNum, struct Manager* manager);
 // manager
 void manager_menu(struct Staff* staff, struct Manager* manager);
 void manager_login(struct Staff* staff, struct Manager* manager);
@@ -206,7 +207,7 @@ main() {
 
 //heading all pages
 void title(void) {
-    // system("cls");
+    system("cls");
     printf("%10s %s %s", "Train", "Ticketing", "System");
     time_t t;
     time(&t);
@@ -230,9 +231,9 @@ void menu(struct Staff* staff, struct Manager* manager)
     hour = localtime(&t);
     strftime(buffer, 50, "%X", hour);
 
-    //system("cls");
+
     do {
-        /*title();*/
+        title();
         printf("------ EMPLOYEE MENU ------\n");
         printf("-------------------------\n");
         printf("1. Staff\n");
@@ -263,15 +264,17 @@ void menu(struct Staff* staff, struct Manager* manager)
 
 }
 
-// staff Menu!
+// staff Menu - got error why it will ask the ques about do u wnat to select again?
 void staffMenu(struct Staff* staff, struct Manager* manager)
 {
     int choice;
+    char select;
 
-    //system("cls");
+   
     do{
         do {
-            /*title();*/
+            select = 'N';
+            title();
             printf("\n------ STAFF MENU ------\n");
             printf("-------------------------\n");
             printf("1. Login\n");
@@ -288,6 +291,7 @@ void staffMenu(struct Staff* staff, struct Manager* manager)
                 break;
             case 3:
                 printf("Exiting....\n");
+                select = 'N';
                 break;
             default:
                 printf("Invalid Choice!\n");
@@ -298,8 +302,11 @@ void staffMenu(struct Staff* staff, struct Manager* manager)
             }
         } while (choice != 1 && choice != 2 && choice != 3);
     } while (choice != 3);
-    printf("\nYou are Exit Right Now!\n");
+    if (select == 'N') {
+        printf("\nYou are Exit Right Now!\n");
 
+    }
+   
 }
 
 
@@ -313,7 +320,7 @@ void staff_login(struct Staff* staff, struct Manager* manager)
     int ans;
     int again = 0;
 
-    /*title();*/
+    title();
     printf("------ STAFF Login ------\n");
 
     do
@@ -378,6 +385,7 @@ void staff_login(struct Staff* staff, struct Manager* manager)
                 }
                 else
                 {
+                   
                     printf("You are exit right now!\n");
                     return 0;
                 }
@@ -399,7 +407,7 @@ void staff_registration(struct Staff* staff) {
     char email[MAX_EMAIL_LENGTH];
     char phoneNo[MAX_PHONE_LENGTH];
 
-    /*title();*/
+    title();
     printf("\nStaff Registration\n");
     printf("--------------------\n");
     printf("Enter your ID: ");
@@ -413,6 +421,7 @@ void staff_registration(struct Staff* staff) {
     printf("Email:");
     scanf(" %[^\n]", email);
 
+    
     for (int i = 0; i < MAX_STAFF; i++) {
         if (strcmp(staff[i].staff_id, id) == 0) {
             printf("The ID %s already exits.\n", id);
@@ -432,7 +441,7 @@ void staff_registration(struct Staff* staff) {
 
     //write all equal to 0 or NULL;
 
-    staff[staff_count].schedule.total_working_hours = 0; ////!!!!!
+    staff[staff_count].schedule.total_working_hours = 0; 
 
 
 
@@ -441,19 +450,18 @@ void staff_registration(struct Staff* staff) {
     printf("Log in here.\n");
 
     staff_count++;
-    // system("cls"); // This make some notification can't detect.
+
 }
 
 
-// Staff Choice menu //got error
+// Staff Choice menu //got error- not sure the error haoxiangs case 6 loop problem??
 void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum) {
     int choice;
     char select;
 
-    //system("cls");
     do {
         select = 'Y';
-        /*title();*/
+        title();
         printf("\nStaff\n");
         printf("-------\n");
         printf("1. Employee working schedule\n");
@@ -461,7 +469,7 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
         // printf("3. Tickets available\n");
         // printf("4. customer data\n");
         printf("5. Working Time\n"); //combination of check in and out time!
-        printf("6. Log Out Staff\n");
+        printf("6. Log Out Staff\n"); //got log out bug
         printf("Enter your Choice: ");
         scanf("%d", &choice);
 
@@ -477,7 +485,7 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
         case 4:
             break;
         case 5:
-            staff_logout(staff, staffNum);
+            staff_logout(staff, staffNum, manager);
             break;
         case 6:
             printf("Exiting...\n");
@@ -508,7 +516,7 @@ void staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum)
 //staff rest schedule 
 void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum)
 {
-
+    title();
     if (staff[staffNum].schedule.total_working_hours != 0) {
         printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[staffNum].staff_name);
         printf("BEGIN TIME\tREST TIME\tEND TIME\n");
@@ -536,7 +544,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
         success = 0;
         again = 0;
 
-        /*title();*/
+        title();
 
                 // Before edit --change the versio view
         printf("---------------------------\n");
@@ -551,6 +559,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
         scanf(" %c", &confirm);
 
         if (confirm == 'Y' || confirm == 'y') {
+            //title();
             printf("\n--------------------------\n");
             printf("---------- UPDATE ----------\n");
             printf("----------------------------\n");
@@ -588,7 +597,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
             do {
                 again = 0;
 
-                /*title();*/
+                //title();
                 printf("\n--------------------------\n");
                 printf("DO you want to update again?");
                 printf("\n1. Yes\n");
@@ -616,7 +625,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
 
 
 //combination of log out&in time selected
-void staff_logout(struct Staff* staff, int staffNum) {
+void staff_logout(struct Staff* staff, int staffNum, struct Manager* manager) {
     int ans, choice;
     time_t check_in_time = 0;
     time_t check_out_time = 0;
@@ -624,10 +633,10 @@ void staff_logout(struct Staff* staff, int staffNum) {
     clock_t checkIn = 0, checkOut = 0;
     double elapsedTime;
 
+    title();
     printf("\nSTAFF WORKING TIME RECORDED\n");
     printf("=================================\n\n");
     printf("1. CHECK IN\n");
-
     printf("2. CHECK OUT\n");
     printf("Enter your choice:");
     scanf("%d", &ans);
@@ -636,21 +645,23 @@ void staff_logout(struct Staff* staff, int staffNum) {
     if (ans == 1) {
         checkIn = clock();
         // Check in
+        title();
         time(&staff[staffNum].check_in_time);
-        printf("-------------------- CHECK IN --------------------\n");
+        printf("---------------------------- CHECK IN ----------------------------\n");
         printf("STAFF ID:%s\tCHECK IN TIME:%s", staff[staffNum].staff_id, ctime(&staff[staffNum].check_in_time));
         printf("Check In succeed\n");
-        printf("--------------------------------------------------\n");
+        printf("-------------------------------------------------------------------\n");
 
 
     }
     else if (ans == 2) {
         checkOut = clock();
         // Check out
+        title();
         time(&staff[staffNum].check_out_time);
-        printf("-------------------- CHECK OUT ---------------------\n");
+        printf("----------------------------- CHECK OUT ---------------------------\n");
         printf("STAFF ID:%s\tCHECK OUT TIME:%s", staff[staffNum].staff_id, ctime(&staff[staffNum].check_out_time));
-        printf("----------------------------------------------------\n");
+        printf("-------------------------------------------------------------------\n");
 
         elapsedTime = (double)(checkOut - checkIn) / CLOCKS_PER_SEC;
 
@@ -661,22 +672,26 @@ void staff_logout(struct Staff* staff, int staffNum) {
         }
         else {
   
-            printf("\nToday check in time %s\n", ctime(&staff[staffNum].check_in_time));
-            printf("Today check out time %s\n", ctime(&staff[staffNum].check_out_time));
-            printf("You have not completed 8 hours of work today.\n");
+            printf("--------------------- Time Overall situation ----------------------\n");
+            printf("-------------------------------------------------------------------\n");
+            printf(" | CHECK IN TIME  | %s |\n", ctime(&staff[staffNum].check_in_time));
+            printf(" | CHECK OUT TIME | %s |\n", ctime(&staff[staffNum].check_out_time));
+            printf("-------------------------------------------------------------------\n");
+
+            printf("---------- You have not completed 8 hours of work today. ----------\n");
             do {
                 printf("\nAre you sure you want to check out? (1 for Yes, 0 for No): ");
                 scanf("%d", &choice);
                 if (choice == 1) {
                     // Exit and return to the menu
                     printf("Exiting...\n");
-
+                    staffMenu(staff, manager);
                     // You may want to return to the main menu or exit the program here
                 }
-                else if (choice == 2)
+                else if (choice == 0)
                 {
-                    // Return to check in and out interface
-                    staff_logout(staff, staffNum);
+                    // Return to staff choice menu
+                    staff_main_page(staff, manager,staffNum);
                 }
                 else 
                 {
@@ -703,6 +718,7 @@ int resetPassword(struct Staff* staff)
     char comf_newPassword[MAX_PASS_LENGTH];
     char choice;
 
+    title();
     printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
     printf("| You need to double check the data showe below |\n");
     printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
@@ -806,6 +822,7 @@ int resetPassword(struct Staff* staff)
 
 void sendValidationCode(char* email, char* code) {
     // Implement sending the validation code to the provided email
+    title();
     printf("Validation code sent to %s is: %s\n", email, code);
 }
 
@@ -828,7 +845,7 @@ void manager_menu(struct Staff* staff, struct Manager* manager)
 
     
     do {
-        /*title();*/
+        title();
 
         printf("\n------ MANAGER MENU ------\n");
         printf("----------------------------\n");
@@ -868,7 +885,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
     int ans;
     int count = 0;
 
-    /*title();*/
+    title();
     printf("\n------ MANAGER Login ------\n");
 
     do
@@ -891,6 +908,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
             do
             {
                 again = 0;
+                title();
                 printf("\nInvalid ID or Password\n");
                 printf("Do you want to try again?");
                 printf("\n1. Yes\n");
@@ -913,6 +931,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 
                 if (count == 3)
                 {
+                    title();
                     printf("\nYou are failed to log in 3 time!\n");
                     printf("\n1. RESET PASSWORD\n");
                     printf("2. EXIT\n");
@@ -945,9 +964,9 @@ void manager_main_page(struct Staff* staff, struct Manager* manager, int manager
     int choice;
     char select;
 
-    // system("cls");
+
     do {
-        /*title();*/
+        title();
         printf("\nManager\n");
         printf("------\n");
         printf("1. Modify staff rest schedule\n");
@@ -1019,7 +1038,7 @@ void manager_registration(struct Manager* manager)
     int questionSelection[MAX_QUESTION_SELECTED];
 
 
-    /*title();*/
+    title();
     printf("\Manager Registration\n");
     printf("--------------------\n");
     printf("Manager ID: ");
@@ -1135,7 +1154,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
     int again = 0;
     int done = 1;
     int choice;
-    // system("cls");
+
 
     do
     {
@@ -1143,7 +1162,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
         deleted = 0;
         again = 0;
 
-        /*title();*/
+        title();
         printf("you are able to delete the record\n");
 
         printf("\nEenter staff id to delete :");
@@ -1208,6 +1227,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
             
         }
         if (deleted == 1) {
+            title();
             do {
                 printf("Do you want to continue");
                 printf("\n1. Yes\n");
@@ -1219,7 +1239,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
                     again++;
                 else if (choice == 2) {
                     return 0;
-                    //system("cls");
+
                 }
                 else
                     again = 0;
@@ -1228,13 +1248,13 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
 
         }
 
-        // havent done yet
+
 
     } while (done == 1);
 }
 
 
-//manager modify particular staff / entire staff rest schedule !*
+//manager modify particular staff / entire staff rest schedule 
 void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
 {
     char id[MAX_ID_LENGTH];
@@ -1255,7 +1275,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
         successful = 0;
         again = 0;
         reenter = 0;
-        /*title();*/
+        title();
 
         printf("\n------- Particular staff rest schedule -------\n");
         printf("Staff ID:");
@@ -1326,6 +1346,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                     total_working_hours = total_working_minutes / 60;
                     remaining_minutes = total_working_minutes % 60;
 
+                    title();
                     printf("\n---------------------------------------------\n");
                     printf("| WORKING TIME UPDATED SUCCESSFULLY |\n");
                     printf("---------------------------------------------\n");
@@ -1386,7 +1407,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
         else
         {
             do {
-                
+                title();
                 printf("\n1. CONTINUE\n");
                 printf("2. EXIT\n");
                 printf("Enter you choice:");
@@ -1422,7 +1443,7 @@ void updateManager_information(struct Staff* staff, struct Manager* manager, int
     do {
         success = 0;
         again = 0;
-        /*title();*/
+        title();
 
         //no need enter manager ID alredy pass from parameter
 
@@ -1439,6 +1460,7 @@ void updateManager_information(struct Staff* staff, struct Manager* manager, int
 
         //ask manager to update
         if (confirm == 'Y' || confirm == 'y') {
+            title();
             printf("\n--------------------------\n");
             printf("----- UPDATE RIGHT NOW -----\n");
             printf("----------------------------\n");
@@ -1474,6 +1496,7 @@ void updateManager_information(struct Staff* staff, struct Manager* manager, int
 
         if (success == 0) {
             do {
+                title();
                 again = 0;
                 printf("\n--------------------------\n");
                // printf("Invalid | Wrong Manager ID |\n");
@@ -1520,7 +1543,9 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
     char enterAgain;
 
     do {
+        
         again = 0;
+        title();
         printf("\n--------------- RESET PASSWORD manager---------------\n");
         printf("\n|||||||||||||||||||||||||||||||||||||||||||||||\n");
         printf("| You need to double check the data showe below |\n");
@@ -1595,6 +1620,7 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
                 
                 else if (ans == 2) {
                     do {
+                        title();
                         printf("Do you want to exit?\n");
                         printf("1. Yes\n");
                         printf("2. No\n");
@@ -1627,7 +1653,7 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
 // Security question 
 void security_Ques()
 {
-
+    title();
     printf("\n------------- Security Question -------------\n");
     printf("|  Choose 2 question as your security question  |\n");
 
@@ -1677,7 +1703,7 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
 
     char id[MAX_ID_LENGTH];
     int success = 0;
-
+    title();
     printf("\nEnter staff ID to view the particular staff schedule:");
     scanf(" %[^\n]", id);
 
@@ -1686,6 +1712,7 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
         if (strcmp(staff[i].staff_id, id) == 0)
         {
             if (staff[i].schedule.total_working_hours != 0) {
+                title();
                 printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].staff_name);
                 printf("BEGIN TIME\tREST TIME\tEND TIME\n");
                 printf("%02d:%02d\t%d\t%02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
@@ -1713,7 +1740,7 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
 //Display all staff record
 void dispalyAll(struct Staff* staff, struct Manager* manager, int staffNum)
 {
-
+    title();
     printf("\n----------- RECORD OF STAFF ------------\n");
     printf("\nStaff Name\tPhone No\tEmail\n");
 
