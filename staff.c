@@ -454,7 +454,6 @@ void staff_registration(struct Staff* staff) {
 
 
     printf("\nRegistration successfully\n");
-    printf("-----------------------------\n");
     Sleep(1000);
 
     staff_count++;
@@ -512,6 +511,7 @@ int staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum) 
         }
         if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5) {
             do {
+                title();
                 printf("\nCountinue select ? (Y||N) : ");
                 scanf(" %c", &select);
 
@@ -615,17 +615,18 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
 
                 title();
                 printf("\n--------------------------\n");
-                printf("DO you want to update again?");
+                printf("Do you want to update again?");
                 printf("\n1. Yes\n");
                 printf("2. No\n");
                 printf("Enter you choice:");
                 scanf("%d", &choice);
                 printf("---------------------------\n");
+                Sleep(1000);
                 if (choice == 1)
                     again++;
                 else if (choice == 2) {
                     return 0;
-                    //system("cls");
+                   
                 }
 
                 else
@@ -714,6 +715,7 @@ int staff_logout(struct Staff* staff, int staffNum, struct Manager* manager) {
                 }
                 else 
                 {
+                    title();
                     printf("\nFailed to select...\n");
                     printf("Please select again!\n");
                     Sleep(1000);
@@ -1435,11 +1437,12 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                 printf("| Invalid ---- Wrong ID  ---- |\n");
                 printf("------------------------------|\n");
                 printf("| Do you want to enter again? |");
-                printf("\n1. Yes                      |\n");
-                printf("2. No                         |\n");
+                printf("\n| 1. Yes                      |\n");
+                printf("| 2. No                       |\n");
                 printf("Enter you choice:             |");
                 scanf("%d", &choice);
                 printf("|-----------------------------|\n");
+                Sleep(800)
                 if (choice == 1)
                     ans++;
                 else if (choice == 2)
