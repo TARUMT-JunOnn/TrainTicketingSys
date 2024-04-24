@@ -32,7 +32,7 @@ void memberLogin(struct Member* member);
 //security question
 void securityQuestion();
 void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]);
-int questioSelected(int questionSelection[3]);
+int questionSelected(int questionSelection[3]);
 
 //registration validation
 void passwordFormat(void);
@@ -301,7 +301,7 @@ void securityQuestion() {
 		printf("\nPlease Choose 3 Security Questions\n");
 }
 
-int questioSelected(int questionSelection[3]) {
+int questionSelected(int questionSelection[3]) {
 	int i = 0, success = 0;
 
 	do {
@@ -607,7 +607,7 @@ void memberRegister(struct Member* member) {
 	strcpy(member[numMember].id, memberID);
 	strcpy(member[numMember].pass, password);
 
-	questioSelected(questionSelection);
+	questionSelected(questionSelection);
 
 	for (int i = 0; i < 3; i++) {
 		member[numMember].security[i].questionNum = questionSelection[i];
@@ -756,7 +756,7 @@ void forgotPass(struct Member* member) {
 		}
 		
 		if (idExist == 1) {
-			questioSelected(questionSelection);
+			questionSelected(questionSelection);
 
 			questionTitle(questionSelection, question);
 
@@ -1022,7 +1022,6 @@ void viewSchedule() {
 		
 }
 
-//havent done yet
 void rewardPoint(struct Member* member, int memberNUM) {
 	char key[10];
 	title();
@@ -1044,7 +1043,6 @@ void rewardPoint(struct Member* member, int memberNUM) {
 
 }
 
-//havent done yet
 void searchMember(struct Member* member) {
 	char* menu[] = { "ID", "Gender", "Age", "Reward Points", "Exit"};
 	char choice[LENGTH_CHOICE];
