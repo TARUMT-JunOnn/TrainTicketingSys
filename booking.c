@@ -105,7 +105,7 @@ int readBookingFile(FILE** fptr) {
 	return i;
 }
 
-int writefile(FILE** fptr) {
+int writeBookingFile(FILE** fptr) {
 	int i = 0;
 	*fptr = fopen("../TrainTicketingSys/res/booking.txt", "w");
 	while (strcmp(records[i].date, "") != 0) {

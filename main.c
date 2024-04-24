@@ -54,33 +54,59 @@ int readFile() {
 	}
 }
 
-int menu(void) {
-	int choice, status, identifier;
+int writeFile() {
+	FILE* fptr[4];
+	int status;
+	for (int i = 0; i < 4; i++) {
+		switch (i) {
+		case 0:
+			status = writeMemberFile(&fptr[i]);
+			break;
+		case 1:
+			status = writeStaffFile(&fptr[i]);
+			break;
+		case 2:
+			status = writeScheduleFile(&fptr[i]);
+			break;
+		case 3:
+			status = writeBookingFile(&fptr[i]);
+			break;
+		}
+		if (status == -1)
+			return status;
+	}
+}
+
+int menu(int choice) {
+	int status, identifier;
 	do {
-		title();
-		printf("Menu\n");
-		printf("-----\n");
-		printf("1. Employee\n");
-		printf("2. Member\n");
-		printf("0. Exit\n");
-		scanf("%d", &choice);
+		if (choice == 0) {
+			title();
+			printf("Menu\n");
+			printf("-----\n");
+			printf("1. Employee\n");
+			printf("2. Member\n");
+			printf("0. Exit\n");
+			scanf("%d", &choice);
+		}
 
 		switch (choice) {
 		case 1:
 			status = employeeMenu();
+			choice = 0;
 			identifier = 10;
 			break;
 		case 2:
 			status = memberMenu();
+			choice = 0;
 			identifier = 20;
 			break;
 		case 0:
+			writeFile();
 			exit(-1);
 			break;
 		}
 	} while (status == 0);
-
-	//add default or something to validate
 	return status + identifier;
 }
 
@@ -106,11 +132,11 @@ int subMenu(int input) {
 		case 21:
 			status = memberLogin();
 			switch (status) {
-				case 2:
-					DisplaySchedule();
-					break;
+			case 1:
+				return 2;
+				break;
 				case 3:
-					
+					chooseTime();
 					break;
 				case 4:
 					
@@ -122,36 +148,32 @@ int subMenu(int input) {
 			break;
 		case 22:
 			memberRegister();
-			//got error
-			return 0;
+			return 2;
 			break;
 		case 23:
 			forgotPass();
-			return 0;
+			return 2;
 			break;
 		}
 	} while (status != 0);
 }
 
 int main(void) {
-	int status;
+	int status = 0;
 	if (readFile() == -1) {
 		printf("Unable open file");
 		return -1;
 	}
 	do {
-		status = menu();
+		status = menu(status);
 		status = subMenu(status);
-	} while (status == 0);
+	} while (status == 0 || status == 1 || status == 2);
 }
 
 int chooseTime() {
-	allSchedule(); 
 	int dateSeperate[3];
 	char date[11], day[80];
 	printf("What time you would like to booking ?\n");
-	for (int i = 0; i < 14; ++i) {
-		countDate(i, &dateSeperate[0], &dateSeperate[0], &dateSeperate[0], day);
-
-	}
+	SearchSchedule();
+	system("pause");
 }

@@ -22,10 +22,10 @@
 
 int tryAgain(int again);
 void waitingScreen(void);
-int memberMenu(struct Member* member);
+int memberMenu();
 
 //member Login
-int memberLogin(struct Member* member);
+int memberLogin();
 
 //security question
 void securityQuestion();
@@ -38,16 +38,16 @@ bool verify_email(char* email);
 bool verify_phone_no(char* phoneNo);
 bool verify_IC(char gender, char* ic);
 int questionSelected(int questionSelection[3]);
-int memberRegister(struct Member* member);
+int memberRegister();
 
 //password recovery modules
-void forgotPass(struct Member* member);
+void forgotPass();
 
 //memberMenu
-int memberMainPage(struct Member* member, int memberNUM);
+int memberMainPage(int memberNUM);
 
 //modify and display modules
-void viewProfile(struct Member* member, int memberNUM);
+void viewProfile(int memberNUM);
 
 void viewSchedule();
 void addBooking();
@@ -55,20 +55,20 @@ void bookingHistory();
 void cancelBooking();
 
 //reward point
-void rewardPoint(struct Member* member, int memberNUM);
+void rewardPoint(int memberNUM);
 
 int validateNumberMember(void);
 
 //search modules
 void searchMemberTitle(void);
-void searchMember(struct Member* member);
-void searchMemberID(struct Member* member);
-void searchMemberGender(struct Member* member);
-void searchMemberAge(struct Member* member);
-void searchMemberRewardPoints(struct Member* member);
+void searchMember();
+void searchMemberID();
+void searchMemberGender();
+void searchMemberAge();
+void searchMemberRewardPoints();
 
 //delete modules
-void deleteMember(struct Member* member);
+void deleteMember();
 
 char passwordStore(char password[]);
 
@@ -156,13 +156,13 @@ void memberMain(){
 		scanf("%d", &choice);
 		switch (choice) {
 		case 1:
-			memberMenu(member);
+			memberMenu();
 			break;
 		case 2:
-			deleteMember(member);
+			deleteMember();
 			break;
 		case 3:
-			searchMember(member);
+			searchMember();
 			break;
 		case 4:
 			printf("EXITING PROGRAM.....\n");
@@ -189,11 +189,11 @@ int tryAgain(int again) {
 		scanf(" %[^\n]", choice);
 
 		if (strcmp(choice, "1") == 0) {
-			again++;
+			again = 2;
 			return again;
 		}
 		else if (strcmp(choice, "2") == 0)
-			return 0;
+			return 1;
 		else {
 			title();
 			printf("Invalid Choice\n");
@@ -252,7 +252,7 @@ int memberMenu() {
 	} while (strcmp(choice, "4") !=0);
 }
 
-int memberLogin(struct Member* member) {
+int memberLogin() {
 	char id[MEMBER_ID], password[MEMBER_PASS];
 	int memberNUM;
 	int loginSuccess = 0, again;
@@ -277,7 +277,7 @@ int memberLogin(struct Member* member) {
 				waitingScreen();
 				
 				memberNUM = i;
-				return memberMainPage(member, memberNUM);
+				return memberMainPage(memberNUM);
 				loginSuccess++;
 			}
 		}
@@ -285,12 +285,10 @@ int memberLogin(struct Member* member) {
 		if (loginSuccess == 0) {
 
 				printf("Invalid ID or Password\n");
-				again = tryAgain(again);
-				if (again == 0) 
-					return memberMenu();
-				
+				again = tryAgain(again);			
 		}
-	} while (again == 1);
+	} while (again == 2);
+	return again;
 }
 
 void securityQuestion() {
@@ -536,7 +534,7 @@ int questionSelected(int questionSelection[3]) {
 	return questionSelection;
 }
 
-int memberRegister(struct Member* member) {
+int memberRegister() {
 	
 	char memberID[MEMBER_ID];
 	char numID[5];
@@ -738,7 +736,7 @@ int memberRegister(struct Member* member) {
 	numMember++;
 }
 
-void forgotPass(struct Member* member) {
+void forgotPass() {
 	bool resultPass;
 	char id[MEMBER_ID], question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
 	int num, questionSelection[MAX_NUMBER_MEMBER], newPassword[MEMBER_PASS], newPassConfirm[MEMBER_PASS];
@@ -828,16 +826,13 @@ void forgotPass(struct Member* member) {
 			printf("Invalid ID!\n");
 				
 			again = tryAgain(again);
-
-			if (again == 0)
-				return memberMenu();
 		}
-		
-	} while (again == 1);
+	} while (again == 2);
+	return again;
 
 }
 
-int memberMainPage(struct Member* member, int memberNUM) {
+int memberMainPage(int memberNUM) {
 	char choice[LENGTH_CHOICE];
 	char* menu[] = { "Display Profile", "View Schedule", "Add Booking",
 					"Display Booking History", "Cancel Booking", "Reward Points", "Exit" };
@@ -857,7 +852,7 @@ int memberMainPage(struct Member* member, int memberNUM) {
 		scanf(" %[^\n]", choice);
 
 		if (strcmp(choice, "1") == 0)
-			viewProfile(member, memberNUM);
+			viewProfile(memberNUM);
 
 		else if (strcmp(choice, "2") == 0)
 			return atoi(choice);
@@ -875,7 +870,7 @@ int memberMainPage(struct Member* member, int memberNUM) {
 		
 
 		else if (strcmp(choice, "6") == 0)
-			rewardPoint(member, memberNUM);
+			rewardPoint(memberNUM);
 
 		else if (strcmp(choice, "7") == 0) {
 			title();
@@ -890,7 +885,7 @@ int memberMainPage(struct Member* member, int memberNUM) {
 	} while (strcmp(choice, "7") != 0);
 }
 
-void viewProfile(struct Member* member, int memberNUM) {
+void viewProfile(int memberNUM) {
 	char choice[LENGTH_CHOICE], modify[LENGTH_CHOICE];
 	int again;
 	char oldPassword[MEMBER_PASS], newPassword[MEMBER_PASS], passConfirm[MEMBER_PASS], phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
@@ -1031,7 +1026,7 @@ void viewSchedule() {
 }
 
 //havent done yet
-void rewardPoint(struct Member* member, int memberNUM) {
+void rewardPoint(int memberNUM) {
 	char key[10];
 	title();
 	printf("\t\t\t\t\t\t\t\t   Current Points \n\t\t\t\t\t\t\t\t\t%.2f\n\n", member[memberNUM].rewardPoints);
@@ -1053,7 +1048,7 @@ void rewardPoint(struct Member* member, int memberNUM) {
 }
 
 //havent done yet
-void searchMember(struct Member* member) {
+void searchMember() {
 	char* menu[] = { "ID", "Gender", "Age", "Reward Points", "Exit"};
 	char choice[LENGTH_CHOICE];
 
@@ -1069,16 +1064,16 @@ void searchMember(struct Member* member) {
 		scanf(" %[^\n]", &choice);
 
 		if(strcmp(choice, "1") == 0)
-			searchMemberID(member);
+			searchMemberID();
 
 		else if(strcmp(choice, "2") == 0)
-			searchMemberGender(member);
+			searchMemberGender();
 
 		else if (strcmp(choice, "3") == 0)
-			searchMemberAge(member);
+			searchMemberAge();
 
 		else if (strcmp(choice, "4") == 0)
-			searchMemberRewardPoints(member);
+			searchMemberRewardPoints();
 
 		else if (strcmp(choice, "5") == 0) {
 			printf("EXITING. ");
@@ -1109,7 +1104,7 @@ void searchMemberTitle(void) {
 	printf("----------------------------------------------------------------------------------------------------------------------\n");
 }
 
-void searchMemberID(struct Member* member) {
+void searchMemberID() {
 	char id[MEMBER_ID], next[10];
 	int success = 0, again = 0;
 
@@ -1151,7 +1146,7 @@ void searchMemberID(struct Member* member) {
 	} while (again == 1);
 }
 
-void searchMemberGender(struct Member* member) {
+void searchMemberGender() {
 	char* menu[] = { "Male", "Female"};
 	char next[10];
 	int again = 0, memberExist =0;
@@ -1246,7 +1241,7 @@ void searchMemberGender(struct Member* member) {
 	} while (again == 1);
 }
 
-void searchMemberAge(struct Member* member) {
+void searchMemberAge() {
 	char* menu[] = { "Equal To ", "Greater Than or Equal To ", "Less Than or Equal To " };
 	char next[10];
 	int age, again=0, choice, memberExist = 0;
@@ -1376,7 +1371,7 @@ void searchMemberAge(struct Member* member) {
 	}while (again == 1);
 }
 
-void searchMemberRewardPoints(struct Member* member) {
+void searchMemberRewardPoints() {
 	char* menu[] = { "Equal To ", "Greater Than or Equal To ", "Less Than or Equal To " };
 	char next[10];
 	float rewardPoints;
@@ -1504,7 +1499,7 @@ void searchMemberRewardPoints(struct Member* member) {
 	} while (again == 1);
 }
 
-void deleteMember(struct Member* member) {
+void deleteMember() {
 	char* confirmationMenu[] = { "Confirm", "Cancel" };
 	char id[MEMBER_ID];
 	int confirmation, again = 0, success = 0;

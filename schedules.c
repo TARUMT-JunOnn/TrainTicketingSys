@@ -26,12 +26,19 @@ typedef struct
 }Schedule;
 Schedule schedule[STRUCTCOUNT];
 
-
+int daySelection(void);
 int month_day(int year, int yearday, int* pmonth, int* pday);
- int DisplaySchedule(void);
+int DisplaySchedule(void);
 void ModifySchedule(void);
 void AddSchedule(void);
+void AddSchedulePartII(char dayHolder[20]);
 void SearchSchedule(void);
+void SearchScheduleII(char destination[20]);
+void DeleteSchedule(void);
+int checkTrainIDValid(char deleteID[6]);
+void ResetSchedule(void);
+void ResetScheduleIIWeekday(char resetDayII[15]);
+void ResetScheduleIIWeekend(char resetDayII[15]);
 
 int readScheduleFile(FILE** fp) {
 	*fp = fopen("../TrainTicketingSys/res/schedule.txt", "r");
@@ -47,7 +54,24 @@ int readScheduleFile(FILE** fp) {
 	fclose(*fp);
 }
 
-void countDate(int followingNum, int *day, int *month, int *year, char (*dayOW)[80]) {
+int writeScheduleFile(FILE** fp2) {
+	*fp2 = fopen("../TrainTicketingSys/res/schedule.txt", "w");
+	while (*fp2 == NULL)
+	{
+		printf("Unable to open the file for writing.\n");
+		exit(-1);
+	}
+	for (int i = 0; i < STRUCTCOUNT; i++)
+	{
+		if (strcmp(schedule[i].day, "") != 0)
+		{
+			fprintf(*fp2, "%s %.2f %.2f %s|%s|%s|%d\n", schedule[i].day, schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+		}
+	}
+	fclose(*fp2);
+}
+
+void countDate(int followingNum, int* day, int* month, int* year, char(*dayOW)[80]) {
 	time_t timer;
 	struct tm* now;
 	int status;
@@ -83,7 +107,19 @@ void countDate(int followingNum, int *day, int *month, int *year, char (*dayOW)[
 //
 //	// Read text file into array
 //	rewind(stdin);
-//
+//	FILE* fp, * fp2;
+//	fp = fopen("../TrainTicketingSys/res/schedule.txt", "r");
+//	while (fp == NULL)
+//	{
+//		printf("Failed to read the file");
+//		exit(-1);
+//	}
+//	int i = 0;
+//	while (fscanf(fp, "%s %f %f %[^|]|%[^|]|%[^|]|%d\n", schedule[i].day, &schedule[i].deptArr.time.depart, &schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, &schedule[i].seats) != EOF)
+//	{
+//		i++;
+//	}
+//	fclose(fp);
 //	for (int i = 0; i < 14; i++) {
 //		countDate(i, &toMaxWeek[i].day, &toMaxWeek[i].month, &toMaxWeek[i].year, &toMaxWeek[i].weekday);
 //	}
@@ -116,7 +152,9 @@ void countDate(int followingNum, int *day, int *month, int *year, char (*dayOW)[
 //		printf("2. | Modify Schedule\n");
 //		printf("3. | Add Schedule\n");
 //		printf("4. | Search Schedule\n");
-//		printf("5. | Return to Main Menu\n");
+//		printf("5. | Delete Schedule\n");
+//		printf("6. | Reset Schedule\n");
+//		printf("7. | Return to Main Menu\n");
 //		printf("Choose One > ");
 //		rewind(stdin);
 //		scanf("%d", &menuChoice);
@@ -140,6 +178,14 @@ void countDate(int followingNum, int *day, int *month, int *year, char (*dayOW)[
 //			break;
 //
 //		case 5:
+//			DeleteSchedule();
+//			break;
+//
+//		case 6:
+//			ResetSchedule();
+//			break;
+//
+//		case 7:
 //			printf("Returning to Main Menu\n");
 //			break;
 //
@@ -149,48 +195,80 @@ void countDate(int followingNum, int *day, int *month, int *year, char (*dayOW)[
 //			printf("Enter Again.\n\n");
 //			Sleep(1000);
 //		}
-//	} while (menuChoice != 5);
+//	} while (menuChoice != 7);
+//
+//	fp2 = fopen("../TrainTicketingSys/res/schedule.txt", "w");
+//	while (fp2 == NULL)
+//	{
+//		printf("Unable to open the file for writing.\n");
+//		exit(-1);
+//	}
+//	for (int i = 0; i < STRUCTCOUNT; i++)
+//	{
+//		if (strcmp(schedule[i].day, "") != 0)
+//		{
+//			fprintf(fp2, "%s %.2f %.2f %s|%s|%s|%d\n", schedule[i].day, schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
+//		}
+//	}
+//	fclose(fp2);
 //}
 
-void allSchedule(int followingDay, int day, int month, int year, char weekday[80]) {
+void parSchedule(int week, int day, int month, int year, char weekday[80]) {
 	struct date toMaxWeek[14];
-	char s[14][80];
-	for (int i = 0; i < 14; i++) {
-		countDate(i, &toMaxWeek[i].day, &toMaxWeek[i].month, &toMaxWeek[i].year, &toMaxWeek[i].weekday);
-		printf("-------------------------------------------------------------------------------------------------------\n");
-		printf("This Week Schedule: \n");
-		printf("-------------------------------------------------------------------------------------------------------\n");
-		for (int j = 0; j < 14; j++)
+	char s[80];
+	if (week > 1) {
+		strcpy(s, "Next");
+		strcat(s, weekday);
+		if (day != 0 && month != 0 && year != 0)
+			printf("Date: %d/%d/%d\n", day, month, year);
+		printf("Next %s:\n", weekday);
+	}
+	else {
+		strcpy(s, weekday);
+		if (day != 0 && month != 0 && year != 0)
+			printf("Date: %d/%d/%d\n", day, month, year);
+			printf("%s:\n", weekday);
+	}
+	printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
+	printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
+	for (int counter = 0; counter < STRUCTCOUNT; counter++)
+	{
+		if (strcmp(schedule[counter].day, s) == 0)
 		{
-			if (j == 7) {
-				printf("Next Week Schedule: \n");
-				printf("-------------------------------------------------------------------------------------------------------\n");
-			}
-			printf("Date: %d/%d/%d\n", toMaxWeek[j].day, toMaxWeek[j].month, toMaxWeek[j].year);
-			if (j < 7)
-				printf("%s:\n", toMaxWeek[j].weekday);
-			else {
-				printf("%s %s:\n", "Next", toMaxWeek[j].weekday);
-				strcpy(s[j], "Next");
-				strcat(s[j], toMaxWeek[j].weekday);
-			}
-			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (int counter = 0; counter < STRUCTCOUNT; counter++)
-			{
-				if (strcmp(schedule[counter].day, s[j]) == 0)
-				{
-					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.time.depart, schedule[counter].deptArr.time.arrive, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
-				}
-			}
-			printf("\n-------------------------------------------------------------------------------------------------------\n");
+			printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.time.depart, schedule[counter].deptArr.time.arrive, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
 		}
 	}
+	printf("\n");
+}
+
+void allSchedule() {
+	struct date toMaxWeek[14];
+	printf("-------------------------------------------------------------------------------------------------------\n");
+	printf("This Week Schedule: \n");
+	printf("-------------------------------------------------------------------------------------------------------\n");
+	for (int i = 0; i < 14; i++)
+		countDate(i, &toMaxWeek[i].day, &toMaxWeek[i].month, &toMaxWeek[i].year, &toMaxWeek[i].weekday);
+	for (int j = 0; j < 14; j++) {
+		if (j == 7) {
+			printf("\n");
+			printf("-------------------------------------------------------------------------------------------------------\n");
+			printf("Next Week Schedule: \n");
+			printf("-------------------------------------------------------------------------------------------------------\n");
+		}
+		if (j < 7)
+			parSchedule(1, toMaxWeek[j].day, toMaxWeek[j].month, toMaxWeek[j].year, toMaxWeek[j].weekday);
+		else
+			parSchedule(2, toMaxWeek[j].day, toMaxWeek[j].month, toMaxWeek[j].year, toMaxWeek[j].weekday);
+	}
+	printf("-------------------------------------------------------------------------------------------------------\n");
 }
 
 // Display schedule module
-int DisplaySchedule(struct date *toMaxWeek)
+int DisplaySchedule()
 {
+	struct date toMaxWeek[MAX_DAY];
+	for (int i = 0; i < 14; i++)
+		countDate(i, &toMaxWeek[i].day, &toMaxWeek[i].month, &toMaxWeek[i].year, &toMaxWeek[i].weekday);
 	int counter = 0;
 	int choice;
 	int k;
@@ -225,7 +303,7 @@ int DisplaySchedule(struct date *toMaxWeek)
 		switch (choice)
 		{
 		case 0:
-		/*	allSchedule();*/
+			allSchedule();
 			break;
 		case 1:
 		case 2:
@@ -237,44 +315,17 @@ int DisplaySchedule(struct date *toMaxWeek)
 			system("cls");
 			printf("-------------------------------------------------------------------------------------------------------\n");
 			dayOfWeek(choice, &weekday);
-			if(choice == 7)
+			if (choice == 7)
 				dayOfWeek(0, &weekday);
 			for (k = 0; k < 7; k++) {
-				if (strcmp((*(toMaxWeek + k)).weekday, weekday) == 0)
-				{
-					printf("Date: %d/%d/%d\n", (*(toMaxWeek + k)).day, (*(toMaxWeek + k)).month, (*(toMaxWeek + k)).year);
-					printf("%s:\n", (*(toMaxWeek + k)).weekday);
-				}
-			}
-			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
-			{
-				if (strcmp(schedule[counter].day, weekday) == 0)
-				{
-					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.time.depart, schedule[counter].deptArr.time.arrive, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
-				}
+				if (strcmp(toMaxWeek[k].weekday, weekday) == 0)
+					parSchedule(1, toMaxWeek[k].day, toMaxWeek[k].month, toMaxWeek[k].year, toMaxWeek[k].weekday);
 			}
 			printf("\n");
 			for (k = 7; k < 14; k++)
 			{
-				if (strcmp((*(toMaxWeek + k)).weekday, weekday) == 0)
-				{
-					printf("Date:%d/%d/%d\n", (*(toMaxWeek + k)).day, (*(toMaxWeek + k)).month, (*(toMaxWeek + k)).year);
-					printf("%s %s:\n","Next", (*(toMaxWeek + k)).weekday);
-					strcpy(s[k], "Next");
-					strcat(s[k], (*(toMaxWeek + k)).weekday);
-					break;
-				}
-			}
-			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-			printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-			for (counter = 0; counter < 50; counter++)
-			{
-				if (strcmp(schedule[counter].day, s[k]) == 0)
-				{
-					printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[counter].deptArr.time.depart, schedule[counter].deptArr.time.arrive, schedule[counter].trainID, schedule[counter].departureFrom, schedule[counter].destination, schedule[counter].seats);
-				}
+				if (strcmp(toMaxWeek[k].weekday, weekday) == 0)
+					parSchedule(2, toMaxWeek[k].day, toMaxWeek[k].month, toMaxWeek[k].year, toMaxWeek[k].weekday);
 			}
 			printf("-------------------------------------------------------------------------------------------------------\n");
 			break;
@@ -688,149 +739,71 @@ int month_day(int year, int yearday, int* pmonth, int* pday)
 // Add schedule module
 void AddSchedule(void)
 {
-	printf("[Add Schedule Tool]\n");
-	printf("-------------------\n");
+	int choice, selectDay;
+	char tempDayHolder[20];
 
-}
-
-// Search schedule module
-void SearchSchedule(void)
-{
-	int choice, choice2;
-	system("cls");
 	do
 	{
-		printf("[Schedule Searching Tool]\n");
-		printf("-------------------------\n");
-		printf("1. | This week schedule\n");
-		printf("2. | Next week schedule\n");
-		printf("3. | Return to schedule menu.\n");
-		printf("Choice > ");
-		rewind(stdin);
-		scanf("%d", &choice);
 		system("cls");
+		printf("[Add Schedule Tool]\n");
+		printf("-------------------\n");
+		printf("Do you want to add schedule for:\n");
+		printf("1. | This week\n");
+		printf("2. | Next week\n");
+		printf("3. | Return to schedule menu\n");
+		printf("Your choice > \n");
+		scanf("%d", &choice);
+
+		system("cls");
+
 		switch (choice)
 		{
 		case 1:
 			do
 			{
-				printf("You are searching for this week schedule\n");
-				printf("1. | Monday Schedule\n");
-				printf("2. | Tuesday Schedule\n");
-				printf("3. | Wednesday Schedule\n");
-				printf("4. | Thursday Schedule\n");
-				printf("5. | Friday Schedule\n");
-				printf("6. | Saturday Schedule\n");
-				printf("7. | Sunday Schedule\n");
-				printf("8. | Return to last page.\n");
-				rewind(stdin);
-				scanf("%d", &choice2);
-				switch (choice2)
+				printf("[Add Schedule Tool]\n");
+				printf("-------------------\n");
+				printf("Select a day for this week.\n");
+				selectDay = daySelection();
+
+				system("cls");
+
+				switch (selectDay)
 				{
 				case 1:
-					system("cls");
-					printf("\n\nMonday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "Monday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Monday\n");
+					strcpy(tempDayHolder, "Monday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 2:
-					system("cls");
-					printf("\n\nTuesday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "Tuesday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Tuesday\n");
+					strcpy(tempDayHolder, "Tuesday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 3:
-					system("cls");
-					printf("\n\nWednesday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "Wednesday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Wednesday\n");
+					strcpy(tempDayHolder, "Wednesday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 4:
-					system("cls");
-					printf("\n\nThursday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "Thursday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Thursday\n");
+					strcpy(tempDayHolder, "Thursday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 5:
-					system("cls");
-					printf("\n\nFriday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "Friday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Friday\n");
+					strcpy(tempDayHolder, "Friday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 6:
-					system("cls");
-					printf("\n\nSaturday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "Saturday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Saturday\n");
+					strcpy(tempDayHolder, "Saturday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 7:
-					system("cls");
-					printf("\n\nSunday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "Sunday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Sunday\n");
+					strcpy(tempDayHolder, "Sunday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 8:
 					system("cls");
@@ -839,131 +812,58 @@ void SearchSchedule(void)
 					break;
 				default:
 					system("cls");
-					printf("Invalid value. Again.\n");
+					printf("Invalid value. Try again.\n");
 					break;
 				}
-			} while (choice2 != 8);
+			} while (selectDay != 8);
 			break;
+
 		case 2:
 			do
 			{
-				printf("You are searching for next week schedule\n");
-				printf("1. | Monday Schedule\n");
-				printf("2. | Tuesday Schedule\n");
-				printf("3. | Wednesday Schedule\n");
-				printf("4. | Thursday Schedule\n");
-				printf("5. | Friday Schedule\n");
-				printf("6. | Saturday Schedule\n");
-				printf("7. | Sunday Schedule\n");
-				printf("8. | Return to last page.\n");
-				rewind(stdin);
-				scanf("%d", &choice2);
-				switch (choice2)
+				printf("[Add Schedule Tool]\n");
+				printf("-------------------\n");
+				printf("Select a day for next week.\n");
+				selectDay = daySelection();
+
+				system("cls");
+
+				switch (selectDay)
 				{
 				case 1:
-					system("cls");
-					printf("\n\nNext Monday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "NextMonday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Next Monday\n");
+					strcpy(tempDayHolder, "NextMonday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 2:
-					system("cls");
-					printf("\n\nNext Tuesday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "NextTuesday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Tuesday\n");
+					strcpy(tempDayHolder, "NextTuesday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 3:
-					system("cls");
-					printf("\n\nNext Wednesday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "NextWednesday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Wednesday\n");
+					strcpy(tempDayHolder, "NextWednesday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 4:
-					system("cls");
-					printf("\n\nNext Thursday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "NextThursday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Thursday\n");
+					strcpy(tempDayHolder, "NextThursday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 5:
-					system("cls");
-					printf("\n\nNext Friday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "NextFriday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Friday\n");
+					strcpy(tempDayHolder, "NextFriday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 6:
-					system("cls");
-					printf("\n\nNext Saturday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "NextSaturday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Saturday\n");
+					strcpy(tempDayHolder, "NextSaturday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 7:
-					system("cls");
-					printf("\n\nNext Sunday");
-					printf("\n-------------------------------------------------------------------------------------------------------\n");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-					printf("%-15s %-15s %-10s %-15s %-15s %s\n", "==============", "============", "========", "===========", "===========", "==========");
-					for (int i = 0; i < STRUCTCOUNT; i++)
-					{
-						if (strcmp(schedule[i].day, "NextSunday") == 0)
-						{
-							printf("%-15.2f %-15.2f %-10s %-15s %-15s %d\n", schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats);
-						}
-					}
-					printf("\n\n");
+					printf("Adding schedule for Sunday\n");
+					strcpy(tempDayHolder, "NextSunday");
+					AddSchedulePartII(tempDayHolder);
 					break;
 				case 8:
 					system("cls");
@@ -972,18 +872,926 @@ void SearchSchedule(void)
 					break;
 				default:
 					system("cls");
-					printf("Invalid value. Again.\n");
+					printf("Invalid value. Try again.\n");
 					break;
 				}
-			} while (choice2 != 8);
+			} while (selectDay != 8);
 			break;
 		case 3:
 			system("cls");
 			printf("Returning to schedule menu...\n");
-			Sleep(1000);
+			Sleep(1500);
 			break;
 		default:
+			system("cls");
+			printf("Invalid command. Try again.\n");
+			Sleep(1000);
 			break;
 		}
 	} while (choice != 3);
 }
+
+// Add schedule part II
+void AddSchedulePartII(char dayHolder[20])
+{
+	float deptTime, arrTime;
+	int destinationChoice;
+	char trainID[6], deptfrom[30], destination[30];
+	int idLength;
+	int i;
+	int trainSeats;
+	char confirmation;
+
+	printf("Enter a trainID (Maximum 5 characters): ");
+	rewind(stdin);
+	scanf("%[^\n]", trainID);
+	idLength = strlen(trainID);
+	while (idLength > 5)
+	{
+		system("cls");
+		printf("Train ID (%s) exceed 5 characters.Try again.\n", trainID);
+		printf("Enter a train ID (Maximum 5 characters): ");
+		rewind(stdin);
+		scanf("%[^\n]", trainID);
+		idLength = strlen(trainID);
+	}
+	while (idLength < 2)
+	{
+		system("cls");
+		printf("Invalid train ID. Try again.\n", trainID);
+		printf("Enter a train ID (Maximum 5 characters): ");
+		rewind(stdin);
+		scanf("%[^\n]", trainID);
+		idLength = strlen(trainID);
+	}
+	do
+	{
+		printf("Select a depart train station\n");
+		printf("1. | KL Sentral\n");
+		printf("2. | Kampar\n");
+		printf("Choice > ");
+		rewind(stdin);
+		scanf("%d", &destinationChoice);
+		switch (destinationChoice)
+		{
+		case 1:
+			strcpy(deptfrom, "KL Sentral");
+			printf("\nAuto assign destination to Kampar.\n");
+			strcpy(destination, "Kampar");
+			break;
+		case 2:
+			strcpy(deptfrom, "Kampar");
+			printf("\nAuto assign destination to KL Sentral.\n");
+			strcpy(destination, "KL Sentral");
+			break;
+		default:
+			system("cls");
+			printf("Invalid command. Try again.\n");
+			break;
+		}
+	} while (destinationChoice != 1 && destinationChoice != 2);
+
+	printf("Enter train depart time: ");
+	rewind(stdin);
+	scanf("%f", &deptTime);
+
+	// Check valid, valid for midnight haven't **
+	while (deptTime < 0 || deptTime > 24)
+	{
+		printf("\nInvalid time. Again.\n");
+		printf("Enter train depart time: ");
+		rewind(stdin);
+		scanf("%f", &deptTime);
+	}
+
+	printf("\n");
+	printf("Enter train arrive time: ");
+	rewind(stdin);
+	scanf("%f", &arrTime);
+	while (arrTime < 0 || arrTime > 24)
+	{
+		printf("\nInvalid time. Again.\n");
+		printf("Enter train depart time: ");
+		rewind(stdin);
+		scanf("%f", &arrTime);
+	}
+	printf("Enter total seats available: ");
+	rewind(stdin);
+	scanf("%d", &trainSeats);
+
+	printf("Confirm(Y/N) ? >");
+	rewind(stdin);
+	scanf("%c", &confirmation);
+
+	while (confirmation != 'Y' && confirmation != 'y' && confirmation != 'n' && confirmation != 'N')
+	{
+		system("cls");
+		printf("Invalid command. Try again.\n");
+		printf("Confirm(Y/N) ? >");
+		rewind(stdin);
+		scanf("%c", &confirmation);
+	}
+
+	if (confirmation == 'Y' || confirmation == 'y')
+	{
+		for (i = 0; strcmp(schedule[i].day, "") != 0; i++);
+		strcpy(schedule[i].day, dayHolder);
+		schedule[i].deptArr.time.depart = deptTime;
+		schedule[i].deptArr.time.arrive = arrTime;
+		strcpy(schedule[i].trainID, trainID);
+		strcpy(schedule[i].departureFrom, deptfrom);
+		strcpy(schedule[i].destination, destination);
+		schedule[i].seats = trainSeats;
+
+		system("cls");
+		printf("Schedule Added.\n\n");
+		Sleep(1000);
+		system("cls");
+	}
+	else if (confirmation == 'n' || confirmation == 'N')
+	{
+		system("cls");
+		printf("Change ignore.\n\n");
+		printf("Returning to last page...");
+		Sleep(1000);
+		system("cls");
+	}
+}
+
+// Search schedule module
+void SearchSchedule(void)
+{
+	int mainChoice, choice, choice2, choice3;
+	int date, todays, diffDays;
+	int searchDay, searchMonth, searchYear;
+	time_t dateNow, compare;
+	struct tm* searchDate, * compareStruct;
+	char nextWeekResult[20], searchDestination[20], searchResult[80];
+	char confirmation;
+
+
+	system("cls");
+
+	do
+	{
+		printf("[Schedule Searching Tool]\n");
+		printf("-------------------------\n");
+		printf("Do you wish to search by\n");
+		printf("1. | Day\n");
+		printf("2. | Date\n");
+		printf("3. | Destination\n");
+		printf("4. | Return to schedule menu.\n");
+		printf("Choice > ");
+		rewind(stdin);
+		scanf("%d", &mainChoice);
+
+		system("cls");
+		switch (mainChoice)
+		{
+			// By day
+		case 1:
+			do
+			{
+				system("cls");
+				printf("[Schedule Searching Tool]\n");
+				printf("-------------------------\n");
+				printf("1. | This week schedule\n");
+				printf("2. | Next week schedule\n");
+				printf("3. | Return to last page.\n");
+				printf("Choice > ");
+				rewind(stdin);
+				scanf("%d", &choice);
+				system("cls");
+				switch (choice)
+				{
+				case 1:
+					do
+					{
+						printf("You are searching for this week schedule\n");
+						printf("1. | Monday Schedule\n");
+						printf("2. | Tuesday Schedule\n");
+						printf("3. | Wednesday Schedule\n");
+						printf("4. | Thursday Schedule\n");
+						printf("5. | Friday Schedule\n");
+						printf("6. | Saturday Schedule\n");
+						printf("7. | Sunday Schedule\n");
+						printf("8. | Return to last page.\n");
+						rewind(stdin);
+						scanf("%d", &choice2);
+						switch (choice2)
+						{
+						case 1:
+							system("cls");
+							parSchedule(1, 0, 0, 0, "Monday");
+							printf("\n\n");
+							break;
+						case 2:
+							system("cls");
+							parSchedule(1, 0, 0, 0, "Tuesday");
+							break;
+						case 3:
+							system("cls");
+							parSchedule(1, 0, 0, 0, "Wednesday");
+							printf("\n\n");
+							break;
+						case 4:
+							system("cls");
+							parSchedule(1, 0, 0, 0, "Thursday");
+							printf("\n\n");
+							break;
+						case 5:
+							system("cls");
+							parSchedule(1, 0, 0, 0, "Friday");
+							break;
+						case 6:
+							system("cls");
+							parSchedule(1, 0, 0, 0, "Saturday");
+							break;
+						case 7:
+							system("cls");
+							parSchedule(1, 0, 0, 0, "Sunday");
+							printf("\n\n");
+							break;
+						case 8:
+							system("cls");
+							printf("Returning to last page...\n");
+							Sleep(1000);
+							break;
+						default:
+							system("cls");
+							printf("Invalid value. Again.\n");
+							break;
+						}
+					} while (choice2 != 8);
+					break;
+				case 2:
+					do
+					{
+						printf("You are searching for next week schedule\n");
+						printf("1. | Monday Schedule\n");
+						printf("2. | Tuesday Schedule\n");
+						printf("3. | Wednesday Schedule\n");
+						printf("4. | Thursday Schedule\n");
+						printf("5. | Friday Schedule\n");
+						printf("6. | Saturday Schedule\n");
+						printf("7. | Sunday Schedule\n");
+						printf("8. | Return to last page.\n");
+						rewind(stdin);
+						scanf("%d", &choice2);
+						switch (choice2)
+						{
+						case 1:
+							system("cls");
+							parSchedule(2, 0, 0, 0, "Monday");
+							printf("\n\n");
+							break;
+						case 2:
+							system("cls");
+							system("cls");
+							parSchedule(2, 0, 0, 0, "Tuesday");
+							printf("\n\n");
+							break;
+						case 3:
+							system("cls");
+							system("cls");
+							parSchedule(2, 0, 0, 0, "Wednesday");
+							printf("\n\n");
+							break;
+						case 4:
+							system("cls");
+							parSchedule(2, 0, 0, 0, "Thursday");
+							printf("\n\n");
+							break;
+						case 5:
+							system("cls");
+							parSchedule(2, 0, 0, 0, "Friday");
+							printf("\n\n");
+							break;
+						case 6:
+							system("cls");
+							parSchedule(2, 0, 0, 0, "Saturday");
+							printf("\n\n");
+							break;
+						case 7:
+							system("cls");
+							parSchedule(2, 0, 0, 0, "Sunday");
+							printf("\n\n");
+							break;
+						case 8:
+							system("cls");
+							printf("Returning to last page...\n");
+							Sleep(1000);
+							break;
+						default:
+							system("cls");
+							printf("Invalid value. Again.\n");
+							break;
+						}
+					} while (choice2 != 8);
+					break;
+				case 3:
+					system("cls");
+					printf("Returning to last page...\n");
+					Sleep(1000);
+					break;
+				default:
+					break;
+				}
+			} while (choice != 3);
+			break;
+
+			// By date
+		case 2:
+			do
+			{
+				time(&dateNow);
+				searchDate = localtime(&dateNow);
+				system("cls");
+
+				printf("Enter the date you wish to search for by: \n");
+				printf("Day  : ");
+				rewind(stdin);
+				scanf("%d", &searchDay);
+				printf("Month: ");
+				rewind(stdin);
+				scanf("%d", &searchMonth);
+				printf("Year : ");
+				rewind(stdin);
+				scanf("%d", &searchYear);
+
+				searchDate->tm_mday = searchDay;
+				searchDate->tm_mon = searchMonth - 1;
+				searchDate->tm_year = searchYear - 1900;
+
+				mktime(searchDate);
+				date = searchDate->tm_yday;
+				strftime(searchResult, 80, "%A", searchDate);
+
+				time(&compare);
+				compareStruct = localtime(&compare);
+
+				compareStruct->tm_mday = compareStruct->tm_mday;
+				compareStruct->tm_mon = compareStruct->tm_mon - 1;
+				compareStruct->tm_year = compareStruct->tm_year - 1900;
+
+				mktime(compareStruct);
+				todays = compareStruct->tm_yday;
+
+				diffDays = date - todays;
+
+				if (diffDays > 0 && diffDays < 7)
+				{
+					system("cls");
+					parSchedule(0, searchDay, searchMonth, searchYear, searchResult);
+					printf("\n\n");
+				}
+
+				else if (diffDays >= 7 && diffDays < 14)
+				{
+					system("cls");
+					parSchedule(1, searchDay, searchMonth, searchYear, searchResult);
+					printf("\n\n");
+				}
+				else
+				{
+					system("cls");
+					printf("Sorry. System are only able to show up to two weeks schedules from now.\n");
+				}
+				printf("Continue? (Y/N) > ");
+				rewind(stdin);
+				scanf("%c", &confirmation);
+			} while (confirmation == 'y' || confirmation == 'Y');
+			break;
+
+			// By destination
+		case 3:
+			system("cls");
+			do
+			{
+				printf("Select your route to begin searching.\n");
+				printf("1. | KL Sentral to Kampar\n");
+				printf("2. | Kampar to KL Sentral\n");
+				printf("3. | Return to last page.\n");
+				printf("Choice > ");
+				rewind(stdin);
+				scanf("%d", &choice3);
+				switch (choice3)
+				{
+				case 1:
+					printf("\n===========================================\n");
+					printf("Showing Schedule From Kampar to KL Sentral.\n");
+					printf("===========================================\n");
+					strcpy(searchDestination, "Kampar");
+					SearchScheduleII(searchDestination);
+					break;
+				case 2:
+					printf("\n===========================================\n");
+					printf("Showing Schedule From KL Sentral to Kampar.\n");
+					printf("===========================================\n");
+					strcpy(searchDestination, "KL Sentral");
+					SearchScheduleII(searchDestination);
+					break;
+				case 3:
+					system("cls");
+					printf("Returning to last page.\n");
+					Sleep(1000);
+					break;
+				default:
+					system("cls");
+					printf("Invalid value. Try again. \n");
+					break;
+				}
+			} while (choice3 != 3);
+			break;
+
+		case 4:
+			system("cls");
+			printf("Returning to schedule menu...\n");
+			Sleep(1500);
+			break;
+
+		default:
+			printf("Invalid value. Try again.\n");
+			break;
+		}
+
+	} while (mainChoice != 4);
+}
+
+// Search module part II
+void SearchScheduleII(char destination[20])
+{
+	printf("\n");
+	printf("%-20s %-10s %-20s %-20s %-20s\n", "=================", "========", "==============", "============", "==========");
+	printf("%-20s %-10s %-20s %-20s %-20s\n", "       Day       ", "Train ID", "Departure Time", "Arrival Time", "Seats Left");
+	printf("%-20s %-10s %-20s %-20s %-20s\n", "=================", "========", "==============", "============", "==========");
+	for (int i = 0; i < STRUCTCOUNT; i++)
+	{
+		if (strcmp(schedule[i].destination, destination) == 0)
+		{
+			printf("%-20s %-10s %-20.2f %-20.2f %-20d\n\n", schedule[i].day, schedule[i].trainID, schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].seats);
+		}
+	}
+	printf("------------------------------------------------------------------------------------------------------\n\n");
+}
+
+int daySelection(void)
+{
+	int select;
+	printf("1. | Monday\n");
+	printf("2. | Tuesday\n");
+	printf("3. | Wednesday\n");
+	printf("4. | Thursday\n");
+	printf("5. | Friday\n");
+	printf("6. | Saturday\n");
+	printf("7. | Sunday\n");
+	printf("8. | Return to last page.\n");
+	printf("Your Choice > ");
+	rewind(stdin);
+	scanf("%d", &select);
+	return select;
+}
+
+// Delete module
+void DeleteSchedule(void)
+{
+	int i;
+	char deleteTrainID[10];
+	char confirmation;
+	int checkValid, continueOrNo;
+
+	// Maybe administrator password again here?
+	// scanf("%s", administratorPassword);
+	// if(strcmp() == 0) ... 
+	
+	do
+	{
+		system("cls");
+		printf("[Delete Schedule System]\n");
+		printf("========================\n");
+		printf("You're entering Schedule Deleting System.\n");
+		printf("Notes: You're only able to delete the schedule that you've add before.\n\n");
+		printf("1. | Continue\n");
+		printf("2. | Return to last page\n");
+		rewind(stdin);
+		scanf("%d", &continueOrNo);
+		switch (continueOrNo)
+		{
+		case 1:
+			system("cls");
+			printf("[Delete Schedule System]\n");
+			printf("========================\n");
+			printf("You're entering Schedule Deleting System.\n");
+			printf("Notes: You're only able to delete the schedule that you've add before.\n\n");
+			printf("The schedule you've add before:\n");
+			printf("%-10s %-20s %-20s %-20s %-15s %-15s\n", "Train ID", "Day             ", "Depart From", "Destination", "Depart Time", "Arrive Time");
+			printf("%-10s %-20s %-20s %-20s %-15s %-15s\n", "========", "================", "===========", "===========", "===========", "===========");
+
+			for (i = 0; i < STRUCTCOUNT; i++)
+			{
+				if (i >= 48 && strcmp(schedule[i].day, "") != 0)
+				{
+					printf("%-10s %-20s %-20s %-20s %-15.2f %-15.2f\n", schedule[i].trainID, schedule[i].day, schedule[i].departureFrom, schedule[i].destination, schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive);
+				}
+			}
+			
+			
+				printf("Enter a train ID to delete that schedule(if there is no schedule to delete, XXX to exit): ");
+				rewind(stdin);
+				scanf("%s", deleteTrainID);
+
+				if (strcmp(deleteTrainID, "XXX") != 0 && strcmp(deleteTrainID, "xxx") != 0)
+				{
+					checkValid = checkTrainIDValid(deleteTrainID);
+
+					while (checkValid != 1)
+					{
+						printf("\nInvalid trainID, refer to table above.\n");
+						printf("Enter a train ID to delete that schedule: ");
+						rewind(stdin);
+						scanf("%s", deleteTrainID);
+						checkValid = checkTrainIDValid(deleteTrainID);
+					}
+
+					for (i = 0; i < STRUCTCOUNT; i++)
+					{
+						if (strcmp(schedule[i].trainID, deleteTrainID) == 0)
+						{
+							printf("Confirm? (Y/N) > ");
+							rewind(stdin);
+							scanf("%c", &confirmation);
+							while (confirmation != 'Y' && confirmation != 'y' && confirmation != 'N' && confirmation != 'n')
+							{
+								system("cls");
+								printf("Invalid Action. Try again.\n");
+								printf("Confirm? (Y/N) > ");
+								rewind(stdin);
+								scanf("%c", &confirmation);
+							}
+							if (confirmation == 'Y' || confirmation == 'y')
+							{
+								for (int j = i; j < STRUCTCOUNT; j++)
+								{
+									{
+										schedule[j] = schedule[j + 1];
+									}
+								}
+								system("cls");
+								printf("Schedule successfully deleted.\n");
+								Sleep(1000);
+							}
+							else if (confirmation == 'N' || confirmation == 'n')
+							{
+								system("cls");
+								printf("Action Discard.\n");
+								printf("Returning back...\n");
+								Sleep(1500);
+							}
+						}
+					}
+				}
+			break;
+
+		case 2:
+			system("cls");
+			printf("Returning to last page...");
+			Sleep(600);
+			break;
+		default:
+			system("cls");
+			printf("Invalid value. Try again.\n");
+			Sleep(600);
+			break;
+		}
+	} while (continueOrNo != 2);
+}
+
+// Check Valid ID for delete
+int checkTrainIDValid(char deleteID[10])
+{
+	for (int i = 0; i < STRUCTCOUNT; i++)
+	{
+		if (strcmp(schedule[i].trainID, deleteID) == 0)
+			return 1;
+	}
+}
+
+// Reset module
+void ResetSchedule(void)
+{
+	int selection;
+	char resetConfirmation;
+	char resetDay[15];
+
+	system("cls");
+	printf("[Schedule Reset System]\n");
+	printf("=======================\n");
+	// Admin Enter Password ?
+
+	do
+	{
+		printf("\nSelect a day to reset the schedule.\n");
+		printf("Notes: Keep in mind that only reset for the day that've passed.\n");
+		selection = daySelection();
+		system("cls");
+		switch (selection)
+		{
+		case 1:
+			printf("\n\nYou're about to reset schedule for Monday.\n");
+			printf("Confirm? (Y/N) > ");
+			rewind(stdin);
+			scanf("%c", &resetConfirmation);
+			while (resetConfirmation != 'Y' && resetConfirmation != 'y' && resetConfirmation != 'N' && resetConfirmation != 'n')
+			{
+				printf("Invalid command. Try Again.\n");
+				printf("\n\nYou're about to reset schedule for Monday.\n");
+				printf("Confirm? (Y/N) > ");
+				rewind(stdin);
+				scanf("%c", &resetConfirmation);
+			}
+			if (resetConfirmation == 'y' || resetConfirmation == 'Y')
+			{
+				strcpy(resetDay, "Monday");
+				ResetScheduleIIWeekday(resetDay);
+			}
+			else if (resetConfirmation == 'n' || resetConfirmation == 'N')
+			{
+				system("cls");
+				printf("Change Discard.\n");
+				Sleep(1000);
+			}
+			break;
+		case 2:
+			printf("You're about to reset schedule for Tuesday.\n");
+			printf("\n\nYou're about to reset schedule for Tuesday.\n");
+			printf("Confirm? (Y/N) > ");
+			rewind(stdin);
+			scanf("%c", &resetConfirmation);
+			while (resetConfirmation != 'Y' && resetConfirmation != 'y' && resetConfirmation != 'N' && resetConfirmation != 'n')
+			{
+				printf("Invalid command. Try Again.\n");
+				printf("\n\nYou're about to reset schedule for Tuesday.\n");
+				printf("Confirm? (Y/N) > ");
+				rewind(stdin);
+				scanf("%c", &resetConfirmation);
+			}
+			if (resetConfirmation == 'y' || resetConfirmation == 'Y')
+			{
+				strcpy(resetDay, "Tuesday");
+				ResetScheduleIIWeekday(resetDay);
+			}
+			else if (resetConfirmation == 'n' || resetConfirmation == 'N')
+			{
+				system("cls");
+				printf("Change Discard.\n");
+				Sleep(1000);
+			}
+			break;
+		case 3:
+			printf("You're about to reset schedule for Wednesday.\n");
+			printf("\n\nYou're about to reset schedule for Wednesday.\n");
+			printf("Confirm? (Y/N) > ");
+			rewind(stdin);
+			scanf("%c", &resetConfirmation);
+			while (resetConfirmation != 'Y' && resetConfirmation != 'y' && resetConfirmation != 'N' && resetConfirmation != 'n')
+			{
+				printf("Invalid command. Try Again.\n");
+				printf("\n\nYou're about to reset schedule for Wednesday.\n");
+				printf("Confirm? (Y/N) > ");
+				rewind(stdin);
+				scanf("%c", &resetConfirmation);
+			}
+			if (resetConfirmation == 'y' || resetConfirmation == 'Y')
+			{
+				strcpy(resetDay, "Wednesday");
+				ResetScheduleIIWeekday(resetDay);
+			}
+			else if (resetConfirmation == 'n' || resetConfirmation == 'N')
+			{
+				system("cls");
+				printf("Change Discard.\n");
+				Sleep(1000);
+			}
+			break;
+		case 4:
+			printf("You're about to reset schedule for Thursday.\n");
+			printf("\n\nYou're about to reset schedule for Thursday.\n");
+			printf("Confirm? (Y/N) > ");
+			rewind(stdin);
+			scanf("%c", &resetConfirmation);
+			while (resetConfirmation != 'Y' && resetConfirmation != 'y' && resetConfirmation != 'N' && resetConfirmation != 'n')
+			{
+				printf("Invalid command. Try Again.\n");
+				printf("\n\nYou're about to reset schedule for Thursday.\n");
+				printf("Confirm? (Y/N) > ");
+				rewind(stdin);
+				scanf("%c", &resetConfirmation);
+			}
+			if (resetConfirmation == 'y' || resetConfirmation == 'Y')
+			{
+				strcpy(resetDay, "Thursday");
+				ResetScheduleIIWeekday(resetDay);
+			}
+			else if (resetConfirmation == 'n' || resetConfirmation == 'N')
+			{
+				system("cls");
+				printf("Change Discard.\n");
+				Sleep(1000);
+			}
+			break;
+		case 5:
+			printf("You're about to reset schedule for Friday.\n");
+			printf("\n\nYou're about to reset schedule for Friday.\n");
+			printf("Confirm? (Y/N) > ");
+			rewind(stdin);
+			scanf("%c", &resetConfirmation);
+			while (resetConfirmation != 'Y' && resetConfirmation != 'y' && resetConfirmation != 'N' && resetConfirmation != 'n')
+			{
+				printf("Invalid command. Try Again.\n");
+				printf("\n\nYou're about to reset schedule for Friday.\n");
+				printf("Confirm? (Y/N) > ");
+				rewind(stdin);
+				scanf("%c", &resetConfirmation);
+			}
+			if (resetConfirmation == 'y' || resetConfirmation == 'Y')
+			{
+				strcpy(resetDay, "Friday");
+				ResetScheduleIIWeekday(resetDay);
+			}
+			else if (resetConfirmation == 'n' || resetConfirmation == 'N')
+			{
+				system("cls");
+				printf("Change Discard.\n");
+				Sleep(1000);
+			}
+			break;
+		case 6:
+			printf("You're about to reset schedule for Saturday.\n");
+			printf("\n\nYou're about to reset schedule for Saturday.\n");
+			printf("Confirm? (Y/N) > ");
+			rewind(stdin);
+			scanf("%c", &resetConfirmation);
+			while (resetConfirmation != 'Y' && resetConfirmation != 'y' && resetConfirmation != 'N' && resetConfirmation != 'n')
+			{
+				printf("Invalid command. Try Again.\n");
+				printf("\n\nYou're about to reset schedule for Saturday.\n");
+				printf("Confirm? (Y/N) > ");
+				rewind(stdin);
+				scanf("%c", &resetConfirmation);
+			}
+			if (resetConfirmation == 'y' || resetConfirmation == 'Y')
+			{
+				strcpy(resetDay, "Saturday");
+				ResetScheduleIIWeekend(resetDay);
+			}
+			else if (resetConfirmation == 'n' || resetConfirmation == 'N')
+			{
+				system("cls");
+				printf("Change Discard.\n");
+				Sleep(1000);
+			}
+			break;
+		case 7:
+			printf("You're about to reset schedule for Sunday.\n");
+			printf("\n\nYou're about to reset schedule for Sunday.\n");
+			printf("Confirm? (Y/N) > ");
+			rewind(stdin);
+			scanf("%c", &resetConfirmation);
+			while (resetConfirmation != 'Y' && resetConfirmation != 'y' && resetConfirmation != 'N' && resetConfirmation != 'n')
+			{
+				printf("Invalid command. Try Again.\n");
+				printf("\n\nYou're about to reset schedule for Sunday.\n");
+				printf("Confirm? (Y/N) > ");
+				rewind(stdin);
+				scanf("%c", &resetConfirmation);
+			}
+			if (resetConfirmation == 'y' || resetConfirmation == 'Y')
+			{
+				strcpy(resetDay, "Sunday");
+				ResetScheduleIIWeekend(resetDay);
+			}
+			else if (resetConfirmation == 'n' || resetConfirmation == 'N')
+			{
+				system("cls");
+				printf("Change Discard.\n");
+				Sleep(1000);
+			}
+			break;
+		case 8:
+			system("cls");
+			printf("Returning to last page");
+			Sleep(1000);
+			break;
+		default:
+			system("cls");
+			printf("Invalid value. Try Again.\n\n");
+			break;
+		}
+	} while (selection != 8);
+}
+
+// Reset Schedule Module Part II Weekday
+void ResetScheduleIIWeekday(char resetDayII[15])
+{
+	int j = 0, k;
+	// Reset added schedule
+	for (int i = 48; i < STRUCTCOUNT; i++) {
+		if (strcmp(schedule[i].day, resetDayII) == 0)
+			j++;
+	}
+	for (j; j > 0; j--) {
+		for (k = 48; strcmp(schedule[k].day, resetDayII) != 0; k++);
+		for (int i = k; k < STRUCTCOUNT; k++) {
+			schedule[k] = schedule[k + 1];
+		}
+	}
+
+	// Reset passed schedule
+	for (int j = 0; j < STRUCTCOUNT; j++)
+	{
+		if (strcmp(schedule[j].day, resetDayII) == 0)
+		{
+			schedule[j].seats = 100;
+			if (strcmp(schedule[j].trainID, "T1001") == 0)
+			{
+				schedule[j].deptArr.time.depart = 9;
+				schedule[j].deptArr.time.arrive = 13;
+			}
+			else if (strcmp(schedule[j].trainID, "T1002") == 0)
+			{
+				schedule[j].deptArr.time.depart = 9;
+				schedule[j].deptArr.time.arrive = 13;
+			}
+			else if (strcmp(schedule[j].trainID, "T1003") == 0)
+			{
+				schedule[j].deptArr.time.depart = 16;
+				schedule[j].deptArr.time.arrive = 20;
+			}
+			else if (strcmp(schedule[j].trainID, "T1004") == 0)
+			{
+				schedule[j].deptArr.time.depart = 16;
+				schedule[j].deptArr.time.arrive = 20;
+			}
+		}
+	}
+	for (int i = 0; i < 3; ++i) {
+		system("cls");
+		printf("Resetting Schedule");
+		for (int j = 0; j < 3; ++j) {
+			Sleep(200);
+			printf(".");
+			Sleep(200);
+		}
+	}
+	system("cls");
+	printf("\nSchedule reset completed.\n\n");
+	Sleep(1500);
+}
+void ResetScheduleIIWeekend(char resetDayII[15])
+{
+	int j = 0, k;
+	// Reset added schedule
+	for (int i = 48; i < STRUCTCOUNT; i++) {
+		if (strcmp(schedule[i].day, resetDayII) == 0)
+			j++;
+	}
+	for (j; j > 0; j--) {
+		for (k = 48; strcmp(schedule[k].day, resetDayII) != 0; k++);
+		for (int i = k; k < STRUCTCOUNT; k++) {
+			schedule[k] = schedule[k + 1];
+		}
+	}
+
+	// Reset passed schedule
+	for (int j = 0; j < STRUCTCOUNT; j++)
+	{
+		if (strcmp(schedule[j].day, resetDayII) == 0)
+		{
+			schedule[j].seats = 100;
+			if (strcmp(schedule[j].trainID, "T1001") == 0)
+			{
+				schedule[j].deptArr.time.depart = 15;
+				schedule[j].deptArr.time.arrive = 19;
+			}
+			else if (strcmp(schedule[j].trainID, "T1002") == 0)
+			{
+				schedule[j].deptArr.time.depart = 15;
+				schedule[j].deptArr.time.arrive = 19;
+			}
+		}
+	}
+	for (int i = 0; i < 3; ++i) {
+		system("cls");
+		printf("Resetting Schedule");
+		for (int j = 0; j < 3; ++j) {
+			Sleep(200);
+			printf(".");
+			Sleep(200);
+		}
+	}
+	system("cls");
+	printf("\nSchedule reset completed.\n\n");
+	Sleep(1500);
+}
+
+// End. Scheduling Module By Lee Ka Qin

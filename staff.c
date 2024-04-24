@@ -170,6 +170,20 @@ int readStaffFile(FILE** fstaff) {
     fclose(*fstaff);
 }
 
+int writeStaffFile(FILE** fstaff) {
+     *fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
+
+    for (int i = 0; i < manager_count; i++) {
+        fwrite(&manager[i], sizeof(manager), 1, *fstaff);
+    }
+
+    for (int i = 0; i < staff_count; i++) {
+        fwrite(&staff[i], sizeof(staff), 1, *fstaff);
+    }
+
+    fclose(*fstaff);
+}
+
 
 //main() {
 //    struct Staff staff[MAX_STAFF];
