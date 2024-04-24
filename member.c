@@ -37,6 +37,7 @@ bool verify_password(char* pass);
 bool verify_email(char* email);
 bool verify_phone_no(char* phoneNo);
 bool verify_IC(char gender, char* ic);
+int questionSelected(int questionSelection[3]);
 int memberRegister(struct Member* member);
 
 //password recovery modules
@@ -485,6 +486,53 @@ char passwordStore(char password[]) {
 	return password;
 }
 
+int questionSelected(int questionSelection[3]) {
+	int i = 0, success = 0;
+
+	do {
+		success = 1;
+		securityQuestion();
+
+		do {
+			printf("%d. ", i + 1);
+			scanf("%d", &questionSelection[i]);
+
+			if (questionSelection[i] > 6 || questionSelection[i] < 1) {
+				printf("\nInvalid Choice!\n");
+				printf("Please Enter Number 1 - 6. ");
+
+				waitingScreen();
+
+				i = 0;
+				success = 0;
+
+			}
+			else {
+				i++;
+			}
+			if (i > 1 && success == 1) {
+				for (int y = 0; y < i - 1; y++) {
+
+					if (questionSelection[y] == questionSelection[i - 1]) {
+						printf("\nThe Selected Security Question Must Be Different From The Previous One.\n");
+						printf("Please Try Again. ");
+
+						waitingScreen();
+						i = 0;
+						success = 0;
+
+					}
+
+				}
+
+			}
+		} while (i < 3 && success == 1);
+
+	} while (i < 3 && success == 0);
+
+	return questionSelection;
+}
+
 int memberRegister(struct Member* member) {
 	
 	char memberID[MEMBER_ID];
@@ -560,42 +608,7 @@ int memberRegister(struct Member* member) {
 	strcpy(member[numMember].id, memberID);
 	strcpy(member[numMember].pass, password);
 
-	do {
-		again = 0;
-		success = 1;
-
-		securityQuestion();
-
-		for (int i = 0; i < MAX_NUM_QUESTION; i++) {
-			printf("%d. ", i + 1);
-			scanf("%d", &questionSelection[i]);
-
-			if (questionSelection[i] > 6 || questionSelection[i] < 1) {
-				printf("\nInvalid Choice!\n");
-				printf("Please Enter Number 1 - 6. ");
-
-				waitingScreen();
-				
-				success = 0;
-				break;
-			}
-			if (i > 0) {
-				for (int x = 0; x < i; x++) {
-					if (questionSelection[i] == questionSelection[x]) {
-						printf("\nThe Selected Security Question Must Be Different From The Previous One.\n");
-						printf("Please Try Again. ");
-
-						waitingScreen();
-						again++;
-						success = 0;
-						break;
-					}
-				}
-				if (again == 1)
-					break;
-			}
-		}
-	} while(success != 1);
+	questionSelected(questionSelection);
 
 	for (int i = 0; i < 3; i++) {
 		member[numMember].security[i].questionNum = questionSelection[i];
@@ -742,23 +755,8 @@ void forgotPass(struct Member* member) {
 		}
 		
 		if (idExist == 1) {
-			do {
-				again = 0;
-				securityQuestion();
 
-				for (int i = 0; i < MAX_NUM_QUESTION; i++) {
-					printf("%d. ", i + 1);
-					scanf("%d", &questionSelection[i]);
-
-					if (questionSelection[i] > 6 || questionSelection[i] < 1) {
-						printf("Invalid Choice!\n");
-						printf("Please Enter Number 1 - 6 !\n");
-						again = 1;
-						break;
-					}
-
-				}
-			} while (again == 1);
+			questionSelected(questionSelection);
 
 			questionTitle(questionSelection, question);
 
@@ -1534,18 +1532,20 @@ void deleteMember(struct Member* member) {
 					scanf("%d", &confirmation);
 
 					if (confirmation == 1) {
-						strcpy(member[i].id, member[i + 1].id);
-						strcpy(member[i].pass, member[i + 1].pass);
-						member[i].age = member[i + 1].age;
-						strcpy(member[i].gender, member[i + 1].gender);
-						strcpy(member[i].ic, member[i + 1].ic);
-						strcpy(member[i].phoneNo, member[i + 1].phoneNo);
-						strcpy(member[i].email, member[i + 1].email);
-						member[i].rewardPoints = member[i + 1].rewardPoints;
+						for (i; i < numMember; i++) {
+							strcpy(member[i].id, member[i + 1].id);
+							strcpy(member[i].pass, member[i + 1].pass);
+							member[i].age = member[i + 1].age;
+							strcpy(member[i].gender, member[i + 1].gender);
+							strcpy(member[i].ic, member[i + 1].ic);
+							strcpy(member[i].phoneNo, member[i + 1].phoneNo);
+							strcpy(member[i].email, member[i + 1].email);
+							member[i].rewardPoints = member[i + 1].rewardPoints;
 
-						for (int x = 0; x < 3; x++) {
-							member[i].security[x].questionNum = member[i + 1].security[x].questionNum;
-							strcpy(member[i].security[x].answer, member[i + 1].security[x].answer);
+							for (int x = 0; x < 3; x++) {
+								member[i].security[x].questionNum = member[i + 1].security[x].questionNum;
+								strcpy(member[i].security[x].answer, member[i + 1].security[x].answer);
+							}
 						}
 						numMember--;
 						title();
