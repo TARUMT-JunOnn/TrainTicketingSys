@@ -99,6 +99,7 @@ struct Member {
 	struct SecurityQuestion security[MAX_NUM_QUESTION];
 	LoginOutRecords logInOutTime[20];
 };
+
 struct Member member[MAX_NUMBER_MEMBER];
 struct Member member2;
 
@@ -118,22 +119,6 @@ void readMemberFile(FILE** memberFptr) {
 	{
 
 		member[numMember] = member2;
-
-		/*strcpy(member[numMember].id, member2.id);
-		strcpy(member[numMember].name, member2.name);
-		strcpy(member[numMember].pass, member2.pass);
-		member[numMember].age = member2.age;
-		strcpy(member[numMember].gender, member2.gender);
-		strcpy(member[numMember].ic, member2.ic);
-		strcpy(member[numMember].phoneNo, member2.phoneNo);
-		strcpy(member[numMember].email, member2.email);
-		member[numMember].rewardPoints = member2.rewardPoints;
-		for (int i = 0; i < 3; i++)
-			member[numMember].security[i].questionNum = member2.security[i].questionNum;
-
-
-		for (int i = 0; i < 3; i++)
-			strcpy(member[numMember].security[i].answer, member2.security[i].answer);*/
 
 		numMember++;
 		fread(&member2, sizeof(member2), 1, *memberFptr);
@@ -1694,7 +1679,7 @@ void loginHistory() {
 
 				int seconds = remainingSecs % 60;
 
-				printf("| %-10s | %-20s | %-25s | %-25s | %2d Hours %2d Mins %2d Sec    |\n", member[i].id, member[i].name, member[i].logInOutTime[j].loginTimeDate, member[i].logInOutTime[j].logoutTimeDate, hours, minutes, seconds);
+				printf("| %-10s | %-20s | %-25s | %-25s | %02d Hours %02d Mins %02d Sec    |\n", member[i].id, member[i].name, member[i].logInOutTime[j].loginTimeDate, member[i].logInOutTime[j].logoutTimeDate, hours, minutes, seconds);
 				printf("--------------------------------------------------------------------------------------------------------------------------\n");
 			}
 		}
