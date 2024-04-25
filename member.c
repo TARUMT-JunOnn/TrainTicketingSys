@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <time.h>
 #pragma warning(disable:4996)
 
 //ensure the strncat_s no warning even the size is larger
@@ -19,6 +20,7 @@
 #define MAX_LENGTH_IC 15
 #define MAX_LENGTH_GENDER 2
 #define LENGTH_CHOICE 10
+
 
 int tryAgain(int again);
 void waitingScreen(void);
@@ -44,7 +46,7 @@ int memberRegister();
 void forgotPass();
 
 //memberMenu
-int memberMainPage(int memberNUM);
+int memberMainPage(int memberNUM, int now);
 
 //modify and display modules
 void viewProfile(int memberNUM);
@@ -72,10 +74,18 @@ void deleteMember();
 
 char passwordStore(char password[]);
 
+void loginHistory();
+
 struct SecurityQuestion {
 	int questionNum;
 	char answer[100];
 };
+
+typedef struct {
+	long int diff;
+	char loginTimeDate[100];
+	char logoutTimeDate[100];
+}LoginOutRecords;
 
 struct Member {
 	char id[MEMBER_ID];
@@ -87,7 +97,9 @@ struct Member {
 	char phoneNo[MAX_PHONE_NUM];
 	char email[MAX_LENGTH_EMAIL];
 	float rewardPoints;
+	int numLoginRecords;
 	struct SecurityQuestion security[MAX_NUM_QUESTION];
+	LoginOutRecords logInOutTime[20];
 };
 struct Member member[MAX_NUMBER_MEMBER];
 struct Member member2;
@@ -107,7 +119,9 @@ void readMemberFile(FILE** memberFptr) {
 	while (!feof(*memberFptr))
 	{
 
-		strcpy(member[numMember].id, member2.id);
+		member[numMember] = member2;
+
+		/*strcpy(member[numMember].id, member2.id);
 		strcpy(member[numMember].name, member2.name);
 		strcpy(member[numMember].pass, member2.pass);
 		member[numMember].age = member2.age;
@@ -121,7 +135,7 @@ void readMemberFile(FILE** memberFptr) {
 
 
 		for (int i = 0; i < 3; i++)
-			strcpy(member[numMember].security[i].answer, member2.security[i].answer);
+			strcpy(member[numMember].security[i].answer, member2.security[i].answer);*/
 
 		numMember++;
 		fread(&member2, sizeof(member2), 1, *memberFptr);
@@ -212,7 +226,7 @@ void waitingScreen(void) {
 }
 
 int memberMenu() {
-	char *menu[] = {"Login", "Registration", "Forgot Password", "Exit Program",};
+	char *menu[] = {"Login", "Registration", "Forgot Password", "Exit",};
 	char choice[LENGTH_CHOICE];
 
 	do {
@@ -277,7 +291,15 @@ int memberLogin() {
 				waitingScreen();
 				
 				memberNUM = i;
-				return memberMainPage(memberNUM);
+
+				time_t now = time(NULL);
+
+				struct tm* logInTime = localtime(&now);
+
+				strftime(member[memberNUM].logInOutTime[member[memberNUM].numLoginRecords].loginTimeDate, 100, "%x - %I:%M%p", logInTime);
+
+				return memberMainPage(memberNUM, now);
+
 				loginSuccess++;
 			}
 		}
@@ -729,6 +751,7 @@ int memberRegister() {
 	strcpy(member[numMember].phoneNo, phone);
 	strcpy(member[numMember].email, email);
 	member[numMember].rewardPoints = 0.00;
+	member[numMember].numLoginRecords = 0;
 
 	printf("\nInformation Added. ");
 	waitingScreen();
@@ -832,7 +855,7 @@ void forgotPass() {
 
 }
 
-int memberMainPage(int memberNUM) {
+int memberMainPage(int memberNUM, int now) {
 	char choice[LENGTH_CHOICE];
 	char* menu[] = { "Display Profile", "View Schedule", "Add Booking",
 					"Display Booking History", "Cancel Booking", "Reward Points", "Exit" };
@@ -875,7 +898,19 @@ int memberMainPage(int memberNUM) {
 		else if (strcmp(choice, "7") == 0) {
 			title();
 			printf("Logging Out. ");
+
+			time_t now2 = time(NULL);
+
+			struct tm* logOutTime = localtime(&now2);
+
+			strftime(member[memberNUM].logInOutTime[member[memberNUM].numLoginRecords].logoutTimeDate, 100, "%x - %I:%M%p", logOutTime);
+
+			member[memberNUM].logInOutTime[member[memberNUM].numLoginRecords].diff = now2 - now;
+
+			member[memberNUM].numLoginRecords++;
+
 			waitingScreen();
+			
 		}
 		else {
 			printf("Invalid Choice!\n");
@@ -883,6 +918,8 @@ int memberMainPage(int memberNUM) {
 			waitingScreen();
 		}
 	} while (strcmp(choice, "7") != 0);
+
+	return 1;
 }
 
 void viewProfile(int memberNUM) {
@@ -1027,7 +1064,6 @@ void viewSchedule() {
 
 //havent done yet
 void rewardPoint(int memberNUM) {
-	char key[10];
 	title();
 	printf("\t\t\t\t\t\t\t\t   Current Points \n\t\t\t\t\t\t\t\t\t%.2f\n\n", member[memberNUM].rewardPoints);
 	for (int i = 0; i < 155; i++) {
@@ -1041,9 +1077,9 @@ void rewardPoint(int memberNUM) {
 	printf("\t\t\t\t-> The conversion rate for reward points is 100 points = RM1.\n\n");
 	printf("\t\t\t\t-> Reward points cannot be exchanged for cash or transferred to another account.\n\n");
 	printf("\t\t\t\t-> When canceling a booking, the refund will be issued in the form of reward points instead of cash.\n\n");
+	printf("\t\t\t\t");
+	system("pause");
 
-	printf("\n\t\t\t\tPress Any Key To Continue....\n\t\t\t\t");
-	scanf(" %[^\n]", key);
 
 }
 
@@ -1577,3 +1613,50 @@ void deleteMember() {
 	} while (again == 1);
 }
 
+void loginHistory() {
+	int recordsExist = 0;
+	char id[MEMBER_ID];
+	char name[MEMBER_LENGTH_NAME];
+	int logInTime;
+
+	title();
+
+	for (int i = 0; i < numMember; i++) {
+		for (int j = 0; j < member[i].numLoginRecords; j++) {
+			if (member[i].logInOutTime[j].diff != 0) {
+				recordsExist++;
+			}
+
+		}
+	}
+
+	if (recordsExist != 0) {
+		printf("--------------------------------------------------------------------------------------------------------------------------\n");
+		printf("| ID         | NAME                 | Log In Date Time          | Log Out Date Time         | Duratoion                  |\n");
+		printf("--------------------------------------------------------------------------------------------------------------------------\n");
+
+		for (int i = 0; i < numMember; i++) {
+			for (int j = 0; j < member[i].numLoginRecords; j++) {
+
+
+
+				int hours = member[i].logInOutTime[j].diff / 3600;
+
+				int remainingSecs = member[i].logInOutTime[j].diff % 3600;
+
+				int minutes = remainingSecs / 60;
+
+				int seconds = remainingSecs % 60;
+
+				printf("| %-10s | %-20s | %-25s | %-25s | %2d Hours %2d Mins %2d Sec    |\n", member[i].id, member[i].name, member[i].logInOutTime[j].loginTimeDate, member[i].logInOutTime[j].logoutTimeDate, hours, minutes, seconds);
+				printf("--------------------------------------------------------------------------------------------------------------------------\n");
+			}
+		}
+		system("pause");
+	}
+	else {
+		printf("No Member Login Records. ");
+		waitingScreen();
+
+	}
+}
