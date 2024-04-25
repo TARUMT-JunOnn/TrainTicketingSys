@@ -45,12 +45,6 @@ void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char que
 void dispalyAll(struct Staff* staff, struct Manager* manager, int managerNum);
 
 
-// Predefined employee and manager IDs and passwords
-//const char employee_id[] = "emp123";
-//const char employee_password[] = "password123";
-//const char manager_id[] = "mgr456";
-//const char manager_password[] = "password456";
-//const char staff_id[] = "staff518518";
 
 //structure for checkin in & out time
 struct Schedule {
@@ -173,8 +167,9 @@ main() {
     }
 
     for (int i = 0; i < manager_count; i++) {
-        printf("ID: %s\n", staff[i].table.id);
+        printf("ID: %s\n", manager[i].table.id);
     }
+    //------------------------------------------------
 
     fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
 
@@ -186,10 +181,6 @@ main() {
         fwrite(&staff[i], sizeof(struct Staff), 1, fstaff);
     }
 
-    //
-    /*for (int i = 0; i < schedule; i++) {
-        fwrite(&schedule[i], sizeof(Schedule), 1, fstaff);
-    }*/
 
 
 
@@ -250,7 +241,6 @@ void menu(struct Staff* staff, struct Manager* manager)
             printf("Please Select Again...\n");
             Sleep(1000);
             //only can validate numeric answer
-            //if enter character or string, it will be error
         }
 
     } while (choice != 3);
@@ -469,7 +459,7 @@ int staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum) 
 
     do {
         select = 'Y';
-     //   title();
+        title();
         printf("\nStaff\n");
         printf("-------\n");
         printf("1. Employee working schedule\n");
@@ -531,7 +521,7 @@ int staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum) 
 //staff rest schedule 
 void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum)
 {
-    //title();
+    title();
     if (staff[staffNum].schedule.total_working_hours != 0) { //
         printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[staffNum].table.name);
         printf("BEGIN TIME\tREST TIME\tEND TIME\n");
@@ -541,6 +531,7 @@ void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum)
     }
     else
         printf("Sorry,Your schedule haven't done modified yet.\n");
+    Sleep(1000);
 
 }
 
@@ -857,7 +848,7 @@ int resetPassword(struct Staff* staff)
 
 void sendValidationCode(char* email, char* code) {
     // Implement sending the validation code to the provided email
-  //  title();
+   title();
     printf("Validation code sent to %s is: %s\n", email, code);
 }
 
@@ -949,7 +940,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
             do
             {
                 again = 0;
-                //title();
+                title();
                 printf("\nInvalid ID or Password\n");
                 printf("Do you want to try again?");
                 printf("\n1. Yes\n");
@@ -963,7 +954,6 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
                 }
                 else if (ans == 2) {
                     return 0;
-                    // system("cls");
                 }
                 else {
                     again = 0;
@@ -972,8 +962,9 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 
                 if (count == 3)
                 {
-                    title();
+                    
                     printf("\nYou are failed to log in 3 time!\n");
+                    title();
                     printf("\n1. RESET PASSWORD\n");
                     printf("2. EXIT\n");
                     printf("Do u want to reset the password ?");
@@ -1208,7 +1199,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
         deleted = 0;
         again = 0;
 
-        //title();
+        title();
         printf("you are able to delete the record\n");
         Sleep(1000);
 
@@ -1221,7 +1212,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
         {
             if (strcmp(staff[i].table.id, deleteID) == 0)
             {
-                //title();
+                title();
                 printf("\n----------- RECORD OF STAFF -----------\n");
                 printf("\nStaff Name\tPhone No\tEmail\n");
                 printf("%s\t%s\t%s", staff[i].table.name, staff[i].table.phone, staff[i].table.email);
@@ -1277,7 +1268,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
             
         }
         if (deleted == 1) {
-            //title();
+            title();
             do {
                 printf("Do you want to continue");
                 printf("\n1. Yes\n");
@@ -1442,7 +1433,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                 printf("Enter you choice:             |");
                 scanf("%d", &choice);
                 printf("|-----------------------------|\n");
-                Sleep(800)
+                Sleep(800);
                 if (choice == 1)
                     ans++;
                 else if (choice == 2)
@@ -1513,7 +1504,7 @@ void updateManager_information(struct Staff* staff, struct Manager* manager, int
 
         //ask manager to update
         if (confirm == 'Y' || confirm == 'y') {
-            //title();
+            title();
             printf("\n--------------------------\n");
             printf("----- UPDATE RIGHT NOW -----\n");
             printf("----------------------------\n");
@@ -1550,7 +1541,7 @@ void updateManager_information(struct Staff* staff, struct Manager* manager, int
 
         if (success == 0) {
             do {
-                //title();
+                title();
                 again = 0;
                 printf("\n--------------------------\n");
                // printf("Invalid | Wrong Manager ID |\n");
@@ -1772,7 +1763,7 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
         if (strcmp(staff[i].table.id, id) == 0)
         {
             if (staff[i].schedule.total_working_hours != 0) {
-                //title();
+                title();
                 printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].table.name);
                 printf("BEGIN TIME\tREST TIME\tEND TIME\n");
                 printf("%02d:%02d\t%d\t%02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
@@ -1801,7 +1792,7 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
 //Display all staff record
 void dispalyAll(struct Staff* staff, struct Manager* manager, int staffNum)
 {
-    //title();
+    title();
     printf("\n----------- RECORD OF STAFF ------------\n");
     printf("\nStaff Name\tPhone No\tEmail\n");
 
