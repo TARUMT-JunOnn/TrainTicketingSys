@@ -8,7 +8,6 @@
 #pragma warning(disable:4996);
 SYSTEMTIME t;
 int mem_point;
-
 int menu(void);
 
 void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
@@ -115,19 +114,86 @@ int subMenu(int input) {
 	do {
 		switch (input) {
 		case 11:
-			status = staffMenu();
-			switch (status) {
-			case 1: 
-				staff_login();
-				break;
-			case 2:
-				staff_registration();
-				break;
-					
-			}
+			do {
+				status = staffMenu();
+				switch (status) {
+				case 1:
+					status = staff_login();
+					switch (status) {
+					case 1:
+						do {
+							status = -1;
+							switch (staff_main_page()) {
+							case 3:
+								scheduleMain(0);
+								status = 3;
+								break;
+							case 4:
+								searchMember();
+								status = 4;
+								break;
+							case 6:
+								chooseTime();
+								status = 6;
+								break;
+							case 0:
+								status = -1;
+								break;
+							}
+						} while (status != -1);
+						break;
+					case 0:
+						status = -1;
+						break;
+					}
+					break;
+				case 2:
+					staff_registration();
+					status = -1;
+					break;
+				case 0:
+					return 1;
+					break;
+				}
+			} while (status == -1);
 			break;
 		case 12:
-			manager_menu();
+			do{
+				status = manager_menu();
+				switch (status) {
+				case 0:
+					return 1;
+					break;
+				case 1:
+						switch (manager_login()) {
+						case 1:
+							do {
+								switch (manager_main_page()) {
+								case 6:
+									scheduleMain(1);
+									status = 6;
+									break;
+								case 7:
+									loginHistory();
+									status = 7;
+									break;
+								case 0:
+									status = -1;
+									break;
+							}
+							} while (status != -1);
+							break;
+						case 0:
+							status = -1;
+							break;
+						}
+					break;
+				case 2:
+					manager_registration();
+					status = -1;
+					break;
+				}
+			} while (status == -1);
 			break;
 		case 21:
 			status = memberLogin();
@@ -139,7 +205,6 @@ int subMenu(int input) {
 					chooseTime();
 					break;
 				case 4:
-					
 					break;
 				case 5: 
 					cancelBooking();
@@ -168,12 +233,13 @@ int main(void) {
 		status = menu(status);
 		status = subMenu(status);
 	} while (status == 0 || status == 1 || status == 2);
+	chooseTime();
 }
 
 int chooseTime() {
 	int dateSeperate[3];
 	char date[11], day[80];
-	printf("What time you would like to booking ?\n");
-	SearchSchedule();
+	title();
+	beforeBooking();
 	system("pause");
 }
