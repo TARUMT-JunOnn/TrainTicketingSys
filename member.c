@@ -61,14 +61,14 @@ void rewardPoint(int memberNUM);
 
 //search modules
 void searchMemberTitle(void);
-void searchMember();
-void searchMemberID();
-void searchMemberGender();
-void searchMemberAge();
-void searchMemberRewardPoints();
+int searchMember();
+int searchMemberID();
+int searchMemberGender();
+int searchMemberAge();
+int searchMemberRewardPoints();
 
 //delete modules
-void deleteMember();
+int deleteMember();
 
 char passwordStore(char password[]);
 
@@ -1090,7 +1090,7 @@ void rewardPoint(int memberNUM) {
 }
 
 //havent done yet
-void searchMember() {
+int searchMember() {
 	char* menu[] = { "ID", "Gender", "Age", "Reward Points", "Exit"};
 	char choice[LENGTH_CHOICE];
 
@@ -1136,7 +1136,7 @@ void searchMemberTitle(void) {
 	printf("----------------------------------------------------------------------------------------------------------------------\n");
 }
 
-void searchMemberID() {
+int searchMemberID() {
 	char id[MEMBER_ID], next[10];
 	int success = 0, again = 0;
 
@@ -1187,7 +1187,7 @@ void searchMemberID() {
 	//return something back to menu
 }
 
-void searchMemberGender() {
+int searchMemberGender() {
 	char* menu[] = { "Male", "Female"};
 	char next[10];
 	int again = 0, memberExist =0;
@@ -1292,7 +1292,7 @@ void searchMemberGender() {
 	//return something back to menu
 }
 
-void searchMemberAge() {
+int searchMemberAge() {
 	char* menu[] = { "Equal To ", "Greater Than or Equal To ", "Less Than or Equal To " };
 	char next[10];
 	int age, again=0, choice, memberExist = 0;
@@ -1434,7 +1434,7 @@ void searchMemberAge() {
 		//return something back to menu
 }
 
-void searchMemberRewardPoints() {
+int searchMemberRewardPoints() {
 	char* menu[] = { "Equal To ", "Greater Than or Equal To ", "Less Than or Equal To " };
 	char next[10];
 	float rewardPoints;
@@ -1572,7 +1572,7 @@ void searchMemberRewardPoints() {
 	//return something back to menu
 }
 
-void deleteMember() {
+int deleteMember() {
 	char* confirmationMenu[] = { "Confirm", "Cancel" };
 	char id[MEMBER_ID];
 	int confirmation, again = 0, success = 0;
