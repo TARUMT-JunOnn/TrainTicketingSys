@@ -43,6 +43,7 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager);
 void security_Ques();
 void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char questionTitle[MAX_QUESTION_SELECTED][50]);
 void dispalyAll(struct Staff* staff, struct Manager* manager, int managerNum);
+void title(void);
 
 
 
@@ -249,7 +250,7 @@ void menu(struct Staff* staff, struct Manager* manager)
 
 }
 
-// staff Menu - got error why it will ask the ques about do u wnat to select again?
+// Staff menu
 void staffMenu(struct Staff* staff, struct Manager* manager)
 {
     int choice, status = 1;
@@ -451,7 +452,7 @@ void staff_registration(struct Staff* staff) {
 }
 
 
-// Staff Choice menu //got error- not sure the error haoxiangs case 6 loop problem??
+// Staff Choice menu 
 int staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum) {
     int choice;
     int status = 1;
@@ -518,7 +519,7 @@ int staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum) 
     } while (toupper(select) == 'Y');
 }
 
-//staff rest schedule 
+//staff working schedule 
 void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum)
 {
     title();
@@ -536,7 +537,7 @@ void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum)
 }
 
 
-//staff update information !!Logic error
+//staff update information 
 void staff_information(struct Staff* staff, struct Manager* manager, int staffNum) {
     char name[MAX_NAME_LENGTH];
     char email[MAX_EMAIL_LENGTH];
