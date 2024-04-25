@@ -35,7 +35,7 @@ void manager_menu(struct Staff* staff, struct Manager* manager);
 void manager_login(struct Staff* staff, struct Manager* manager);
 void manager_registration(struct Manager* manager);
 void manager_main_page(struct Staff* staff, struct Manager* manager, int managerNum);
-void delete_Acc(struct Staff* staff, struct Manager* manager);
+int delete_Acc(struct Staff* staff, struct Manager* manager);
 void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager);
 void updateManager_information(struct Staff* staff, struct Manager* manager, int managerNum);
 void manager_view_schedule(struct Staff* staff, struct Manager* manager);
@@ -240,7 +240,7 @@ void menu(struct Staff* staff, struct Manager* manager)
             
             printf("Invalid Choice!\n");
             printf("Please Select Again...\n");
-            Sleep(1000);
+            Sleep(600);
             //only can validate numeric answer
         }
 
@@ -279,12 +279,12 @@ void staffMenu(struct Staff* staff, struct Manager* manager)
             case 3:
                 printf("Exiting....\n");
                 select = 'N';
-                Sleep(1000);
+                Sleep(600);
                 break;
             default:
                 printf("Invalid Choice!\n");
                 printf("Please Select Again\n");
-                Sleep(1000);
+                Sleep(600);
                 break;
                 //only can validate numeric answer
                 //if enter character or string, it will be error
@@ -294,7 +294,7 @@ void staffMenu(struct Staff* staff, struct Manager* manager)
     if (select == 'N') {
         
         printf("\nYou are Exit Right Now!\n");
-        Sleep(1000);
+        Sleep(600);
 
     }
    
@@ -327,7 +327,7 @@ int staff_login(struct Staff* staff, struct Manager* manager)
             if (strcmp(staff[i].table.id, id) == 0 && strcmp(staff[i].table.password, password) == 0)
             {
                 printf("Login successful...\n");
-                Sleep(1000);
+                Sleep(600);
                 status = staff_main_page(staff, manager, i);
                 loginSuccess++;
             }
@@ -365,28 +365,33 @@ int staff_login(struct Staff* staff, struct Manager* manager)
             {
                 int std;
                 printf("\nYou are failed to log in 3 time!\n");
-                Sleep(1000);
-                printf("\n1. RESET PASSWORD\n");
-                printf("2. EXIT\n");
-                printf("Do u want to reset the password ?");
-                scanf("%d", &ans);
+                Sleep(600);
+                do {
+                    printf("\n1. RESET PASSWORD\n");
+                    printf("2. EXIT\n");
+                    printf("Do u want to reset the password ?");
+                    scanf("%d", &ans);
 
-                if (ans == 1)
-                {
-                    std = resetPassword(staff);
-                    if (std == 0) {
+                    if (ans == 1)
+                    {
+                        std = resetPassword(staff);
+                        if (std == 0) {
+                            return 0;
+                        }
+                        count = 0;
+                    }
+                    else if (ans == 2)
+                    {
+
+                        printf("You are exit right now!\n");
+                        Sleep(600);
                         return 0;
                     }
-                    count = 0;
-                }
-                else
-                {
-                   
-                    printf("You are exit right now!\n");
-                    Sleep(1000);
-                    return 0;
-                }
-
+                    else
+                    {
+                        printf("Select again.\n");
+                    }
+                } while (ans != 1 && ans != 2);
             }
 
 
@@ -424,7 +429,7 @@ void staff_registration(struct Staff* staff) {
             title();
             printf("The ID %s already exits.\n", id);
             printf("Please choose a different ID.\n");
-            Sleep(1000);
+            Sleep(600);
             return 0;
         }
     }
@@ -445,7 +450,7 @@ void staff_registration(struct Staff* staff) {
 
 
     printf("\nRegistration successfully\n");
-    Sleep(1000);
+    Sleep(600);
 
     staff_count++;
 
@@ -488,13 +493,13 @@ int staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum) 
             break;
         case 6:
             printf("Exiting...\n");
-            Sleep(1000);
+            Sleep(600);
             select = 'N';
             break;
         default:
             select = 'Y';
             printf("\nPlease try again\n");
-            Sleep(1000);
+            Sleep(600);
             break;
         }
         if (status == 0) {
@@ -509,7 +514,7 @@ int staff_main_page(struct Staff* staff, struct Manager* manager, int staffNum) 
                 if (toupper(select) != 'Y' && toupper(select) != 'N')
                 {
                     printf("Invalide select.");
-                    Sleep(1000);
+                    Sleep(600);
                 }
 
             } while (toupper(select) != 'Y' && toupper(select) != 'N');
@@ -532,7 +537,7 @@ void staff_schedule(struct Staff* staff, struct Manager* manager, int staffNum)
     }
     else
         printf("Sorry,Your schedule haven't done modified yet.\n");
-    Sleep(1000);
+    Sleep(600);
 
 }
 
@@ -584,6 +589,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
             success++;
 
             printf("\nUpdate was done successfully!\n");
+            Sleep(800);
 
             printf("\n---------------------------\n");
             printf("------- After Updated -------\n");
@@ -593,6 +599,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
             printf("Phone No: %s\n", staff[staffNum].table.phone);
             printf("Email:%s\n", staff[staffNum].table.email);
             printf("\n---------------------------\n");
+            Sleep(1000);
         }
         else
         {
@@ -613,7 +620,7 @@ void staff_information(struct Staff* staff, struct Manager* manager, int staffNu
                 printf("Enter you choice:");
                 scanf("%d", &choice);
                 printf("---------------------------\n");
-                Sleep(1000);
+                Sleep(600);
                 if (choice == 1)
                     again++;
                 else if (choice == 2) {
@@ -640,14 +647,17 @@ int staff_logout(struct Staff* staff, int staffNum, struct Manager* manager) {
     clock_t checkIn = 0, checkOut = 0;
     double elapsedTime;
 
-    title();
-    printf("\nSTAFF WORKING TIME RECORDED\n");
-    printf("=================================\n\n");
-    printf("1. CHECK IN\n");
-    printf("2. CHECK OUT\n");
-    printf("Enter your choice:");
-    scanf("%d", &ans);
-    printf("==================================\n\n");
+   
+    do {
+        title();
+        printf("\nSTAFF WORKING TIME RECORDED\n");
+        printf("=================================\n\n");
+        printf("1. CHECK IN\n");
+        printf("2. CHECK OUT\n");
+        printf("Enter your choice:");
+        scanf("%d", &ans);
+        printf("==================================\n\n");
+    } while (ans != 1 && ans != 2);
 
     if (ans == 1) {
         checkIn = clock();
@@ -658,7 +668,7 @@ int staff_logout(struct Staff* staff, int staffNum, struct Manager* manager) {
         printf("STAFF ID:%s\tCHECK IN TIME:%s", staff[staffNum].table.id, ctime(&staff[staffNum].check_in_time));
         printf("Check In succeed\n");
         printf("-------------------------------------------------------------------\n");
-        Sleep(1000);
+        Sleep(600);
 
 
     }
@@ -677,7 +687,7 @@ int staff_logout(struct Staff* staff, int staffNum, struct Manager* manager) {
         if (elapsedTime > 8 * 3600) {
             printf("\nThis is your check in time %s and you are check out right now.\n", ctime(&staff[staffNum].check_in_time));
             printf("You have completed 8 hours of work today.\n");
-            Sleep(1000);
+            Sleep(600);
         }
         else {
   
@@ -688,7 +698,7 @@ int staff_logout(struct Staff* staff, int staffNum, struct Manager* manager) {
             printf("-------------------------------------------------------------------\n");
 
             printf("---------- You have not completed 8 hours of work today. ----------\n");
-            Sleep(1000);
+            Sleep(600);
 
             do {
                 printf("\nAre you sure you want to check out? (1 for Yes, 0 for No): ");
@@ -696,21 +706,21 @@ int staff_logout(struct Staff* staff, int staffNum, struct Manager* manager) {
                 if (choice == 1) {
                     // Exit and return to the menu
                     printf("Exiting...\n");
-                    Sleep(1000);
-                    return 1;
+                    Sleep(600);
+                    return 0;
                     // You may want to return to the main menu or exit the program here
                 }
                 else if (choice == 0)
                 {
                     // Return to staff menu
-                    return 0;
+                    return 1;
                 }
                 else 
                 {
                     title();
                     printf("\nFailed to select...\n");
                     printf("Please select again!\n");
-                    Sleep(1000);
+                    Sleep(600);
                 }
 
             } while (choice != 1 && choice != 2);
@@ -735,7 +745,7 @@ int resetPassword(struct Staff* staff)
     printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
     printf("| You need to double check the data showe below |\n");
     printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-    Sleep(1000);
+    Sleep(600);
 
     printf("\nEnter ID:");
     scanf(" %[^\n]", id);
@@ -762,7 +772,7 @@ int resetPassword(struct Staff* staff)
                         {
                             printf("Sending a validation code to your email\n");
                             printf("Waiting time....\n");
-                            Sleep(1000);
+                            Sleep(600);
                             //random()
                             //store(send) the code to email.Then compare the code staff keyin and the code in the email.
                             char* code = generateValidationCode();
@@ -774,7 +784,7 @@ int resetPassword(struct Staff* staff)
                             if (atoi(code) == codeReceived)
                             {
                                 printf("Able to reset the password\n");
-                                Sleep(1000);
+                                Sleep(600);
 
                                 successfuly = 0;
                                 do {
@@ -786,14 +796,14 @@ int resetPassword(struct Staff* staff)
                                     if (strcmp(newPassword, comf_newPassword) == 0)
                                     {
                                         printf("Success!\n");
-                                        Sleep(1000);
+                                        Sleep(600);
                                         strcpy(staff[i].table.password, comf_newPassword);
                                         successfuly++;
                                         return 0;
                                     }
                                     else {
                                         printf("Failed!\n");
-                                        Sleep(1000);
+                                        Sleep(600);
                                         successfuly = 0;
                                     }
                                 } while (successfuly == 0);
@@ -801,7 +811,7 @@ int resetPassword(struct Staff* staff)
                             }
                             else
                                 printf("Validation code incorrect!\n");
-                            Sleep(1000);
+                            Sleep(600);
 
                         }
                         else
@@ -809,11 +819,11 @@ int resetPassword(struct Staff* staff)
                             printf("You phone number is incorrect!\n");
                         do {
                             printf("Do u want to try again?(Y/N)");
-                            Sleep(1000);
+                            Sleep(600);
                             scanf(" %c", &choice);
                             if (toupper(choice) == 'N') {
                                 printf("EXIT");
-                                Sleep(1000);
+                                Sleep(600);
                                 return 0;
                             }
                             else if (toupper(choice) != 'Y') {
@@ -826,7 +836,7 @@ int resetPassword(struct Staff* staff)
                 }
                 else if (ans != 1 && ans != 2)
                     printf("Invalid select.\n");
-                Sleep(1000);
+                Sleep(600);
 
             } while (ans != 1 && ans != 2);
             
@@ -834,7 +844,7 @@ int resetPassword(struct Staff* staff)
         else {
             printf("Authentication failed.\n");
             printf("You need to register first !\n\n");
-            Sleep(1000);
+            Sleep(600);
             return 0;
         }
         
@@ -842,7 +852,7 @@ int resetPassword(struct Staff* staff)
     }
     printf("Staff ID not found.\n");
     printf("You need to register first !\n\n");
-    Sleep(1000);
+    Sleep(600);
     return 0;
     
 }
@@ -892,19 +902,19 @@ void manager_menu(struct Staff* staff, struct Manager* manager)
             break;
         case 3:
             printf("Exiting....\n");
-            Sleep(1000);
+            Sleep(600);
             break;
         default:
             printf("\nInvalid Choice!\n");
             printf("Please Select Again\n");
-            Sleep(1000);
+            Sleep(600);
             //only can validate numeric answer
             //if enter character or string, it will be error
         }
 
     } while (choice != 3);
     printf("\nYou are Exit Right Now!\n");
-    Sleep(1000);
+    Sleep(600);
 }
 
 
@@ -930,7 +940,7 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
         for (int i = 0; i < MAX_MANAGER; i++) {
             if (strcmp(manager[i].table.id, id) == 0 && strcmp(manager[i].table.password, password) == 0) {
                 printf("\nLogin successful...\n");
-                Sleep(1000);
+                Sleep(600);
                 manager_main_page(staff, manager, i);
                 loginSuccess++;
             }
@@ -965,25 +975,30 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
                 {
                     
                     printf("\nYou are failed to log in 3 time!\n");
+                    
                     title();
-                    printf("\n1. RESET PASSWORD\n");
-                    printf("2. EXIT\n");
-                    printf("Do u want to reset the password ?");
-                    scanf("%d", &ans);
+                    do {
+                        printf("\n1. RESET PASSWORD\n");
+                        printf("2. EXIT\n");
+                        printf("Do u want to reset the password ?");
+                        scanf("%d", &ans);
 
-                    if (ans == 1)
-                    {
-                        manager_reset_pass(staff, manager);
-                        count = 0;
-                        return 0;
-                    }
-                    else
-                    {
-                        printf("\nYou are exit right now\n");
-                        Sleep(1000);
-                        return 0;
-                    }
-
+                        if (ans == 1)
+                        {
+                            manager_reset_pass(staff, manager);
+                            count = 0;
+                            return 0;
+                        }
+                        else if (ans == 2)
+                        {
+                            printf("\nYou are exit right now\n");
+                            Sleep(600);
+                            return 0;
+                        }
+                        else {
+                            printf("Select again.\n");
+                        }
+                    } while (ans != 1 && ans != 2);
                 }
 
         }
@@ -996,9 +1011,11 @@ void manager_login(struct Staff* staff, struct Manager* manager) {
 void manager_main_page(struct Staff* staff, struct Manager* manager, int managerNum) {
     int choice;
     char select;
+    int status= 0;
 
 
     do {
+        //select = 'N';
         title();
         printf("\nManager\n");
         printf("------\n");
@@ -1007,7 +1024,7 @@ void manager_main_page(struct Staff* staff, struct Manager* manager, int manager
         printf("3. Remove staff\n");
         printf("4. Display All staff record\n");
         printf("5. Update information\n");
-        printf("6. Log Out\n");
+        printf("6. Log Out\n"); //can't directly log out! 
         printf("Enter your Choice: ");
         scanf("%d", &choice);
 
@@ -1019,7 +1036,7 @@ void manager_main_page(struct Staff* staff, struct Manager* manager, int manager
             manager_view_schedule(staff, manager);
             break;
         case 3:
-            delete_Acc(staff, manager, managerNum);
+            status = delete_Acc(staff, manager, managerNum);
             break;
         case 4:
             dispalyAll(staff, manager, managerNum);
@@ -1033,7 +1050,7 @@ void manager_main_page(struct Staff* staff, struct Manager* manager, int manager
         default:
             select = 'Y';
             printf("\nPlease try again\n");
-            Sleep(1000);
+            Sleep(600);
             break;
         }
         if (choice == 1 || choice == 2 || choice == 3 || choice == 4 || choice == 5) {
@@ -1044,7 +1061,7 @@ void manager_main_page(struct Staff* staff, struct Manager* manager, int manager
                 if(toupper(select) != 'Y' && toupper(select) != 'N')
                 {
                     printf("Invalide select.");
-                    Sleep(1000);
+                    Sleep(600);
                 }
 
             } while (toupper(select) != 'Y' && toupper(select) != 'N');
@@ -1089,7 +1106,7 @@ void manager_registration(struct Manager* manager)
             title();
             printf("The ID %s already exits.\n", id);
             printf("Please choose a different ID.\n");
-            Sleep(1000);
+            Sleep(600);
             return 0;
         }
     }
@@ -1100,24 +1117,27 @@ void manager_registration(struct Manager* manager)
     {     
             
         do {
-            success = 1;
-            again = 0;
+            
             security_Ques();
 
             for (int i = 0; i < MAX_QUESTION_SELECTED; i++)
             {
-                printf("%d. ", i + 1);
-                scanf("%d", &questionSelection[i]);
-
                 do
                 {
+                    success = 1;
+                    again = 0;
+
+                    printf("%d. ", i + 1);
+                    scanf("%d", &questionSelection[i]);
+
+               
                     if (questionSelection[i] > 5 || questionSelection[i] < 1)
                     {
                         printf("Invalid Choice!\n");
                         printf("Please Enter Number 1 - 5!\n");
-                        Sleep(1000);
+                        Sleep(600);
                         success = 0;
-                        //break; 
+                        //break; //got bugg looping bug
                     }
                 } while (questionSelection[i] > 5 || questionSelection[i] < 1);
 
@@ -1130,7 +1150,7 @@ void manager_registration(struct Manager* manager)
                         {
                             printf("\nSelect the difference security question\n");
                             printf("Please Try Again.\n");
-                            Sleep(1000);
+                            Sleep(600);
                             again++;
                             success = 0;
 
@@ -1183,7 +1203,7 @@ void manager_registration(struct Manager* manager)
 
 
 //Manager delete/remove staff acc 
-void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
+int delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
 {
     int confirm;
     char answers;
@@ -1202,10 +1222,10 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
 
         title();
         printf("you are able to delete the record\n");
-        Sleep(1000);
+        Sleep(600);
 
         printf("\nEenter staff id to delete :");
-        Sleep(1000);
+        Sleep(600);
         rewind(stdin);
         scanf("%[^\n]", deleteID);
 
@@ -1220,6 +1240,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
                 printf("\n------------------------------------------\n");
 
                 do {
+                    done = 1;
                     printf("\nConfirm To delete?\n");
                     printf("\n1. Yes\n");
                     printf("2. No\n");
@@ -1230,7 +1251,7 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
 
                     if (confirm == 1)
                     {
-
+                        
                         strcpy(staff[i].table.id, staff[i + 1].table.id);
                         strcpy(staff[i].table.name, staff[i + 1].table.name);
                         strcpy(staff[i].table.password, staff[i + 1].table.password);
@@ -1242,14 +1263,14 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
                         deleted++;
 
                         printf("\nDELETE SUCCESSFUL\n");
-                        Sleep(1000);
+                        Sleep(600);
 
                     }
 
                     else if (confirm == 2)
                     {
                         printf("\nEXIT FROM REMOVE STAFF MENU.\n");
-                        Sleep(1000);
+                        Sleep(600);
                         return 0;
                         //system("cls");
                     }
@@ -1265,7 +1286,8 @@ void delete_Acc(struct Staff* staff, struct Manager* manager, int managerNum)
 
         if (deleted == 0) {
             printf("\nINVALID - STAFF ID NOT FOUND\n");
-            return manager_main_page(staff, manager, managerNum);
+            Sleep(600);
+            return 0;
             
         }
         if (deleted == 1) {
@@ -1340,7 +1362,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                     {
                         printf("Invalid input format. Please enter time in hh:mm - 24H format.\n");
                         reenter++;
-                        Sleep(1000);
+                        Sleep(600);
                     }
                     if (reenter == 0) {
                         printf("\nREST (minutes): ");
@@ -1407,7 +1429,7 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                 }
                 else
                 {
-                    Sleep(1000);
+                    Sleep(600);
                     printf("---------------------------------------------\n");
                     printf("| STAFF END WORKING TIME MUST ENOUGH 8 HOUR |\n");
                     printf("---------------------------------------------\n");
@@ -1431,16 +1453,16 @@ void modifyEmpRestSchedule(struct Staff* staff, struct Manager* manager)
                 printf("| Do you want to enter again? |");
                 printf("\n| 1. Yes                      |\n");
                 printf("| 2. No                       |\n");
-                printf("Enter you choice:             |");
+                printf("Enter you choice:             ");
                 scanf("%d", &choice);
                 printf("|-----------------------------|\n");
-                Sleep(800);
+                Sleep(600);
                 if (choice == 1)
                     ans++;
                 else if (choice == 2)
                 {
                     printf("\nEXIT\n");
-                    Sleep(1000);
+                    Sleep(600);
                     return 0;
                 }
 
@@ -1536,7 +1558,7 @@ void updateManager_information(struct Staff* staff, struct Manager* manager, int
         else
         {
             printf("Update unsuccessfull\n");
-            Sleep(1000);
+            Sleep(600);
         }
 
 
@@ -1592,7 +1614,7 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
         
         again = 0;
         title();
-        printf("\n--------------- RESET PASSWORD manager---------------\n");
+        printf("\n--------------- RESET PASSWORD MANAGER---------------\n");
         printf("\n|||||||||||||||||||||||||||||||||||||||||||||||\n");
         printf("| You need to double check the data showe below |\n");
         printf("|||||||||||||||||||||||||||||||||||||||||||||||||\n");
@@ -1647,6 +1669,7 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
                             {
                                 do {
                                     printf("You failed to answer one or more security questions correctly.\n");
+                                    Sleep(600);
                                     printf("Do u want to enter the answers for security password again?(Y/N):\n");
                                     scanf(" %c", &enterAgain);
                                     if (toupper(enterAgain) != 'N' && toupper(enterAgain) != 'Y')
@@ -1676,7 +1699,7 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
 
                             if (choice == 1)
                                 // return back to manager menu
-                                return manager_menu(staff, manager);
+                                return 0;
 
                             if (choice == 2)
                                 again++;
@@ -1686,7 +1709,7 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
                     }
                     else {
                         printf("Invalid select.\n");
-                        Sleep(1000);
+                        Sleep(600);
                     }
                 } while (ans != 1 && ans != 2);
             }
@@ -1695,8 +1718,8 @@ void manager_reset_pass(struct Staff* staff, struct Manager* manager)
         if (idExist == 0) {
             printf("\nNo manager found with the provided ID.\n");
             printf("You need to register first !\n\n");
-            Sleep(1000);
-            return manager_registration(manager);
+            Sleep(600);
+            return 0;
         }
     } while (again == 1);
 }
@@ -1774,7 +1797,7 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
             else
             {
                 printf("Empty\n\n");
-                Sleep(1000);
+                Sleep(600);
             }
 
             success++;
@@ -1784,7 +1807,7 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
 
     if (success == 0) {
         printf("You haven't modify the staff working schedule\n");
-        Sleep(1000);
+        Sleep(600);
     }
 
 }
@@ -1794,14 +1817,14 @@ void manager_view_schedule(struct Staff* staff, struct Manager* manager)
 void dispalyAll(struct Staff* staff, struct Manager* manager, int staffNum)
 {
     title();
-    printf("\n----------- RECORD OF STAFF ------------\n");
-    printf("\nStaff Name\tPhone No\tEmail\n");
+    printf("\n----------- RECORD OF ALL STAFF ----------------------------------\n");
+    printf("\n%-20s%-20s%-20s\n","Staff Name", "Phone No", "Email");
 
     for (int i = 0; i < staff_count; i++)
     {
-        printf("%s\t%s\t%s", staff[i].table.name, staff[i].table.phone, staff[i].table.email);
+        printf("%-20s%-20s%-20s\n", staff[i].table.name, staff[i].table.phone, staff[i].table.email);
 
     }
-    printf("\n------------------------------------------\n");
+    printf("\n------------------------------------------------------------------\n");
 
 }
