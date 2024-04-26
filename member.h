@@ -5,7 +5,9 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <time.h>
+#include"common.h"
 #pragma warning(disable:4996)
+#pragma once
 
 //ensure the strncat_s no warning even the size is larger
 #define _CRT_SECURE_NO_WARNINGS
@@ -50,11 +52,6 @@ int memberMainPage(int memberNUM, int now);
 
 //modify and display modules
 void viewProfile(int memberNUM);
-
-void viewSchedule();
-void addBooking();
-void bookingHistory();
-void cancelBooking();
 
 //reward point
 void rewardPoint(int memberNUM);
@@ -105,13 +102,12 @@ struct Member member2;
 
 int numMember = 0;
 
-void readMemberFile(FILE** memberFptr) {
+int readMemberFile(FILE** memberFptr) {
 
 	*memberFptr = fopen("../TrainTicketingSys/res/member.bin", "rb");
 
 	if (*memberFptr == NULL) {
-		printf("Can't Open The File\n");
-		exit(-1);
+		return -1;
 	}
 
 	fread(&member2, sizeof(member2), 1, *memberFptr);
@@ -249,9 +245,8 @@ int memberMenu() {
 	} while (strcmp(choice, "4") !=0);
 }
 
-int memberLogin() {
+int memberLogin(int *memberNUM) {
 	char id[MEMBER_ID], password[MEMBER_PASS];
-	int memberNUM;
 	int loginSuccess = 0, again;
 	
 	do {
@@ -273,15 +268,15 @@ int memberLogin() {
 
 				waitingScreen();
 				
-				memberNUM = i;
+				*memberNUM = i;
 
 				time_t now = time(NULL);
 
 				struct tm* logInTime = localtime(&now);
 
-				strftime(member[memberNUM].logInOutTime[member[memberNUM].numLoginRecords].loginTimeDate, 100, "%x - %I:%M%p", logInTime);
+				strftime(member[*memberNUM].logInOutTime[member[*memberNUM].numLoginRecords].loginTimeDate, 100, "%x - %I:%M%p", logInTime);
 
-				return memberMainPage(memberNUM, now);
+				return memberMainPage(*memberNUM, now);
 
 				loginSuccess++;
 			}
@@ -736,7 +731,7 @@ int memberRegister() {
 		member[numMember].rewardPoints = 0.00;
 		member[numMember].numLoginRecords = 0;
 
-		printf("\nInformation Added. ");
+		printf("\nzrmation Added. ");
 		waitingScreen();
 
 		numMember++;

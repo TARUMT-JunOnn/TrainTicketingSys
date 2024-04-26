@@ -5,6 +5,8 @@
 #include<string.h>
 #include <ctype.h>
 #include <Windows.h>
+#include"common.h"
+#pragma once
 #pragma warning (disable : 4996);
 
 #define MAX_STAFF 40
@@ -19,36 +21,9 @@
 
 
 
-void menu( );
-int staffMenu( );
-int staff_login( );
-void staff_registration();
-int staff_main_page( );
-void staff_schedule( );
-void staff_information( );
-int staff_logout( );
-int resetPassword();
-void sendValidationCode(char* email, char* code);
-char* generateValidationCode();
-// manager
-void manager_menu( );
-int manager_login( );
-void manager_registration();
-void manager_main_page( );
-int delete_Acc( );
-void modifyEmpRestSchedule( );
-void updateManager_information( );
-void manager_view_schedule( );
-void manager_reset_pass( );
-void security_Ques();
-void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char questionTitle[MAX_QUESTION_SELECTED][50]);
-void dispalyAll( );
-void title(void);
-
-
 
 //structure for checkin in & out time
-struct Schedule {
+struct ScheduleStaff {
 
     int begin_hour;
     int begin_minute;
@@ -71,7 +46,7 @@ typedef struct {
 
 struct Staff {
     Table table;
-    struct Schedule schedule;
+    struct ScheduleStaff schedule;
     time_t check_in_time; //time staff
     time_t check_out_time;
 };
@@ -93,6 +68,8 @@ struct Manager manager[MAX_MANAGER];
 int staff_count = 0;
 int manager_count = 0;
 int employeeNum[2];
+
+
 
 
 int readStaffFile(FILE** fstaff) {
@@ -469,55 +446,6 @@ void staff_registration() {
 
 }
 
-// Staff Choice menu 
-int staff_main_page() {
-    int choice;
-    int status = 1;
-
-    do {
-        title();
-        printf("\nStaff\n");
-        printf("-------\n");
-        printf("1. Employee working schedule\n");
-        printf("2. Update Information\n");
-        printf("3. Train Schedules\n");
-        printf("4. Search Member Information\n");
-        printf("5. Working Time\n"); //combination of check in and out time!
-        printf("6. Add Booking\n");
-        printf("0. Log Out Staff\n"); //got log out bug
-        printf("Enter your Choice: ");
-        scanf("%d", &choice);
-
-        switch (choice) {
-        case 1:
-            staff_schedule();
-            break;
-        case 2:
-            staff_information();
-            break;
-        case 3:
-        case 4:
-        case 6:
-            return choice;
-            break;
-        case 5:
-            status = staff_logout();
-            break;
-        case 0:
-            printf("Exiting...\n");
-            Sleep(600);
-            return 0;
-            break;
-        default:
-            printf("\nPlease try again\n");
-            Sleep(600);
-            break;
-        }
-        if (status == 1) {
-            return 0;
-        }
-    } while (choice != '0');
-}
 
 //staff working schedule 
 void staff_schedule()
@@ -724,6 +652,19 @@ int staff_logout() {
     return 2;
 }
 
+void sendValidationCode(char* email, char* code) {
+    // Implement sending the validation code to the provided email
+   title();
+    printf("Validation code sent to %s is: %s\n", email, code);
+}
+
+char* generateValidationCode() {
+    // Generate a random validation code (simplified example)
+    char* code = (char*)malloc(7 * sizeof(char)); // 6 characters + null terminator
+    sprintf(code, "%06d", rand() % 1000000);
+    return code;
+}
+
 // Staff reset password 
 int resetPassword()
 {
@@ -749,7 +690,7 @@ int resetPassword()
     {
         if (strcmp(staff[i].table.id, id) == 0)
         {
-            
+
             printf("\nName: %s\n", staff[i].table.name);
             printf("Email:%s\n", staff[i].table.email);
             do {
@@ -775,7 +716,7 @@ int resetPassword()
                             printf("\nPlease enter the validation code you receive:");
                             scanf("%d", &codeReceived);
 
-                            
+
                             if (atoi(code) == codeReceived)
                             {
                                 printf("Able to reset the password\n");
@@ -824,8 +765,8 @@ int resetPassword()
                             else if (toupper(choice) != 'Y') {
                                 printf("Invalid select.\n");
                             }
-                        } while(toupper(choice) != 'Y' && toupper(choice) != 'N');
-                       
+                        } while (toupper(choice) != 'Y' && toupper(choice) != 'N');
+
                     } while (toupper(choice) == 'Y');
 
                 }
@@ -834,7 +775,7 @@ int resetPassword()
                 Sleep(600);
 
             } while (ans != 1 && ans != 2);
-            
+
         }
         else {
             printf("Authentication failed.\n");
@@ -842,7 +783,7 @@ int resetPassword()
             Sleep(600);
             return 0;
         }
-       
+
     }
     printf("Staff ID not found.\n");
     printf("You need to register first !\n\n");
@@ -850,23 +791,8 @@ int resetPassword()
     return 0;
 }
 
-void sendValidationCode(char* email, char* code) {
-    // Implement sending the validation code to the provided email
-   title();
-    printf("Validation code sent to %s is: %s\n", email, code);
-}
-
-char* generateValidationCode() {
-    // Generate a random validation code (simplified example)
-    char* code = (char*)malloc(7 * sizeof(char)); // 6 characters + null terminator
-    sprintf(code, "%06d", rand() % 1000000);
-    return code;
-}
-
-
-
 // Manager menu
-void manager_menu()
+int manager_menu()
 {
     int choice;
     struct tm* hour;
@@ -909,156 +835,49 @@ void manager_menu()
     return 0;
 }
 
-
-// Manager Login menu --need to do let manager reset password!***
-int manager_login() {
-    char id[MAX_ID_LENGTH];
-    char password[MAX_PASS_LENGTH];
-    int loginSuccess = 0;
-    int again = 0;
-    int ans;
-    int count = 0;
-
-    title();
-    printf("\n------ MANAGER LOGIN ------\n");
-
-    do
-    {
-        loginSuccess = 0;
-        printf("\nEnter your manager ID: ");
-        scanf(" %[^\n]", id);
-        printf("Enter your manager password: ");
-        scanf(" %[^\n]", password);
-        for (int i = 0; i < MAX_MANAGER; i++) {
-            if (strcmp(manager[i].table.id, id) == 0 && strcmp(manager[i].table.password, password) == 0) {
-                printf("\nLogin successful...\n");
-                Sleep(600);
-                employeeNum[1] = i;
-                return 1;
-                loginSuccess++;
-            }
-        }
-
-        if (loginSuccess == 0)
+void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char questionTitle[MAX_QUESTION_SELECTED][50])
+{
+    for (int i = 0; i < 2; i++) {
+        switch (questionSelection[i])
         {
-            do
-
-
-
-            {
-                again = 0;
-                title();
-                printf("\nInvalid ID or Password\n");
-                printf("Do you want to try again?");
-                printf("\n1. Yes\n");
-                printf("2. No\n");
-                printf("Enter you choice:");
-                scanf("%d", &ans);
-                printf("---------------------------\n");
-                if (ans == 1) {
-                    again++;
-                    count++;
-                }
-                else if (ans == 2) {
-                    return 0;
-                }
-                else {
-                    again = 0;
-                }
-            } while (again == 0);
-
-                if (count == 3)
-                {
-                    
-                    printf("\nYou are failed to log in 3 time!\n");
-                    
-                    title();
-                    do {
-                        printf("\n1. RESET PASSWORD\n");
-                        printf("2. EXIT\n");
-                        printf("Do u want to reset the password ?");
-                        scanf("%d", &ans);
-
-                        if (ans == 1)
-                        {
-                            manager_reset_pass();
-                            count = 0;
-                            return 0;
-                        }
-                        else if (ans == 2)
-                        {
-                            printf("\nYou are exit right now\n");
-                            Sleep(600);
-                            return 0;
-                        }
-                        else {
-                            printf("Select again.\n");
-                        }
-                    } while (ans != 1 && ans != 2);
-                }
-
-        }
-    } while (again == 1 && loginSuccess ==0);
-
-}
-
-
-//Manager Choice menu 
-void manager_main_page( ) {
-    int choice;
-    int status= 1;
-
-    do {
-        title();
-        alert();
-        printf("\nManager\n");
-        printf("------\n");
-        printf("1. Modify staff working schedule\n");
-        printf("2. View staff working schedule\n");
-        printf("3. Remove staff\n");
-        printf("4. Display All staff record\n");
-        printf("5. Update information\n");
-        printf("6. Train Schedules\n");
-        printf("7. Member Login History\n");
-        printf("0. Log Out\n"); //can't directly log out! 
-        printf("Enter your Choice: ");
-        scanf("%d", &choice);
-
-        switch (choice) {
         case 1:
-            modifyEmpRestSchedule();
+            strcpy(questionTitle[i], "What was the first name of your first pet?");
             break;
         case 2:
-            manager_view_schedule();
+            strcpy(questionTitle[i], "What was your childhood nickname?");
             break;
         case 3:
-            status = delete_Acc();
+            strcpy(questionTitle[i], "What are the favorite food as a child?");
             break;
         case 4:
-            dispalyAll();
+            strcpy(questionTitle[i], "In what city were you born?");
             break;
         case 5:
-            updateManager_information();
-            break;
-        case 6:
-        case 7:
-        case 0:
-            return choice;
-            break;
-        default:
-            printf("\nPlease try again\n");
-            Sleep(600);
+            strcpy(questionTitle[i], "What is your mother's maiden name?");
             break;
         }
 
-        if(status == 1)
-            return 0;
-        
-
-    } while (choice != 0);
-    
+    }
 }
 
+// Security question 
+void security_Ques()
+{
+    title();
+    printf("\n------------- Security Question -------------\n");
+    printf("|  Choose 2 question as your security question  |\n");
+
+    printf("1. What was the first name of your first pet?\n");
+    printf("2. What was your childhood nickname?\n");
+    printf("3. What are the favorite food as a child?\n");
+    printf("4. In what city were you born?\n");
+    printf("5. What is your mother's maiden name?\n");
+
+
+    printf("-----------------------------------------------\n");
+
+
+}
 
 // Manager registration 
 void manager_registration()
@@ -1579,8 +1398,6 @@ void updateManager_information( ) {
 
 }
 
-
-
 // Manager reset password 
 void manager_reset_pass( )
 {
@@ -1712,50 +1529,98 @@ void manager_reset_pass( )
 }
 
 
-// Security question 
-void security_Ques()
-{
+// Manager Login menu --need to do let manager reset password!***
+int manager_login() {
+    char id[MAX_ID_LENGTH];
+    char password[MAX_PASS_LENGTH];
+    int loginSuccess = 0;
+    int again = 0;
+    int ans;
+    int count = 0;
+
     title();
-    printf("\n------------- Security Question -------------\n");
-    printf("|  Choose 2 question as your security question  |\n");
+    printf("\n------ MANAGER LOGIN ------\n");
 
-    printf("1. What was the first name of your first pet?\n");
-    printf("2. What was your childhood nickname?\n");
-    printf("3. What are the favorite food as a child?\n");
-    printf("4. In what city were you born?\n");
-    printf("5. What is your mother's maiden name?\n");
-
-
-    printf("-----------------------------------------------\n");
-
-
-}
-
-
-void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char questionTitle[MAX_QUESTION_SELECTED][50])
-{
-    for (int i = 0; i < 2; i++) {
-        switch (questionSelection[i])
-        {
-        case 1:
-            strcpy(questionTitle[i], "What was the first name of your first pet?");
-            break;
-        case 2:
-            strcpy(questionTitle[i], "What was your childhood nickname?");
-            break;
-        case 3:
-            strcpy(questionTitle[i], "What are the favorite food as a child?");
-            break;
-        case 4:
-            strcpy(questionTitle[i], "In what city were you born?");
-            break;
-        case 5:
-            strcpy(questionTitle[i], "What is your mother's maiden name?");
-            break;
+    do
+    {
+        loginSuccess = 0;
+        printf("\nEnter your manager ID: ");
+        scanf(" %[^\n]", id);
+        printf("Enter your manager password: ");
+        scanf(" %[^\n]", password);
+        for (int i = 0; i < MAX_MANAGER; i++) {
+            if (strcmp(manager[i].table.id, id) == 0 && strcmp(manager[i].table.password, password) == 0) {
+                printf("\nLogin successful...\n");
+                Sleep(600);
+                employeeNum[1] = i;
+                return 1;
+                loginSuccess++;
+            }
         }
 
-    }
+        if (loginSuccess == 0)
+        {
+            do
+
+
+
+            {
+                again = 0;
+                title();
+                printf("\nInvalid ID or Password\n");
+                printf("Do you want to try again?");
+                printf("\n1. Yes\n");
+                printf("2. No\n");
+                printf("Enter you choice:");
+                scanf("%d", &ans);
+                printf("---------------------------\n");
+                if (ans == 1) {
+                    again++;
+                    count++;
+                }
+                else if (ans == 2) {
+                    return 0;
+                }
+                else {
+                    again = 0;
+                }
+            } while (again == 0);
+
+            if (count == 3)
+            {
+
+                printf("\nYou are failed to log in 3 time!\n");
+
+                title();
+                do {
+                    printf("\n1. RESET PASSWORD\n");
+                    printf("2. EXIT\n");
+                    printf("Do u want to reset the password ?");
+                    scanf("%d", &ans);
+
+                    if (ans == 1)
+                    {
+                        manager_reset_pass();
+                        count = 0;
+                        return 0;
+                    }
+                    else if (ans == 2)
+                    {
+                        printf("\nYou are exit right now\n");
+                        Sleep(600);
+                        return 0;
+                    }
+                    else {
+                        printf("Select again.\n");
+                    }
+                } while (ans != 1 && ans != 2);
+            }
+
+        }
+    } while (again == 1 && loginSuccess == 0);
+
 }
+
 
 
 // Manager view staff schedule
@@ -1812,5 +1677,110 @@ void dispalyAll( )
 
     }
     printf("\n------------------------------------------------------------------\n");
+}
+
+// Staff Choice menu 
+int staff_main_page() {
+    int choice;
+    int status = 1;
+
+    do {
+        title();
+        printf("\nStaff\n");
+        printf("-------\n");
+        printf("1. Employee working schedule\n");
+        printf("2. Update Information\n");
+        printf("3. Train Schedules\n");
+        printf("4. Search Member Information\n");
+        printf("5. Working Time\n"); //combination of check in and out time!
+        printf("6. Add Booking\n");
+        printf("0. Log Out Staff\n"); //got log out bug
+        printf("Enter your Choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            staff_schedule();
+            break;
+        case 2:
+            staff_information();
+            break;
+        case 3:
+        case 4:
+        case 6:
+            return choice;
+            break;
+        case 5:
+            status = staff_logout();
+            break;
+        case 0:
+            printf("Exiting...\n");
+            Sleep(600);
+            return 0;
+            break;
+        default:
+            printf("\nPlease try again\n");
+            Sleep(600);
+            break;
+        }
+        if (status == 1) {
+            return 0;
+        }
+    } while (choice != '0');
+}
+
+//Manager Choice menu 
+int manager_main_page() {
+    int choice;
+    int status = 1;
+
+    do {
+        title();
+        alert();
+        printf("\nManager\n");
+        printf("------\n");
+        printf("1. Modify staff working schedule\n");
+        printf("2. View staff working schedule\n");
+        printf("3. Remove staff\n");
+        printf("4. Display All staff record\n");
+        printf("5. Update information\n");
+        printf("6. Train Schedules\n");
+        printf("7. Member Login History\n");
+        printf("0. Log Out\n"); //can't directly log out! 
+        printf("Enter your Choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            modifyEmpRestSchedule();
+            break;
+        case 2:
+            manager_view_schedule();
+            break;
+        case 3:
+            status = delete_Acc();
+            break;
+        case 4:
+            dispalyAll();
+            break;
+        case 5:
+            updateManager_information();
+            break;
+        case 6:
+        case 7:
+        case 0:
+            return choice;
+            break;
+        default:
+            printf("\nPlease try again\n");
+            Sleep(600);
+            break;
+        }
+
+        if (status == 1)
+            return 0;
+
+
+    } while (choice != 0);
 
 }

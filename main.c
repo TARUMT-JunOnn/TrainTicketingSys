@@ -1,34 +1,21 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<time.h>
 #include<string.h>
 #include<math.h>
 #include<windows.h>
 #include<conio.h>
 #include<ctype.h>
+
+#include"booking.h"
+#include"member.h"
+#include"schedules.h"
+#include"staff.h"
 #pragma warning(disable:4996);
+
 SYSTEMTIME t;
 int mem_point;
 int menu(void);
-
-void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
-	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
-	strcpy((*dayReturn), day[numOfWeek]);
-}
-
-void title(void) {
-	char day[10];
-	system("cls");
-	printf("%10s %s %s", "Train", "Ticketing", "System");
-	GetLocalTime(&t);
-	dayOfWeek(t.wDayOfWeek, &day);
-	const char month[12][10] = { {"January"}, {"February"}, {"March"}, {"April"}, {"May"}, {"June"}, {"July"}, {"August"}, {"September"}, {"October"}, {"November"}, {"December"} };
-	printf("%104s %02d %s %d %02d:%02d:%02d", day, t.wDay, month[t.wMonth - 1], t.wYear, t.wHour, t.wMinute, t.wSecond);
-	printf("\n");
-	for (int i = 0; i < 155; i++) {
-		printf("%s", "-");
-	}
-	printf("\n\n");
-}
 
 int readFile() {
 	FILE* fptr[4];
@@ -78,6 +65,7 @@ int writeFile() {
 
 int menu(int choice) {
 	int status, identifier;
+	int mem_num;
 	do {
 		if (choice == 0) {
 			title();
@@ -110,7 +98,7 @@ int menu(int choice) {
 }
 
 int subMenu(int input) {
-	int status;
+	int status, member_num;
 	do {
 		switch (input) {
 		case 11:
@@ -133,7 +121,7 @@ int subMenu(int input) {
 								status = 4;
 								break;
 							case 6:
-								chooseTime();
+								beforeBooking(-1);
 								status = 6;
 								break;
 							case 0:
@@ -196,18 +184,18 @@ int subMenu(int input) {
 			} while (status == -1);
 			break;
 		case 21:
-			status = memberLogin();
+			status = memberLogin(&member_num);
 			switch (status) {
 			case 1:
 				return 2;
 				break;
 				case 3:
-					chooseTime();
+					beforeBooking(member_num);
 					break;
 				case 4:
 					break;
 				case 5: 
-					cancelBooking();
+					searchBooking(member[member_num].id);
 					break;
 			}
 			break;
@@ -233,13 +221,26 @@ int main(void) {
 		status = menu(status);
 		status = subMenu(status);
 	} while (status == 0 || status == 1 || status == 2);
-	chooseTime();
 }
 
-int chooseTime() {
-	int dateSeperate[3];
+int beforeBooking(int mem_num) {
+	int dateSeperate[3], status;
 	char date[11], day[80];
+	Info userChoice[MAX_TRIP][MAX_PAX];
+	for (int i = 0; i < MAX_TRIP; i++) {
+		for (int j = 0; j < MAX_PAX; j++)
+			reset(&userChoice[i][j]);
+	}
 	title();
-	beforeBooking();
+	status = chooseTime(&userChoice);
+	switch (status) {
+	case 0:
+		return 0;
+		break;
+	case 1:
+	case 2:
+		addBooking(&userChoice, member[mem_num].name, member[mem_num].id, (int)member[mem_num].rewardPoints);
+		break;
+	}
 	system("pause");
 }
