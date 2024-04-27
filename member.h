@@ -186,7 +186,7 @@ int tryAgain(int again) {
 			return again;
 		}
 		else if (strcmp(choice, "2") == 0)
-			return 1;
+			return 0;
 		else {
 			title();
 			printf("Invalid Choice\n");
@@ -245,7 +245,7 @@ int memberMenu() {
 	} while (strcmp(choice, "4") !=0);
 }
 
-int memberLogin(int *memberNUM) {
+int memberLogin(int *memberNUM, int *num) {
 	char id[MEMBER_ID], password[MEMBER_PASS];
 	int loginSuccess = 0, again;
 	
@@ -276,7 +276,9 @@ int memberLogin(int *memberNUM) {
 
 				strftime(member[*memberNUM].logInOutTime[member[*memberNUM].numLoginRecords].loginTimeDate, 100, "%x - %I:%M%p", logInTime);
 
-				return memberMainPage(*memberNUM, now);
+				*num = now;
+
+				return 1;
 
 				loginSuccess++;
 			}
@@ -892,7 +894,7 @@ int memberMainPage(int memberNUM, int now) {
 			member[memberNUM].numLoginRecords++;
 
 			waitingScreen();
-			
+			return -1;
 		}
 		else {
 			printf("Invalid Choice!\n");

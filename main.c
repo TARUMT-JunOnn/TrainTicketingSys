@@ -98,7 +98,7 @@ int menu(int choice) {
 }
 
 int subMenu(int input) {
-	int status, member_num;
+	int status, member_num, now;
 	do {
 		switch (input) {
 		case 11:
@@ -121,7 +121,7 @@ int subMenu(int input) {
 								status = 4;
 								break;
 							case 6:
-								beforeBooking(-1);
+								status = booking(-1);
 								status = 6;
 								break;
 							case 0:
@@ -184,21 +184,35 @@ int subMenu(int input) {
 			} while (status == -1);
 			break;
 		case 21:
-			status = memberLogin(&member_num);
-			switch (status) {
-			case 1:
-				return 2;
-				break;
-				case 3:
-					beforeBooking(member_num);
+			do {
+				status = memberLogin(&member_num, &now);
+				switch (status) {
+				case 1:
+					do {
+						switch (memberMainPage(member_num, now)) {
+						case 2:
+							scheduleMain(0);
+							status = 2;
+							break;
+						case 3:
+							booking(member_num);
+							status = 3;
+							break;
+						case 4:
+							bookingHistory(member[member_num].id);
+							break;
+						case 5:
+							searchBooking(member[member_num].id);
+							status = 5;
+							break;
+						}
+					} while (status != -1);
 					break;
-				case 4:
+				case 0:
+					return 2;
 					break;
-				case 5: 
-					searchBooking(member[member_num].id);
-					break;
-			}
-			break;
+				}
+			} while (status == -1);
 		case 22:
 			memberRegister();
 			return 2;
@@ -223,24 +237,26 @@ int main(void) {
 	} while (status == 0 || status == 1 || status == 2);
 }
 
-int beforeBooking(int mem_num) {
-	int dateSeperate[3], status;
+int booking(int mem_num) {
+	int dateSeperate[3], status, seats[2];
 	char date[11], day[80];
 	Info userChoice[MAX_TRIP][MAX_PAX];
 	for (int i = 0; i < MAX_TRIP; i++) {
 		for (int j = 0; j < MAX_PAX; j++)
 			reset(&userChoice[i][j]);
 	}
-	title();
-	status = chooseTime(&userChoice);
-	switch (status) {
-	case 0:
-		return 0;
-		break;
-	case 1:
-	case 2:
-		addBooking(&userChoice, member[mem_num].name, member[mem_num].id, (int)member[mem_num].rewardPoints);
-		break;
-	}
-	system("pause");
+	do {
+		title();
+		status = chooseTime(&userChoice, seats);
+		switch (status) {
+		case 0:
+			return 0;
+			break;
+		case 1:
+		case 2:
+			status = addBooking(&userChoice, member[mem_num].name, member[mem_num].id, (int)member[mem_num].rewardPoints, seats);
+			break;
+		}
+	} while (status == -1);
+	return status;
 }

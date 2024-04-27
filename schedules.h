@@ -1743,11 +1743,11 @@ int typeDate(int* day, int* month, int* year) {
 
 }
 
-int chooseTime(Info* results) {
+int chooseTime(Info* results,  int seatleft[2]) {
 	struct date temporary;
 	char fromto[100][2][20], choice[2], day[2][80];
 	char destination[2][20][20];
-	int userChoice[2], j, k[2] = { 0, 0 }, date[2][3], followingDate[3], records[2][4][STRUCTCOUNT], seatleft, timeChoice[2], trip;
+	int userChoice[2], j, k[2] = { 0, 0 }, date[2][3], followingDate[3], records[2][4][STRUCTCOUNT], timeChoice[2], trip;
 	for (int k = 0; k < 2; k++) {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < STRUCTCOUNT; j++) {
@@ -1855,13 +1855,14 @@ int chooseTime(Info* results) {
 					if (records[m][0][k] == records[m][1][l]) {
 						temporary.time.depart = schedule[records[m][0][k]].deptArr.time.depart;
 						temporary.time.arrive = schedule[records[m][0][k]].deptArr.time.arrive;
-						seatleft = countVacancy(schedule[records[m][0][k]].trainID, temporary, &records[m][3]);
-						if (schedule[records[m][0][k]].seats - seatleft > 0) {
+						seatleft[m] = countVacancy(schedule[records[m][0][k]].trainID, temporary, &records[m][3]);
+						seatleft[m] = schedule[records[m][0][k]].seats - seatleft[m];
+						if (seatleft[m] > 0) {
 							printf("%-5d %-15.2f %-15.2f %-10s %-15s %-15s ", j, schedule[records[m][0][k]].deptArr.time.depart, schedule[records[m][0][k]].deptArr.time.arrive, schedule[records[m][0][k]].trainID, schedule[records[m][0][k]].departureFrom, schedule[records[m][0][k]].destination);
-							printf("%d\n", schedule[records[m][0][k]].seats - seatleft);
+							printf("%d\n", seatleft[m]);
+							records[m][3][j - 1] = records[m][0][k];
+							j++;
 						}
-						records[m][3][j - 1] = records[m][0][k];
-						j++;
 					}
 				}
 			}
