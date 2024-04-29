@@ -5,7 +5,8 @@
 #include<string.h>
 #include <ctype.h>
 #include <Windows.h>
-#include"common.c"
+#include "common.c"
+#pragma once
 #pragma warning (disable : 4996);
 
 #define MAX_STAFF 40

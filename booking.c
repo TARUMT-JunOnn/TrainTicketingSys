@@ -6,7 +6,8 @@
 #include<conio.h>
 #include<ctype.h>
 #include<time.h>
-#include"common.c"
+#pragma once
+#include "common.c"
 #pragma warning(disable:4996)
 #define MAX_PAX 10
 #define MAX_TRIP 2
@@ -1476,7 +1477,7 @@ int cancelBooking(int found[MAX_RECORDS]) {
 				else if (records[found[i]].trainInfo.prefer.day == t.wDay) {
 					if (records[found[i]].trainInfo.prefer.time.depart > t.wHour)
 						isTrue = 1;
-					else if (records[found[i]].trainInfo.prefer.time.depart == t.wHour && (int)((int)(records[found[i]].trainInfo.prefer.time.depart * 100) % 100) - 30 > t.wMinute) {
+					else if ((int)records[found[i]].trainInfo.prefer.time.depart == t.wHour && (int)((int)(records[found[i]].trainInfo.prefer.time.depart * 100) % 100) - 30 > t.wMinute) {
 						isTrue = 1;
 					}
 				}

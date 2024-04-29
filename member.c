@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <time.h>
-#include"common.c"
+#include "common.c"
 #pragma warning(disable:4996)
 
 //ensure the strncat_s no warning even the size is larger
@@ -370,7 +370,7 @@ bool verify_email(char* email) {
 			count++;
 		
 
-		if (email[i] == ' ' || email[i] == '/' || email == ':' || email[i] == ';'
+		if (email[i] == ' ' || email[i] == '/' || email[i] == ':' || email[i] == ';'
 			|| email[i] == '[' || email[i] == ']' || email[i] == '<' || email[i] == '>'
 			|| email[i] == ',') 
 			return false;

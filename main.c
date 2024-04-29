@@ -2,16 +2,11 @@
 #include<stdlib.h>
 #include<time.h>
 #include<string.h>
-#include<math.h>
-#include<windows.h>
-#include<conio.h>
-#include<ctype.h>
 
-#include"common.c"
-#include"booking.c"
-#include"member.c"
-#include"schedules.c"
-#include"staff.c"
+#include "booking.c"
+#include "schedules.c"
+#include "member.c"
+#include "staff.c"
 #pragma warning(disable:4996);
 
 SYSTEMTIME t;

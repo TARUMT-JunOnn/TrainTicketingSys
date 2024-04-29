@@ -6,7 +6,7 @@
 #pragma warning(disable:4996)
 #define STRUCTCOUNT 100
 #define MAX_DAY 14
-#include"common.c"
+#include "common.c"
 
 typedef struct
 {
@@ -1795,7 +1795,7 @@ int chooseTime(Info* results,  int seatleft[2]) {
 			rewind(stdin);
 			scanf("%s", choice);
 		} while ((choice[0] != '0' && atoi(choice) == 0) || atoi(choice) > k[1] + 1);
-		if (choice == '0')
+		if (choice[0] == '0')
 			return 0;
 		userChoice[1] = atoi(choice) - 1;
 		do {
@@ -1849,7 +1849,15 @@ int chooseTime(Info* results,  int seatleft[2]) {
 						temporary.time.arrive = schedule[records[m][0][k]].deptArr.time.arrive;
 						seatleft[m] = countVacancy(schedule[records[m][0][k]].trainID, temporary, &records[m][3]);
 						seatleft[m] = schedule[records[m][0][k]].seats - seatleft[m];
-						if (seatleft[m] > 0) {
+						int isTrue = 0;
+						if (temporary.day == t.wDay && temporary.month == t.wMonth && temporary.year == t.wYear) {
+							if ((int)temporary.time.depart > t.wHour || ((int)(temporary.time.depart * 100) % 100 - 30 > t.wMinute && temporary.time.depart == t.wHour))
+								isTrue = 1;
+						}
+						else {
+							isTrue = 1;
+						}
+						if (seatleft[m] > 0 && isTrue == 1) {
 							printf("%-5d %-15.2f %-15.2f %-10s %-15s %-15s ", j, schedule[records[m][0][k]].deptArr.time.depart, schedule[records[m][0][k]].deptArr.time.arrive, schedule[records[m][0][k]].trainID, schedule[records[m][0][k]].departureFrom, schedule[records[m][0][k]].destination);
 							printf("%d\n", seatleft[m]);
 							records[m][3][j - 1] = records[m][0][k];
