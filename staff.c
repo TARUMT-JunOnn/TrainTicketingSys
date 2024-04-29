@@ -5,8 +5,7 @@
 #include<string.h>
 #include <ctype.h>
 #include <Windows.h>
-#include"common.h"
-#pragma once
+#include"common.c"
 #pragma warning (disable : 4996);
 
 #define MAX_STAFF 40
@@ -36,12 +35,12 @@ struct ScheduleStaff {
 };
 
 typedef struct {
-	char id[MAX_ID_LENGTH];
-	char password[MAX_PASS_LENGTH];
-	char name[MAX_NAME_LENGTH];
-	char phone[MAX_PHONE_LENGTH];
-	char email[MAX_EMAIL_LENGTH];
-	char position[MAX_POSITION_LENGTH];
+    char id[MAX_ID_LENGTH];
+    char password[MAX_PASS_LENGTH];
+    char name[MAX_NAME_LENGTH];
+    char phone[MAX_PHONE_LENGTH];
+    char email[MAX_EMAIL_LENGTH];
+    char position[MAX_POSITION_LENGTH];
 }Table;
 
 struct Staff {
@@ -74,38 +73,30 @@ int employeeNum[2];
 
 int readStaffFile(FILE** fstaff) {
     Table staff2;
-    *fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb");
-
-    if (*fstaff == NULL) {
-        return -1;
-    }
 
     fread(&staff2, sizeof(Table), 1, *fstaff);
-    
-        while (!feof(*fstaff))
+
+    while (!feof(*fstaff))
+    {
+        if (strcmp(staff2.position, "STAFF") == 0)
         {
-            if (strcmp(staff2.position, "STAFF") == 0)
-            {
-                fseek(*fstaff, sizeof(Table) * -1, SEEK_CUR);
-                fread(&staff[staff_count], sizeof(struct Staff), 1, *fstaff);
-                staff_count++;
-            }
-    
-            if (strcmp(staff2.position, "MANAGER") == 0)
-            {
-                fseek(*fstaff, sizeof(Table) * -1, SEEK_CUR);
-                fread(&manager[manager_count], sizeof(struct Manager), 1, *fstaff);
-                manager_count++;
-            }
-            fread(&staff2, sizeof(Table), 1, *fstaff);
+            fseek(*fstaff, sizeof(Table) * -1, SEEK_CUR);
+            fread(&staff[staff_count], sizeof(struct Staff), 1, *fstaff);
+            staff_count++;
         }
 
-    fclose(*fstaff);
+        if (strcmp(staff2.position, "MANAGER") == 0)
+        {
+            fseek(*fstaff, sizeof(Table) * -1, SEEK_CUR);
+            fread(&manager[manager_count], sizeof(struct Manager), 1, *fstaff);
+            manager_count++;
+        }
+        fread(&staff2, sizeof(Table), 1, *fstaff);
+    }
+
 }
 
 int writeStaffFile(FILE** fstaff) {
-    *fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
-
     for (int i = 0; i < manager_count; i++) {
         fwrite(&manager[i], sizeof(struct Manager), 1, *fstaff);
     }
@@ -113,8 +104,6 @@ int writeStaffFile(FILE** fstaff) {
     for (int i = 0; i < staff_count; i++) {
         fwrite(&staff[i], sizeof(struct Staff), 1, *fstaff);
     }
-
-    fclose(*fstaff);
 }
 
 //main() {
@@ -265,7 +254,7 @@ int employeeMenu()
 }
 
 // Staff menu
-int staffMenu( )
+int staffMenu()
 {
     int choice, status = 1;
     do {
@@ -315,7 +304,7 @@ int staff_login()
 
     do
     {
-        
+
         loginSuccess = 0;
         printf("\nEnter your staff ID: ");
         scanf(" %[^\n]", id);
@@ -327,7 +316,7 @@ int staff_login()
             {
                 printf("Login successful...\n");
                 Sleep(600);
-				employeeNum[0] = i;
+                employeeNum[0] = i;
                 return 1;
                 loginSuccess++;
             }
@@ -387,7 +376,7 @@ int staff_login()
                 } while (ans != 1 && ans != 2);
             }
         }
-    } while (again == 1 && loginSuccess ==0 );
+    } while (again == 1 && loginSuccess == 0);
     // system("cls");
 }
 
@@ -435,7 +424,7 @@ void staff_registration() {
 
     //write all equal to 0 or NULL;
 
-    staff[staff_count].schedule.total_working_hours = 0; 
+    staff[staff_count].schedule.total_working_hours = 0;
 
 
 
@@ -481,7 +470,7 @@ void staff_information() {
 
         title();
 
-                // Before edit --change the versio view
+        // Before edit --change the versio view
         printf("---------------------------\n");
         printf("------ Before Update ------\n");
         printf("---------------------------\n");
@@ -548,7 +537,7 @@ void staff_information() {
                     again++;
                 else if (choice == 2) {
                     return 0;
-                   
+
                 }
 
                 else
@@ -570,7 +559,7 @@ int staff_logout() {
     clock_t checkIn = 0, checkOut = 0;
     double elapsedTime;
 
-   
+
     do {
         title();
         printf("\n STAFF WORKING TIME RECORDED\n");
@@ -613,7 +602,7 @@ int staff_logout() {
             Sleep(600);
         }
         else {
-  
+
             printf("--------------------- Time Overall situation ----------------------\n");
             printf("-------------------------------------------------------------------\n");
             printf(" | CHECK IN TIME  | %s |\n", ctime(&staff[employeeNum[0]].check_in_time));
@@ -638,7 +627,7 @@ int staff_logout() {
                     // Return to staff menu
                     return 0;
                 }
-                else 
+                else
                 {
                     title();
                     printf("\nFailed to select...\n");
@@ -654,7 +643,7 @@ int staff_logout() {
 
 void sendValidationCode(char* email, char* code) {
     // Implement sending the validation code to the provided email
-   title();
+    title();
     printf("Validation code sent to %s is: %s\n", email, code);
 }
 
@@ -800,7 +789,7 @@ int manager_menu()
     time_t t;
     time(&t);
 
-    
+
     do {
         title();
 
@@ -905,7 +894,7 @@ void manager_registration()
     printf("Password: ");
     scanf(" %[^\n]", password);
 
-    for (int i = 0; i < manager_count; i++) 
+    for (int i = 0; i < manager_count; i++)
     {
         if (strcmp(manager[i].table.id, id) == 0)
         {
@@ -919,11 +908,11 @@ void manager_registration()
 
     again = 0;
     //  ---------------------------------------
-    do 
-    {     
-            
+    do
+    {
+
         do {
-            
+
             security_Ques();
 
             for (int i = 0; i < MAX_QUESTION_SELECTED; i++)
@@ -936,7 +925,7 @@ void manager_registration()
                     printf("%d. ", i + 1);
                     scanf("%d", &questionSelection[i]);
 
-               
+
                     if (questionSelection[i] > 5 || questionSelection[i] < 1)
                     {
                         printf("Invalid Choice!\n");
@@ -963,8 +952,8 @@ void manager_registration()
                         }
                     }
 
-            }
-           
+                }
+
             }
         } while (again == 1);
     } while (success != 1);
@@ -1002,14 +991,14 @@ void manager_registration()
 
     printf("\nRegistration successfully\n\n");
     system("pause");
-    
+
 
     manager_count++;
 }
 
 
 //Manager delete/remove staff acc 
-int delete_Acc( )
+int delete_Acc()
 {
     int confirm;
     char answers;
@@ -1057,7 +1046,7 @@ int delete_Acc( )
 
                     if (confirm == 1)
                     {
-                        
+
                         strcpy(staff[i].table.id, staff[i + 1].table.id);
                         strcpy(staff[i].table.name, staff[i + 1].table.name);
                         strcpy(staff[i].table.password, staff[i + 1].table.password);
@@ -1094,7 +1083,7 @@ int delete_Acc( )
             printf("\nINVALID - STAFF ID NOT FOUND\n");
             Sleep(600);
             return 0;
-            
+
         }
         if (deleted == 1) {
             title();
@@ -1125,7 +1114,7 @@ int delete_Acc( )
 
 
 //manager modify particular staff / entire staff rest schedule 
-void modifyEmpRestSchedule( )
+void modifyEmpRestSchedule()
 {
     char id[MAX_ID_LENGTH];
     int ans = 0;
@@ -1163,7 +1152,7 @@ void modifyEmpRestSchedule( )
                     printf("------------------------------------------------\n");
                     printf("\nSTAFF NAME : %s\n", staff[i].table.name);
                     printf("\nBEGIN (hh:mm - 24H format): ");
-                 
+
                     if (scanf("%d:%d", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute) != 2)
                     {
                         printf("Invalid input format. Please enter time in hh:mm - 24H format.\n");
@@ -1173,8 +1162,8 @@ void modifyEmpRestSchedule( )
                     if (reenter == 0) {
                         printf("\nREST (minutes): ");
                         scanf("%d", &staff[i].schedule.rest_time);
-                       
-                        
+
+
                         do {
                             printf("\nEND (hh:mm - 24H format): ");
 
@@ -1186,16 +1175,16 @@ void modifyEmpRestSchedule( )
 
                             total_begin_minutes = staff[i].schedule.begin_hour * 60 + staff[i].schedule.begin_minute;
                             total_end_minutes = staff[i].schedule.end_hour * 60 + staff[i].schedule.end_minute;
-                            
+
 
                             if (staff[i].schedule.begin_hour >= 16 && staff[i].schedule.end_hour < staff[i].schedule.begin_hour) {
                                 total_end_minutes = total_end_minutes + 1440;
                             }
                             total_working_minutes = total_end_minutes - total_begin_minutes - staff[i].schedule.rest_time;
-                            
-                        } while (total_working_minutes < 480 );
-                        
-                        
+
+                        } while (total_working_minutes < 480);
+
+
                     }
 
 
@@ -1239,7 +1228,7 @@ void modifyEmpRestSchedule( )
                     printf("---------------------------------------------\n");
                     printf("| STAFF END WORKING TIME MUST ENOUGH 8 HOUR |\n");
                     printf("---------------------------------------------\n");
-                    
+
                 }
 
 
@@ -1305,7 +1294,7 @@ void modifyEmpRestSchedule( )
 
 
 //Manager update information
-void updateManager_information( ) {
+void updateManager_information() {
     char name[MAX_NAME_LENGTH];
     char email[MAX_EMAIL_LENGTH];
     char phone[MAX_PHONE_LENGTH];
@@ -1373,7 +1362,7 @@ void updateManager_information( ) {
                 title();
                 again = 0;
                 printf("\n--------------------------\n");
-               // printf("Invalid | Wrong Manager ID |\n");
+                // printf("Invalid | Wrong Manager ID |\n");
                 printf("DO you want to enter again?");
                 printf("\n1. Yes\n");
                 printf("2. No\n");
@@ -1384,7 +1373,7 @@ void updateManager_information( ) {
                     again++;
                 else if (choice == 2) {
                     return 0;
-                   
+
                 }
 
                 else
@@ -1399,7 +1388,7 @@ void updateManager_information( ) {
 }
 
 // Manager reset password 
-void manager_reset_pass( )
+void manager_reset_pass()
 {
 
     char id[MAX_ID_LENGTH];
@@ -1415,7 +1404,7 @@ void manager_reset_pass( )
     char enterAgain;
 
     do {
-        
+
         again = 0;
         title();
         printf("\n--------------- RESET PASSWORD MANAGER---------------\n");
@@ -1494,7 +1483,7 @@ void manager_reset_pass( )
 
                     else if (ans == 2) {
                         do {
-                             title();
+                            title();
                             printf("Do you want to exit?\n");
                             printf("1. Yes\n");
                             printf("2. No\n");
@@ -1624,9 +1613,9 @@ int manager_login() {
 
 
 // Manager view staff schedule
-void manager_view_schedule( )
+void manager_view_schedule()
 {
-   
+
 
     char id[MAX_ID_LENGTH];
     int success = 0;
@@ -1665,11 +1654,11 @@ void manager_view_schedule( )
 
 
 //Display all staff record
-void dispalyAll( )
+void dispalyAll()
 {
     title();
     printf("\n----------- RECORD OF ALL STAFF ----------------------------------\n");
-    printf("\n%-20s%-20s%-20s\n","Staff Name", "Phone No", "Email");
+    printf("\n%-20s%-20s%-20s\n", "Staff Name", "Phone No", "Email");
 
     for (int i = 0; i < staff_count; i++)
     {
@@ -1677,6 +1666,7 @@ void dispalyAll( )
 
     }
     printf("\n------------------------------------------------------------------\n");
+    system("pause");
 }
 
 // Staff Choice menu 
@@ -1776,11 +1766,6 @@ int manager_main_page() {
             Sleep(600);
             break;
         }
-
-        if (status == 1)
-            return 0;
-
-
     } while (choice != 0);
 
 }

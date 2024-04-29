@@ -6,9 +6,8 @@
 #include<conio.h>
 #include<ctype.h>
 #include<time.h>
-#include"common.h"
+#include"common.c"
 #pragma warning(disable:4996)
-#pragma once
 #define MAX_PAX 10
 #define MAX_TRIP 2
 #define MAX_RECORDS 5000
@@ -103,7 +102,6 @@ int readBookingFile(FILE** fptr) {
 
 int writeBookingFile(FILE** fptr) {
 	int i = 0;
-	*fptr = fopen("../TrainTicketingSys/res/booking.txt", "w");
 	while (strcmp(records[i].date, "") != 0) {
 		fprintf(*fptr, "%s|%s|%s|%s|%d|%.02f|%.02f|%s|%s|%c\n", records[i].refNum, records[i].ID, records[i].date, records[i].trainInfo.trainId, records[i].amount, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].status);
 		++i;
@@ -1665,6 +1663,7 @@ int bookingHistory(char id[20]) {
 
 int addBooking(Info* userChoice, char memName[20], char memID[20],  int mem_point, int *seats) {
 	char dateAdd[MAX_TRIP][11] = {"NULL", "NULL"}, action = '2', paymentTime[9], input;
+	FILE* fptr;
 	int pax[2] = { 0, 0 }, status = 0, j;
 	float fare;
 	do {

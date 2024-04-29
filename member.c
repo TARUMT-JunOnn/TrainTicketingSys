@@ -5,9 +5,8 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <time.h>
-#include"common.h"
+#include"common.c"
 #pragma warning(disable:4996)
-#pragma once
 
 //ensure the strncat_s no warning even the size is larger
 #define _CRT_SECURE_NO_WARNINGS
@@ -104,12 +103,6 @@ int numMember = 0;
 
 int readMemberFile(FILE** memberFptr) {
 
-	*memberFptr = fopen("../TrainTicketingSys/res/member.bin", "rb");
-
-	if (*memberFptr == NULL) {
-		return -1;
-	}
-
 	fread(&member2, sizeof(member2), 1, *memberFptr);
 	while (!feof(*memberFptr))
 	{
@@ -120,17 +113,12 @@ int readMemberFile(FILE** memberFptr) {
 		fread(&member2, sizeof(member2), 1, *memberFptr);
 	}
 
-	fclose(*memberFptr);
 }
 
 int writeMemberFile(FILE** memberFptr) {
-	*memberFptr = fopen("../TrainTicketingSys/res/member.bin", "wb");
-
 	for (int i = 0; i < numMember; i++) {
 		fwrite(&member[i], sizeof(member[0]), 1, *memberFptr);
 	}
-
-	fclose(*memberFptr);
 }
 
 void memberMain(){
@@ -894,7 +882,7 @@ int memberMainPage(int memberNUM, int now) {
 			member[memberNUM].numLoginRecords++;
 
 			waitingScreen();
-			return -1;
+			return 0;
 		}
 		else {
 			printf("Invalid Choice!\n");

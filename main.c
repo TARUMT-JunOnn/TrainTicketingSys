@@ -7,20 +7,35 @@
 #include<conio.h>
 #include<ctype.h>
 
-#include"booking.h"
-#include"member.h"
-#include"schedules.h"
-#include"staff.h"
+#include"common.c"
+#include"booking.c"
+#include"member.c"
+#include"schedules.c"
+#include"staff.c"
 #pragma warning(disable:4996);
 
 SYSTEMTIME t;
 int mem_point;
 int menu(void);
 
+typedef struct {
+	char name[50];
+	char mode[4];
+}FileMode;
+
 int readFile() {
 	FILE* fptr[4];
+	FileMode read[4] = { 
+		{"../TrainTicketingSys/res/member.bin",  "rb"},
+		{"../TrainTicketingSys/res/staff.bin",  "rb"},
+		{"../TrainTicketingSys/res/schedule.txt",  "r"},
+		{ "../TrainTicketingSys/res/booking.txt",  "r" }
+};
 	int status;
 	for (int i = 0; i < 4; i++) {
+		fptr[i] = fopen(read[i].name, read[i].mode);
+		if (fptr[i] == NULL)
+			return -1;
 		switch (i) {
 		case 0:
 			status = readMemberFile(&fptr[i]);
@@ -35,15 +50,21 @@ int readFile() {
 			status = readBookingFile(&fptr[i]);
 			break;
 		}
-		if (status == -1)
-			return status;
+		fclose(fptr[i]);
 	}
 }
 
 int writeFile() {
 	FILE* fptr[4];
+	FileMode write[4] = {
+	{"../TrainTicketingSys/res/member.bin",  "wb"},
+	{"../TrainTicketingSys/res/staff.bin",  "wb"},
+	{"../TrainTicketingSys/res/schedule.txt",  "w"},
+	{ "../TrainTicketingSys/res/booking.txt",  "w" }
+	};
 	int status;
 	for (int i = 0; i < 4; i++) {
+		fptr[i] = fopen(write[i].name, write[i].mode);
 		switch (i) {
 		case 0:
 			status = writeMemberFile(&fptr[i]);
@@ -58,8 +79,7 @@ int writeFile() {
 			status = writeBookingFile(&fptr[i]);
 			break;
 		}
-		if (status == -1)
-			return status;
+		fclose(fptr[i]);
 	}
 }
 
@@ -184,7 +204,6 @@ int subMenu(int input) {
 			} while (status == -1);
 			break;
 		case 21:
-			do {
 				status = memberLogin(&member_num, &now);
 				switch (status) {
 				case 1:
@@ -200,19 +219,22 @@ int subMenu(int input) {
 							break;
 						case 4:
 							bookingHistory(member[member_num].id);
+							status = 4;
 							break;
 						case 5:
 							searchBooking(member[member_num].id);
 							status = 5;
 							break;
+						case 0:
+							return 2;
+							break;
 						}
-					} while (status != -1);
+					} while (status != 0);
 					break;
 				case 0:
 					return 2;
 					break;
 				}
-			} while (status == -1);
 		case 22:
 			memberRegister();
 			return 2;
@@ -255,6 +277,7 @@ int booking(int mem_num) {
 		case 1:
 		case 2:
 			status = addBooking(&userChoice, member[mem_num].name, member[mem_num].id, (int)member[mem_num].rewardPoints, seats);
+			writeFile();
 			break;
 		}
 	} while (status == -1);

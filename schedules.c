@@ -4,10 +4,9 @@
 #include <ctype.h>
 #include <time.h>
 #pragma warning(disable:4996)
-#pragma once
 #define STRUCTCOUNT 100
 #define MAX_DAY 14
-#include"common.h"
+#include"common.c"
 
 typedef struct
 {
@@ -553,12 +552,6 @@ int readScheduleFile(FILE** fp) {
 }
 
 int writeScheduleFile(FILE** fp2) {
-	*fp2 = fopen("../TrainTicketingSys/res/schedule.txt", "w");
-	while (*fp2 == NULL)
-	{
-		printf("Unable to open the file for writing.\n");
-		exit(-1);
-	}
 	for (int i = 0; i < STRUCTCOUNT; i++)
 	{
 		if (strcmp(schedule[i].day, "") != 0)
@@ -566,7 +559,6 @@ int writeScheduleFile(FILE** fp2) {
 			fprintf(*fp2, "%s %.2f %.2f %s|%s|%s|%d|%.02f\n", schedule[i].day, schedule[i].deptArr.time.depart, schedule[i].deptArr.time.arrive, schedule[i].trainID, schedule[i].departureFrom, schedule[i].destination, schedule[i].seats, schedule[i].price);
 		}
 	}
-	fclose(*fp2);
 }
 
 void alert() {
