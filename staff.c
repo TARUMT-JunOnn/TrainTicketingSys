@@ -222,8 +222,8 @@ int employeeMenu()
     //system("cls");
     do {
         title();
-        printf("------ EMPLOYEE MENU ------\n");
-        printf("-------------------------\n");
+        printf(" ------ EMPLOYEE MENU ------\n");
+        printf("------------------------------\n");
         printf("1. Staff\n");
         printf("2. Manager\n");
         printf("3. Exit\n");
@@ -442,10 +442,11 @@ void staff_schedule()
     title();
     if (staff[employeeNum[0]].schedule.total_working_hours != 0) { //
         printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[employeeNum[0]].table.name);
-        printf("BEGIN TIME\tREST TIME\tEND TIME\n");
-        printf("%02d:%02d\t%d\t%02d:%02d\t\n", staff[employeeNum[0]].schedule.begin_hour, staff[employeeNum[0]].schedule.begin_minute, staff[employeeNum[0]].schedule.rest_time, staff[employeeNum[0]].schedule.end_hour, staff[employeeNum[0]].schedule.end_minute);
+        printf("BEGIN TIME\t\tREST TIME\t\tEND TIME\n");
+        printf("%02d:%02d\t\t\t %d\t\t\t  %02d:%02d\t\n", staff[employeeNum[0]].schedule.begin_hour, staff[employeeNum[0]].schedule.begin_minute, staff[employeeNum[0]].schedule.rest_time, staff[employeeNum[0]].schedule.end_hour, staff[employeeNum[0]].schedule.end_minute);
         printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[employeeNum[0]].schedule.total_working_hours, staff[employeeNum[0]].schedule.remaining_minutes);
         printf("-------------------------------------------------------------------\n");
+        system("pause");
     }
     else
         printf("Sorry,Your schedule haven't done modified yet.\n");
@@ -484,15 +485,16 @@ void staff_information() {
 
         if (confirm == 'Y' || confirm == 'y') {
             title();
-            printf("\n--------------------------\n");
-            printf("---------- UPDATE ----------\n");
-            printf("----------------------------\n");
-            printf("\nName:");
+            printf("\n--------------------------------------\n");
+            printf("---------- UPDATE RIGHT NOW ---------\n");
+            printf("--------------------------------------\n");
+            printf("\nNew Name:");
             scanf(" %[^\n]", name);
-            printf("Phone No:");
+            printf("New Phone No:");
             scanf(" %[^\n]", phone);
-            printf("Email:");
+            printf("New Email:");
             scanf(" %[^\n]", email);
+            printf("----------------------------\n");
 
             strcpy(staff[employeeNum[0]].table.name, name);
             strcpy(staff[employeeNum[0]].table.phone, phone);
@@ -503,20 +505,21 @@ void staff_information() {
             printf("\nUpdate was done successfully!\n");
             Sleep(800);
 
-            printf("\n---------------------------\n");
+            title();
+            printf("\n-----------------------------\n");
             printf("------- After Updated -------\n");
             printf("-----------------------------\n");
             printf("Staff ID: %s\n", staff[employeeNum[0]].table.id);
             printf("\nName: %s\n", staff[employeeNum[0]].table.name);
             printf("Phone No: %s\n", staff[employeeNum[0]].table.phone);
             printf("Email:%s\n", staff[employeeNum[0]].table.email);
-            printf("\n---------------------------\n");
-            Sleep(1000);
+            printf("\n-----------------------------\n");
+            system("pause");
         }
         else
         {
             printf("Update unsuccessfull\n");
-            system("pause");
+            Sleep(500);
         }
 
 
@@ -562,7 +565,7 @@ int staff_logout() {
 
     do {
         title();
-        printf("\n STAFF WORKING TIME RECORDED\n");
+        printf("\nSTAFF WORKING TIME RECORDED\n");
         printf("=================================\n\n");
         printf("1. CHECK IN\n");
         printf("2. CHECK OUT\n");
@@ -580,7 +583,7 @@ int staff_logout() {
         printf("STAFF ID:%s\tCHECK IN TIME:%s", staff[employeeNum[0]].table.id, ctime(&staff[employeeNum[0]].check_in_time));
         printf("Check In succeed\n");
         printf("-------------------------------------------------------------------\n");
-        Sleep(600);
+        Sleep(1000);
 
 
     }
@@ -617,7 +620,7 @@ int staff_logout() {
                 scanf("%d", &choice);
                 if (choice == 1) {
                     // Exit and return to the menu
-                    printf("Exiting...\n");
+                    printf("\nExiting...\n");
                     Sleep(600);
                     return 1;
                     // You may want to return to the main menu or exit the program here
@@ -638,7 +641,7 @@ int staff_logout() {
             } while (choice != 1 && choice != 2);
         }
     }
-    return 2;
+    return 0;
 }
 
 void sendValidationCode(char* email, char* code) {
@@ -669,7 +672,7 @@ int resetPassword()
     title();
     printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
     printf("| You need to double check the data showe below |\n");
-    printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+    printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
     Sleep(600);
 
     printf("\nEnter ID:");
@@ -680,8 +683,8 @@ int resetPassword()
         if (strcmp(staff[i].table.id, id) == 0)
         {
 
-            printf("\nName: %s\n", staff[i].table.name);
-            printf("Email:%s\n", staff[i].table.email);
+            printf("%-20s%-20s\n", "STAFF NAME", "EMAIL");
+            printf("%-20s%-20s\n", staff[i].table.name, staff[i].table.email);
             do {
                 printf("\nIs you?\n");
                 printf("1. CORRECT, IS ME\n");
@@ -691,13 +694,14 @@ int resetPassword()
                 if (ans == 1)
                 {
                     do {
-                        printf("Please enter you phone number to validation\n");
+                        title();
+                        printf("\nPlease enter you phone number to validation\n");
                         scanf(" %[^\n]", phone);
                         if (strcmp(staff[i].table.phone, phone) == 0)
                         {
                             printf("Sending a validation code to your email\n");
-                            printf("Waiting time....\n");
-                            Sleep(600);
+                            printf("\nWaiting time....\n");
+                            Sleep(800);
                             //random()
                             //store(send) the code to email.Then compare the code staff keyin and the code in the email.
                             char* code = generateValidationCode();
@@ -708,11 +712,12 @@ int resetPassword()
 
                             if (atoi(code) == codeReceived)
                             {
-                                printf("Able to reset the password\n");
+                                printf("\nAble to reset the password\n");
                                 Sleep(600);
 
                                 successfuly = 0;
                                 do {
+                                    title();
                                     printf("Enter the new password:");
                                     scanf(" %[^\n]", newPassword);
                                     printf("\nEnter again the same password:");
@@ -727,8 +732,7 @@ int resetPassword()
                                         return 0;
                                     }
                                     else {
-                                        printf("Failed!\n");
-                                        Sleep(600);
+                                        printf("Failed, Password didn't same with the password you key in!\n\n");
                                         successfuly = 0;
                                     }
                                 } while (successfuly == 0);
@@ -743,7 +747,7 @@ int resetPassword()
 
                             printf("You phone number is incorrect!\n");
                         do {
-                            printf("Do u want to try again?(Y/N)");
+                            printf("\nDo you want to try again?(Y/N)");
                             Sleep(600);
                             scanf(" %c", &choice);
                             if (toupper(choice) == 'N') {
@@ -793,8 +797,8 @@ int manager_menu()
     do {
         title();
 
-        printf("\n------ MANAGER MENU ------\n");
-        printf("----------------------------\n");
+        printf("\n ------ MANAGER MENU ------\n");
+        printf("-------------------------------\n");
         printf("1. Login\n");
         printf("2. Registration\n");
         printf("3. Exit\n");
@@ -808,7 +812,7 @@ int manager_menu()
             break;
 
         case 3:
-            printf("Exiting....\n");
+            printf("\nYou are Exit Right Now!\n");
             Sleep(600);
             break;
         default:
@@ -819,8 +823,6 @@ int manager_menu()
             //if enter character or string, it will be error
         }
     } while (choice != 3);
-    printf("\nYou are Exit Right Now!\n");
-    Sleep(600);
     return 0;
 }
 
@@ -1018,6 +1020,7 @@ int delete_Acc()
         title();
         printf("you are able to delete the record\n");
         Sleep(600);
+        title();
 
         printf("\nEenter staff id to delete :");
         Sleep(600);
@@ -1149,7 +1152,7 @@ void modifyEmpRestSchedule()
                 do { ///
                     reenter = 0;
                     printf("\n----------- EDIT STAFF WORKING TIME ------------\n");
-                    printf("------------------------------------------------\n");
+                    printf("--------------------------------------------------\n");
                     printf("\nSTAFF NAME : %s\n", staff[i].table.name);
                     printf("\nBEGIN (hh:mm - 24H format): ");
 
@@ -1210,12 +1213,16 @@ void modifyEmpRestSchedule()
                     printf("\n---------------------------------------------\n");
                     printf("| WORKING TIME UPDATED SUCCESSFULLY |\n");
                     printf("---------------------------------------------\n");
+                    Sleep(1000);
+
+                    title();
 
                     printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].table.name);
                     printf("BEGIN TIME\t\tREST TIME\t\tEND TIME\n");
                     printf("%02d:%02d\t\t\t  %d\t\t\t  %02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
                     printf("TOTAL WORKING TIME : %d hours %d minutes (exclude rest time)\n", total_working_hours, remaining_minutes);
                     printf("-------------------------------------------------------------------\n");
+                    system("pause");
 
                     staff[i].schedule.total_working_hours = total_working_hours;
                     staff[i].schedule.remaining_minutes = remaining_minutes;
@@ -1228,7 +1235,7 @@ void modifyEmpRestSchedule()
                     printf("---------------------------------------------\n");
                     printf("| STAFF END WORKING TIME MUST ENOUGH 8 HOUR |\n");
                     printf("---------------------------------------------\n");
-
+                    Sleep(1000);
                 }
 
 
@@ -1242,22 +1249,25 @@ void modifyEmpRestSchedule()
         {
             do
             {
+                title();
                 ans = 0;
-                printf("| Invalid ---- Wrong ID  ---- |\n");
-                printf("------------------------------|\n");
-                printf("| Do you want to enter again? |");
-                printf("\n| 1. Yes                      |\n");
-                printf("| 2. No                       |\n");
-                printf("Enter you choice:             ");
+                printf("|------------------------------|\n");
+                printf("| Invalid ---- Wrong ID  ----  |\n");
+                printf("|------------------------------|\n");
+                printf("| Do you want to enter again?  |");
+                printf("\n| 1. Yes                       |\n");
+                printf("| 2. No                        |\n");
+                printf("|------------------------------|\n\n");
+                printf("Enter you choice:");
                 scanf("%d", &choice);
                 printf("|-----------------------------|\n");
-                Sleep(600);
+                Sleep(500);
                 if (choice == 1)
                     ans++;
                 else if (choice == 2)
                 {
                     printf("\nEXIT\n");
-                    Sleep(600);
+                    Sleep(300);
                     return 0;
                 }
 
@@ -1271,8 +1281,7 @@ void modifyEmpRestSchedule()
         {
             do {
                 title();
-                printf("\n1. CONTINUE\n");
-                printf("2. EXIT\n");
+                printf("Enter 1 to 'Countinue' modify staff schedules Or Enter 2 to 'Exit' the staff schedules\n");
                 printf("Enter you choice:");
                 scanf("%d", &choice);
 
@@ -1310,12 +1319,12 @@ void updateManager_information() {
         //no need enter manager ID alredy pass from parameter
 
         // Before edit
-        printf("---------------------------\n");
-        printf("------ Before Update ------\n");
-        printf("---------------------------\n");
-        printf("\nName: %s\n", manager[employeeNum[1]].table.name);
-        printf("Phone No: %s\n", manager[employeeNum[1]].table.phone);
-        printf("Email:%s\n", manager[employeeNum[1]].table.email);
+        printf("---------------------------------------------------\n");
+        printf("================== Before Update ==================\n");
+        printf("---------------------------------------------------\n");
+        printf("%-20s%-20s%-20s\n", "Name", "Phone No", "Email");
+        printf("%-20s%-20s%-20s\n", manager[employeeNum[1]].table.name, manager[employeeNum[1]].table.phone, manager[employeeNum[1]].table.email);
+        printf("---------------------------------------------------\n");
 
         printf("\nConfirm to update?(Y/N): ");
         scanf(" %c", &confirm);
@@ -1323,14 +1332,14 @@ void updateManager_information() {
         //ask manager to update
         if (confirm == 'Y' || confirm == 'y') {
             title();
-            printf("\n--------------------------\n");
-            printf("----- UPDATE RIGHT NOW -----\n");
-            printf("----------------------------\n");
-            printf("\nName:");
+            printf("--------------------------------------------------\n");
+            printf("================ UPDATE RIGHT NOW ================\n");
+            printf("--------------------------------------------------\n"); //don't know
+            printf("New Name:");
             scanf(" %[^\n]", name);
-            printf("Phone No:");
+            printf("New Phone Number:");
             scanf(" %[^\n]", phone);
-            printf("Email:");
+            printf("New Email:");
             scanf(" %[^\n]", email);
 
             strcpy(manager[employeeNum[1]].table.name, name);
@@ -1341,14 +1350,15 @@ void updateManager_information() {
 
             printf("\nYou are successful updated.\n");
 
-            printf("\n---------------------------\n");
-            printf("------- After Updated -------\n");
-            printf("-----------------------------\n");
-            printf("Manager ID: %s\n", manager[employeeNum[1]].table.id);
-            printf("\nName: %s\n", manager[employeeNum[1]].table.name);
-            printf("Phone No: %s\n", manager[employeeNum[1]].table.phone);
-            printf("Email:%s\n", manager[employeeNum[1]].table.email);
-            printf("\n---------------------------\n");
+            title();
+
+            printf("---------------------------------------------------\n");
+            printf("================== After Updated ==================\n");
+            printf("---------------------------------------------------\n");
+            printf("%-20s%-20s%-20s\n", "Manager ID", "Name", "Phone No", "Email");
+            printf("%-20s%-20s%-20s\n", manager[employeeNum[1]].table.id, manager[employeeNum[1]].table.name, manager[employeeNum[1]].table.phone, manager[employeeNum[1]].table.email);
+            printf("\n--------------------------------------------------\n");
+            system("pause");
         }
         else
         {
@@ -1361,9 +1371,7 @@ void updateManager_information() {
             do {
                 title();
                 again = 0;
-                printf("\n--------------------------\n");
-                // printf("Invalid | Wrong Manager ID |\n");
-                printf("DO you want to enter again?");
+                printf("Do you want to update again?");
                 printf("\n1. Yes\n");
                 printf("2. No\n");
                 printf("Enter you choice:");
@@ -1468,10 +1476,6 @@ void manager_reset_pass()
                                     if (toupper(enterAgain) != 'N' && toupper(enterAgain) != 'Y')
                                     {
                                         printf("\nInvalid selection - Answers in Y/N only\n\n");
-                                    }
-                                    else {
-                                        printf("------------------------------------------------------------\n");
-
                                     }
 
                                 } while (toupper(enterAgain) != 'N' && toupper(enterAgain) != 'Y');
@@ -1619,52 +1623,85 @@ void manager_view_schedule()
 
     char id[MAX_ID_LENGTH];
     int success = 0;
+    int choice;
     title();
-    printf("\nEnter staff ID to view the particular staff schedule:");
-    scanf(" %[^\n]", id);
+    do {
+        printf("\n\n1. View all staff working schedules\n");
+        printf("2. View particular staff working schedule\n");
+        printf("Enter you choice:");
+        scanf("%d", &choice);
 
-    for (int i = 0; i < staff_count; i++)
-    {
-        if (strcmp(staff[i].table.id, id) == 0)
+        if (choice == 1)
         {
-            if (staff[i].schedule.total_working_hours != 0) {
-                title();
-                printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].table.name);
-                printf("BEGIN TIME\tREST TIME\tEND TIME\n");
-                printf("%02d:%02d\t%d\t%02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
-                printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule.total_working_hours, staff[i].schedule.remaining_minutes);
-                printf("-------------------------------------------------------------------\n");
-            }
-            else
+            for (int i = 0; i < staff_count; i++)
             {
-                printf("Empty\n\n");
+                if (staff[i].schedule.total_working_hours != 0) {
+                    printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].table.name);
+                    printf("BEGIN TIME\t\tREST TIME\t\tEND TIME\n");
+                    printf("%02d:%02d\t\t\t %d\t\t\t  %02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
+                    printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule.total_working_hours, staff[i].schedule.remaining_minutes);
+                    printf("-------------------------------------------------------------------\n");
+                    system("pause");
+                }
+                else
+                {
+                    printf("\nSTAFF %s SCHEDULE IS Empty\n\n", staff[i].table.name);
+                    Sleep(600);
+                }
+            }
+        }
+        else if (choice == 2)
+        {
+            printf("\nEnter staff ID to view the particular staff schedule:");
+            scanf(" %[^\n]", id);
+
+            for (int i = 0; i < staff_count; i++)
+            {
+                if (strcmp(staff[i].table.id, id) == 0)
+                {
+                    if (staff[i].schedule.total_working_hours != 0) {
+                        title();
+                        printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].table.name);
+                        printf("BEGIN TIME\t\tREST TIME\t\tEND TIME\n");
+                        printf("%02d:%02d\t\t\t %d\t\t\t  %02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
+                        printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule.total_working_hours, staff[i].schedule.remaining_minutes);
+                        printf("-------------------------------------------------------------------\n");
+                    }
+                    else
+                    {
+                        printf("Empty\n\n");
+                        Sleep(600);
+                    }
+
+                    success++;
+                }
+
+            }
+
+            if (success == 0) {
+                printf("You haven't modify the staff working schedule\n");
                 Sleep(600);
             }
-
-            success++;
         }
-
-    }
-
-    if (success == 0) {
-        printf("You haven't modify the staff working schedule\n");
-        Sleep(600);
-    }
+    } while (choice != 1 && choice != 2);
 }
 
 
 //Display all staff record
 void dispalyAll()
 {
+    int counter = 0;
     title();
     printf("\n----------- RECORD OF ALL STAFF ----------------------------------\n");
-    printf("\n%-20s%-20s%-20s\n", "Staff Name", "Phone No", "Email");
+    printf("\n|  %-20s  |  %-20s  |  %-20s  |\n", "Staff Name", "Phone No", "Email");
 
     for (int i = 0; i < staff_count; i++)
     {
-        printf("%-20s%-20s%-20s\n", staff[i].table.name, staff[i].table.phone, staff[i].table.email);
+        printf("|  %-20s  |  %-20s  |  %-20s  |\n", staff[i].table.name, staff[i].table.phone, staff[i].table.email);
+        counter++;
 
     }
+    printf("\nTOTAL STAFF RECORD FOUNDED --- %d ", counter);
     printf("\n------------------------------------------------------------------\n");
     system("pause");
 }
@@ -1672,7 +1709,7 @@ void dispalyAll()
 // Staff Choice menu 
 int staff_main_page() {
     int choice;
-    int status = 1;
+    int status = 0;
 
     do {
         title();
