@@ -105,14 +105,23 @@ int booking(int mem_num) {
 			break;
 		case 1:
 		case 2:
-			mem_point = member[mem_num].rewardPoints;
-			status = addBooking(&userChoice, member[mem_num].name, member[mem_num].id, &member[mem_num].rewardPoints, &seats, &price);
-			if (status == 1) {
-				if (mem_point == member[mem_num].rewardPoints && price > 0) {
-					memPointCal(&mem_point, price);
-					addMemPoint(mem_num, mem_point);
+			switch (mem_num) {
+			case -1:
+				mem_point = 0;
+				status = addBooking(&userChoice, "Employee", "EMP", &mem_point, &seats, &price);
+				break;
+			default:
+				mem_point = member[mem_num].rewardPoints;
+				status = addBooking(&userChoice, member[mem_num].name, member[mem_num].id, &member[mem_num].rewardPoints, &seats, &price);
+				if (status == 1) {
+					if (mem_point == member[mem_num].rewardPoints && price > 0) {
+						memPointCal(&mem_point, price);
+						addMemPoint(mem_num, mem_point);
+					}
+					break;
 				}
-				writeFile();
+				if (status == 1)
+					writeFile();
 			}
 			break;
 		}

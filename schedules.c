@@ -1880,10 +1880,12 @@ int chooseTime(Info* results, int seatleft[2]) {
 							if ((int)temporary.time.depart > t.wHour) {
 								if ((int)(temporary.time.depart * 100) % 100 - 30 > 0)
 									isTrue = 1;
-								else {
+								else if ((int)temporary.time.depart == t.wHour + 1) {
 									if ((60 + (int)(temporary.time.depart * 100) % 100 - 30) > t.wMinute)
 										isTrue = 1;
 								}
+								else 
+									isTrue = 1;
 							}
 							else if ((int)temporary.time.depart == t.wHour) {
 								if ((int)(temporary.time.depart * 100) % 100 - 30 > t.wMinute)
@@ -1894,6 +1896,7 @@ int chooseTime(Info* results, int seatleft[2]) {
 							if ((int)(temporary.time.depart * 100) % 100 - 30 < 0 && t.wHour == 23 && 60 + (int)(temporary.time.depart * 100) % 100 - 30 > t.wMinute) {
 								isTrue = 1;
 							}
+							
 						}
 						else {
 							isTrue = 1;
