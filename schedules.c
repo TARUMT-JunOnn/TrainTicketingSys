@@ -596,7 +596,7 @@ void alert() {
 	{
 		printf("Alert ! The schedule has remaining customised schedule that haven't deleted ! \n");
 	}
-	for (int i = 48; i < STRUCTCOUNT; i++) {
+	for (int i = 48; strcmp(schedule[i].day, "") != 0; i++) {
 		printf("%-20s %s\n", schedule[i].day, schedule[i].destination);
 	}
 }
@@ -1431,7 +1431,7 @@ void DeleteSchedule(void)
 						checkValid = checkTrainIDValid(deleteTrainID);
 					}
 
-					for (i = 0; i < STRUCTCOUNT; i++)
+					for (i = 48; i < STRUCTCOUNT; i++)
 					{
 						if (strcmp(schedule[i].trainID, deleteTrainID) == 0)
 						{
