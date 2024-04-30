@@ -1080,7 +1080,6 @@ void viewProfile(int memberNUM) {
 	return 0;
 }
 
-
 void rewardPoint(int memberNUM) {
 	title();
 	printf("\t\t\t\t\t\t\t\t   Current Points \n\t\t\t\t\t\t\t\t\t  %d\n\n", member[memberNUM].rewardPoints);
@@ -1110,6 +1109,15 @@ void memPointCal(int *rewardPoint, float price) {
 
 void addMemPoint(int mem_num, int rewardPoint) {
 	member[mem_num].rewardPoints += rewardPoint;
+}
+
+void displayMember() {
+	title();
+	searchMemberTitle();
+	for (int j = 0; j < numMember; j++) {
+		printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[j].id, member[j].name, member[j].age, member[j].gender, member[j].phoneNo, member[j].email, member[j].rewardPoints);
+		printf("----------------------------------------------------------------------------------------------------------------------\n");
+	}
 }
 
 int searchMember() {
@@ -1177,7 +1185,7 @@ int searchMemberID() {
 						title();
 						printf("Enter Member's ID to search: %s\n\n", id);
 						searchMemberTitle();
-						printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+						printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 						printf("----------------------------------------------------------------------------------------------------------------------\n");
 						printf("\n\nClick 0 To Continue.....\n");
 						scanf(" %[^\n]", next);
@@ -1251,7 +1259,7 @@ int searchMemberGender() {
 						searchMemberTitle();
 						for (int i = 0; i < numMember; i++) {
 							if (strcmp(member[i].gender, "M") == 0) {
-								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 								printf("----------------------------------------------------------------------------------------------------------------------\n");
 							}
 						}
@@ -1281,7 +1289,7 @@ int searchMemberGender() {
 
 						for (int i = 0; i < numMember; i++) {
 							if (strcmp(member[i].gender, "F") == 0) {
-								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 								printf("----------------------------------------------------------------------------------------------------------------------\n");
 							}
 						}
@@ -1356,7 +1364,7 @@ int searchMemberAge() {
 						searchMemberTitle();
 						for (int i = 0; i < numMember; i++) {
 							if (member[i].age == age) {
-								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 								printf("----------------------------------------------------------------------------------------------------------------------\n");
 							}
 						}
@@ -1387,7 +1395,7 @@ int searchMemberAge() {
 						searchMemberTitle();
 						for (int i = 0; i < numMember; i++) {
 							if (member[i].age >= age) {
-								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 								printf("----------------------------------------------------------------------------------------------------------------------\n");
 							}
 						}
@@ -1418,7 +1426,7 @@ int searchMemberAge() {
 						searchMemberTitle();
 						for (int i = 0; i < numMember; i++) {
 							if (member[i].age <= age) {
-								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 								printf("----------------------------------------------------------------------------------------------------------------------\n");
 							}
 						}
@@ -1459,7 +1467,7 @@ int searchMemberAge() {
 int searchMemberRewardPoints() {
 	char* menu[] = { "Equal To ", "Greater Than or Equal To ", "Less Than or Equal To " };
 	char next[10];
-	float rewardPoints;
+	int rewardPoints;
 	int again = 0, choice, memberExist = 0;
 
 
@@ -1468,7 +1476,7 @@ int searchMemberRewardPoints() {
 			again = 0, memberExist = 0;
 			title();
 			printf("Enter Reward Points: ");
-			scanf("%f", &rewardPoints);
+			scanf("%d", &rewardPoints);
 			if (rewardPoints < 0) {
 				printf("INVALID INPUT\n");
 				return 0;
@@ -1476,7 +1484,7 @@ int searchMemberRewardPoints() {
 			printf("\n");
 			for (int i = 0; i < sizeof(menu) / sizeof(menu[0]); i++) {
 				printf("-----\n");
-				printf("| %d | %s%.2f\n", i + 1, menu[i], rewardPoints);
+				printf("| %d | %s%d\n", i + 1, menu[i], rewardPoints);
 				printf("-----\n");
 			}
 			printf("\nPlease Enter Your Choice: ");
@@ -1500,7 +1508,7 @@ int searchMemberRewardPoints() {
 					searchMemberTitle();
 					for (int i = 0; i < numMember; i++) {
 						if (member[i].rewardPoints == rewardPoints) {
-							printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+							printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 							printf("----------------------------------------------------------------------------------------------------------------------\n");
 						}
 					}
@@ -1531,7 +1539,7 @@ int searchMemberRewardPoints() {
 					searchMemberTitle();
 					for (int i = 0; i < numMember; i++) {
 						if (member[i].rewardPoints >= rewardPoints) {
-							printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+							printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 							printf("----------------------------------------------------------------------------------------------------------------------\n");
 						}
 					}
@@ -1562,7 +1570,7 @@ int searchMemberRewardPoints() {
 					searchMemberTitle();
 					for (int i = 0; i < numMember; i++) {
 						if (member[i].rewardPoints <= rewardPoints) {
-							printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+							printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 							printf("----------------------------------------------------------------------------------------------------------------------\n");
 						}
 					}
@@ -1602,6 +1610,7 @@ int deleteMember() {
 	if (numMember > 0) {
 		do {
 			title();
+			displayMember();
 			printf("Enter An ID to Delete: ");
 			scanf(" %[^\n]", id);
 
@@ -1791,6 +1800,7 @@ int sendFeedback(int* memberNUM) {
 void displayFeedback() {
 	char* menu[] = { "Customer Service Rating", "Cleanliness Rating", "Punctuality Rating", "Safety and Security Rating", "Return Back" };
 
+	title();
 	if (feedbackNum > 0) {
 		printf("----------------------------------------------------------------------------------------------------------------------\n");
 		printf("| MEMBER ID  | Type of Feedback               | Rating(0.0-5.0) | Comment                                            |\n");

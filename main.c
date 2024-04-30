@@ -220,12 +220,16 @@ int subMenu(int input) {
 									status = 6;
 									break;
 								case 7:
-									loginHistory();
+									deleteMember();
 									status = 7;
 									break;
 								case 8:
-									displayFeedback();
+									loginHistory();
 									status = 8;
+									break;
+								case 9:
+									displayFeedback();
+									status = 9;
 									break;
 								case 0:
 									status = -1;

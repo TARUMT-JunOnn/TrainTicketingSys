@@ -1773,8 +1773,9 @@ int manager_main_page() {
         printf("4. Display All staff record\n");
         printf("5. Update information\n");
         printf("6. Train Schedules\n");
-        printf("7. Member Login History\n");
-        printf("8. View Feedback\n");
+        printf("7. Delete Member Account\n");
+        printf("8. Member Login History\n");
+        printf("9. View Feedback\n");
         printf("0. Log Out\n"); //can't directly log out! 
         printf("Enter your Choice: ");
         scanf("%d", &choice);
@@ -1798,6 +1799,7 @@ int manager_main_page() {
         case 6:
         case 7:
         case 8:
+        case 9:
         case 0:
             return choice;
             break;
