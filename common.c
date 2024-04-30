@@ -4,6 +4,8 @@
 #include<string.h>
 #pragma warning(disable:4996)
 #pragma once
+#define MAX_PAX 10
+#define MAX_RECORDS 5000
 SYSTEMTIME t;
 
 void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
@@ -36,3 +38,20 @@ struct date {
 	char weekday[20];
 	struct train time;
 };
+
+typedef struct {
+	char trainId[6];
+	char departFrom[20];
+	char destination[20];
+	float price;
+	struct date prefer;
+}Info;
+
+struct {
+	char refNum[10];
+	char ID[20];
+	char date[11];
+	int amount;
+	char status;
+	Info trainInfo;
+}records[MAX_RECORDS];

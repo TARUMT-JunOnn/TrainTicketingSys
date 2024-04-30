@@ -9,27 +9,9 @@
 #pragma once
 #include "common.c"
 #pragma warning(disable:4996)
-#define MAX_PAX 10
 #define MAX_TRIP 2
-#define MAX_RECORDS 5000
 
 //Global Structure Declaration
-typedef struct {
-	char trainId[6];
-	char departFrom[20];
-	char destination[20];
-	float price;
-	struct date prefer;
-}Info;
-
-struct {
-	char refNum[10];
-	char ID[20];
-	char date[11];
-	int amount;
-	char status;
-	Info trainInfo;
-}records[MAX_RECORDS];
 
 //Global Variable
 SYSTEMTIME t;
@@ -1662,7 +1644,7 @@ int bookingHistory(char id[20]) {
 	return 1;
 }
 
-int addBooking(Info* userChoice, char memName[20], char memID[20],  int mem_point, int *seats) {
+int addBooking(Info* userChoice, char memName[20], char memID[20],  int mem_point, int *seats, float *price) {
 	char dateAdd[MAX_TRIP][11] = {"NULL", "NULL"}, action = '2', paymentTime[9], input;
 	FILE* fptr;
 	int pax[2] = { 0, 0 }, status = 0, j;
@@ -1710,6 +1692,7 @@ int addBooking(Info* userChoice, char memName[20], char memID[20],  int mem_poin
 			break;
 		case '3':
 			fare = calcFare(&(*userChoice), dateAdd, pax, status);
+			*price = fare;
 			status = payment(&fare, &(*userChoice), dateAdd, pax, &paymentTime, memName, memID, mem_point);
 			break;
 		case '0':

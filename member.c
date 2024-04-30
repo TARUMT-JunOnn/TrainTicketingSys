@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <time.h>
+#include <math.h>
 #include "common.c"
 #pragma warning(disable:4996)
 
@@ -90,10 +91,17 @@ struct Member {
 	char ic[MAX_LENGTH_IC];
 	char phoneNo[MAX_PHONE_NUM];
 	char email[MAX_LENGTH_EMAIL];
-	float rewardPoints;
+	int rewardPoints;
 	int numLoginRecords;
 	struct SecurityQuestion security[MAX_NUM_QUESTION];
 	LoginOutRecords logInOutTime[20];
+};
+
+struct feedback {
+	char memberID[MEMBER_ID];
+	int type;
+	float rating;
+	char comment;
 };
 
 struct Member member[MAX_NUMBER_MEMBER];
@@ -112,7 +120,6 @@ int readMemberFile(FILE** memberFptr) {
 		numMember++;
 		fread(&member2, sizeof(member2), 1, *memberFptr);
 	}
-
 }
 
 int writeMemberFile(FILE** memberFptr) {
@@ -280,6 +287,7 @@ int memberLogin(int *memberNUM, int *num) {
 	} while (again == 2);
 	return again;
 }
+
 
 void securityQuestion() {
 	title();
@@ -718,7 +726,7 @@ int memberRegister() {
 		strcpy(member[numMember].gender, gender);
 		strcpy(member[numMember].phoneNo, phone);
 		strcpy(member[numMember].email, email);
-		member[numMember].rewardPoints = 0.00;
+		member[numMember].rewardPoints = 0;
 		member[numMember].numLoginRecords = 0;
 
 		printf("\nzrmation Added. ");
@@ -897,6 +905,7 @@ int memberMainPage(int memberNUM, int now) {
 void viewProfile(int memberNUM) {
 	char choice[LENGTH_CHOICE], modify[LENGTH_CHOICE];
 	int again;
+	int age;
 	char oldPassword[MEMBER_PASS], newPassword[MEMBER_PASS], passConfirm[MEMBER_PASS], phone[MAX_PHONE_NUM], email[MAX_LENGTH_EMAIL];
 	bool resultPass = false, resultEmail = false, resultPhoneNo = false;
 
@@ -905,19 +914,20 @@ void viewProfile(int memberNUM) {
 		again = 0;
 		printf("Profile Information\n");
 		printf("--------------------\n");
-		printf("ID: %s\n", member[memberNUM].id);
-		printf("Name: %s\n", member[memberNUM].name);
+		printf("ID            : %s\n", member[memberNUM].id);
+		printf("Name          : %s\n", member[memberNUM].name);
+		printf("Age           : %d\n", member[memberNUM].age);
 		printf("Contact Number: %s\n", member[memberNUM].phoneNo);
-		printf("Email: %s\n", member[memberNUM].email);
+		printf("Email         : %s\n", member[memberNUM].email);
 		printf("\nEnter 1 to MODIFY PROFILE (0 EXIT)\n");
 		scanf(" %[^\n]", choice);
 
 
 		if (strcmp(choice, "1") == 0) {
 			printf("\n");
-			printf("----------------------\t ----------------------\t  ----------------------\n");
-			printf("| 1 | Password       |\t | 2 | Contact Number |\t  | 3 | Email          |\n");
-			printf("----------------------\t ----------------------\t  ----------------------\n");
+			printf("----------------------\t ----------------------\t ----------------------\t  ----------------------\n");
+			printf("| 1 | Password       |\t | 2 | Age            |\t | 3 | Contact Number |\t  | 4 | Email          |\n");
+			printf("----------------------\t ----------------------\t ----------------------\t  ----------------------\n");
 
 			printf("\nEnter your choice: ");
 			scanf(" %[^\n]", modify);
@@ -973,7 +983,23 @@ void viewProfile(int memberNUM) {
 
 			}
 
-			else if (strcmp(modify, "2") == 0){
+			else if (strcmp(modify, "2") == 0) {
+				do {
+					title();
+					printf("Current Age: %d\n\n", member[memberNUM].age);
+					printf("New Age: ");
+					scanf("%d", &age);
+
+				} while (age <= 0 || age > 100);
+
+				if (age > 0 && age < 100) {
+					member[memberNUM].age = age;
+					printf("\nAge is changing. ");
+					waitingScreen();
+				}
+			}
+
+			else if (strcmp(modify, "3") == 0){
 				do {
 					title();
 					printf("Current Contact Number: %s\n\n", member[memberNUM].phoneNo);
@@ -995,7 +1021,7 @@ void viewProfile(int memberNUM) {
 				}
 				
 			}
-			else if (strcmp(modify, "3") == 0) {
+			else if (strcmp(modify, "4") == 0) {
 				do {
 					title();
 					printf("Current Email: %s\n\n", member[memberNUM].email);
@@ -1034,14 +1060,10 @@ void viewProfile(int memberNUM) {
 	return 0;
 }
 
-void viewSchedule() {
-		
-}
 
-//havent done yet
 void rewardPoint(int memberNUM) {
 	title();
-	printf("\t\t\t\t\t\t\t\t   Current Points \n\t\t\t\t\t\t\t\t\t%.2f\n\n", member[memberNUM].rewardPoints);
+	printf("\t\t\t\t\t\t\t\t   Current Points \n\t\t\t\t\t\t\t\t\t  %d\n\n", member[memberNUM].rewardPoints);
 	for (int i = 0; i < 155; i++) {
 		printf("%s", "-");
 	}
@@ -1059,7 +1081,17 @@ void rewardPoint(int memberNUM) {
 
 }
 
-//havent done yet
+void memPointCal(int *rewardPoint, float price) {
+	*rewardPoint = (int)price;
+
+	if (price - (int)price > 0.49)
+		*rewardPoint++;
+}
+
+void addMemPoint(int mem_num, int rewardPoint) {
+	member[mem_num].rewardPoints += rewardPoint;
+}
+
 int searchMember() {
 	char* menu[] = { "ID", "Gender", "Age", "Reward Points", "Exit"};
 	char choice[LENGTH_CHOICE];
@@ -1676,3 +1708,43 @@ void loginHistory() {
 
 	}
 }
+
+//int feedback(int *memberNUM) {
+//	char* menu[] = { "Customer Service Rating", "Cleanliness Rating", "Punctuality Rating", "Safety and Security Rating"};
+//	char choice;
+//	float rating;
+//	char comment[200];
+//
+//	title();
+//	for(int j = 0; j < sizeof(menu) / sizeof(menu[0]); j++){
+//		printf("-----\n");
+//		printf("| %d | %s\n", j + 1, menu[j]);
+//		printf("-----\n");
+//	}
+//	printf("\nPlease Enter Your Choice: ");
+//	scanf(" %c", &choice);
+//
+//	if (choice == '1') {
+//		do {
+//			title();
+//			printf("---------------------------------------------------------------------------------------------\n");
+//			printf("| Type of Feedback          | Rating (0.0 - 5.0) | Comment (ENTER 0 IF NO COMMENT)          |\n");
+//			printf("---------------------------------------------------------------------------------------------\n");
+//			printf("| %-30s | ", menu[1]);
+//			scanf("%f", &rating);
+//
+//		} while (rating < 0.0 || rating > 5.0);
+//
+//		title();
+//		printf("---------------------------------------------------------------------------------------------\n");
+//		printf("| Type of Feedback          | Rating (0.0 - 5.0) | Comment (ENTER 0 IF NO COMMENT)          |\n");
+//		printf("---------------------------------------------------------------------------------------------\n");
+//		printf("| %-30s | %-15.1f | ", menu[1], rating);
+//		scanf(" %[^\n]", comment);
+//
+//		if(strcmp(comment, "0") != 0){
+//			comment
+//		}
+//
+//	}
+//}

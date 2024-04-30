@@ -257,6 +257,8 @@ int main(void) {
 int booking(int mem_num) {
 	int dateSeperate[3], status, seats[2];
 	char date[11], day[80];
+	int rewardPoint;
+	float price;
 	Info userChoice[MAX_TRIP][MAX_PAX];
 	for (int i = 0; i < MAX_TRIP; i++) {
 		for (int j = 0; j < MAX_PAX; j++)
@@ -271,7 +273,9 @@ int booking(int mem_num) {
 			break;
 		case 1:
 		case 2:
-			status = addBooking(&userChoice, member[mem_num].name, member[mem_num].id, (int)member[mem_num].rewardPoints, seats);
+			status = addBooking(&userChoice, member[mem_num].name, member[mem_num].id, (int)member[mem_num].rewardPoints, seats, &price);
+			memPointCal(&rewardPoint, price);
+			addMemPoint(mem_num, rewardPoint);
 			writeFile();
 			break;
 		}
