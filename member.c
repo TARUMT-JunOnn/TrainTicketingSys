@@ -5,7 +5,6 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <time.h>
-#include <math.h>
 #include "common.c"
 #pragma warning(disable:4996)
 
