@@ -6,7 +6,29 @@
 #pragma warning(disable:4996)
 #define STRUCTCOUNT 100
 #define MAX_DAY 14
-#include "common.c"
+#define USE_TITLE
+
+#ifndef USE_TITLE
+void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
+	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
+	strcpy((*dayReturn), day[numOfWeek]);
+}
+
+void title(void) {
+	char day[10];
+	system("cls");
+	printf("%10s %s %s", "Train", "Ticketing", "System");
+	GetLocalTime(&t);
+	dayOfWeek(t.wDayOfWeek, &day);
+	const char month[12][10] = { {"January"}, {"February"}, {"March"}, {"April"}, {"May"}, {"June"}, {"July"}, {"August"}, {"September"}, {"October"}, {"November"}, {"December"} };
+	printf("%104s %02d %s %d %02d:%02d:%02d", day, t.wDay, month[t.wMonth - 1], t.wYear, t.wHour, t.wMinute, t.wSecond);
+	printf("\n");
+	for (int i = 0; i < 155; i++) {
+		printf("%s", "-");
+	}
+	printf("\n\n");
+}
+#endif
 
 typedef struct
 {
@@ -1390,7 +1412,6 @@ void DeleteSchedule(void)
 				}
 			}
 			
-			
 				printf("Enter a train ID to delete that schedule(if there is no schedule to delete, XXX to exit): ");
 				rewind(stdin);
 				scanf("%s", deleteTrainID);
@@ -1851,8 +1872,23 @@ int chooseTime(Info* results,  int seatleft[2]) {
 						seatleft[m] = schedule[records[m][0][k]].seats - seatleft[m];
 						int isTrue = 0;
 						if (temporary.day == t.wDay && temporary.month == t.wMonth && temporary.year == t.wYear) {
-							if ((int)temporary.time.depart > t.wHour || ((int)(temporary.time.depart * 100) % 100 - 30 > t.wMinute && temporary.time.depart == t.wHour))
+							if ((int)temporary.time.depart > t.wHour) {
+								if ((int)(temporary.time.depart * 100) % 100 - 30 > 0)
+									isTrue = 1;
+								else {
+									if ((60 - (int)(temporary.time.depart * 100) % 100 - 30) > t.wMinute)
+										isTrue = 1;
+								}
+							}
+							else if ((int)temporary.time.depart == t.wHour) {
+								if((int)(temporary.time.depart * 100) % 100 - 30 > t.wMinute)
+									isTrue = 1;
+							}
+							else if ((int)temporary.time.depart == 0) {
+							}
+							if (((int)(temporary.time.depart * 100) % 100 - 30 > t.wMinute && temporary.time.depart == t.wHour) || ((int)temporary.time.depart == 0 && (int)(temporary.time.depart * 100) % 100 - 30 < 0 && t.wHour == 23 && 60 - (int)(temporary.time.depart * 100) % 100 - 30 > t.wMinute)) {
 								isTrue = 1;
+							}
 						}
 						else {
 							isTrue = 1;

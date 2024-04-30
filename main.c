@@ -255,7 +255,7 @@ int main(void) {
 }
 
 int booking(int mem_num) {
-	int dateSeperate[3], status, seats[2];
+	int dateSeperate[3], status, seats[2], mem_point;
 	char date[11], day[80];
 	int rewardPoint;
 	float price;
@@ -273,9 +273,15 @@ int booking(int mem_num) {
 			break;
 		case 1:
 		case 2:
+<<<<<<< Updated upstream
 			status = addBooking(&userChoice, member[mem_num].name, member[mem_num].id, (int)member[mem_num].rewardPoints, seats, &price);
 			memPointCal(&rewardPoint, price);
 			addMemPoint(mem_num, rewardPoint);
+=======
+			status = addBooking(&userChoice, member[mem_num].name, member[mem_num].id, (int)member[mem_num].rewardPoints, seats);
+			if (status == 1) {
+			}
+>>>>>>> Stashed changes
 			writeFile();
 			break;
 		}

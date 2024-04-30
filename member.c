@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <time.h>
+#define USE_TITLE
 #include "common.c"
 #pragma warning(disable:4996)
 

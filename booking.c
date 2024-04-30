@@ -6,7 +6,7 @@
 #include<conio.h>
 #include<ctype.h>
 #include<time.h>
-#pragma once
+#define USE_TITLE
 #include "common.c"
 #pragma warning(disable:4996)
 #define MAX_TRIP 2
