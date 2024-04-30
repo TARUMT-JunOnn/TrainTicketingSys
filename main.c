@@ -19,15 +19,16 @@ typedef struct {
 }FileMode;
 
 int readFile() {
-	FILE* fptr[4];
-	FileMode read[4] = { 
+	FILE* fptr[5];
+	FileMode read[5] = { 
 		{"../TrainTicketingSys/res/member.bin",  "rb"},
 		{"../TrainTicketingSys/res/staff.bin",  "rb"},
 		{"../TrainTicketingSys/res/schedule.txt",  "r"},
-		{ "../TrainTicketingSys/res/booking.txt",  "r" }
+		{"../TrainTicketingSys/res/booking.txt",  "r" },
+		{"../TrainTicketingSys/res/feedback.txt", "r"}
 };
 	int status;
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
 		fptr[i] = fopen(read[i].name, read[i].mode);
 		if (fptr[i] == NULL)
 			return -1;
@@ -44,21 +45,25 @@ int readFile() {
 		case 3:
 			status = readBookingFile(&fptr[i]);
 			break;
+		case 4:
+			status = readFeedbackFile(&fptr[i]);
+			break;
 		}
 		fclose(fptr[i]);
 	}
 }
 
 int writeFile() {
-	FILE* fptr[4];
-	FileMode write[4] = {
+	FILE* fptr[5];
+	FileMode write[5] = {
 	{"../TrainTicketingSys/res/member.bin",  "wb"},
 	{"../TrainTicketingSys/res/staff.bin",  "wb"},
 	{"../TrainTicketingSys/res/schedule.txt",  "w"},
-	{ "../TrainTicketingSys/res/booking.txt",  "w" }
+	{ "../TrainTicketingSys/res/booking.txt",  "w" },
+	{"../TrainTicketingSys/res/feedback.txt", "w"}
 	};
 	int status;
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
 		fptr[i] = fopen(write[i].name, write[i].mode);
 		switch (i) {
 		case 0:
@@ -72,6 +77,9 @@ int writeFile() {
 			break;
 		case 3:
 			status = writeBookingFile(&fptr[i]);
+			break;
+		case 4:
+			status = writeFeedbackFile(&fptr[i]);
 			break;
 		}
 		fclose(fptr[i]);
@@ -179,6 +187,10 @@ int subMenu(int input) {
 								case 7:
 									loginHistory();
 									status = 7;
+									break;
+								case 8:
+									displayFeedback();
+									status = 8;
 									break;
 								case 0:
 									status = -1;

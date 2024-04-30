@@ -21,6 +21,7 @@
 #define MAX_LENGTH_IC 15
 #define MAX_LENGTH_GENDER 2
 #define LENGTH_CHOICE 10
+#define MAX_NUM_FEEDBACK 100
 
 
 int tryAgain(int again);
@@ -96,16 +97,18 @@ struct Member {
 	LoginOutRecords logInOutTime[20];
 };
 
-struct feedback {
+struct Feedback {
 	char memberID[MEMBER_ID];
-	int type;
+	char type[30];
 	float rating;
-	char comment;
+	char comment[50];
 };
 
 struct Member member[MAX_NUMBER_MEMBER];
 struct Member member2;
+struct Feedback feedback[MAX_NUM_FEEDBACK];
 
+int feedbackNum = 0;
 int numMember = 0;
 
 int readMemberFile(FILE** memberFptr) {
@@ -113,7 +116,6 @@ int readMemberFile(FILE** memberFptr) {
 	fread(&member2, sizeof(member2), 1, *memberFptr);
 	while (!feof(*memberFptr))
 	{
-
 		member[numMember] = member2;
 
 		numMember++;
@@ -121,9 +123,22 @@ int readMemberFile(FILE** memberFptr) {
 	}
 }
 
+int readFeedbackFile(FILE** feedbackFptr) {
+
+	while (fscanf(*feedbackFptr, "%[^|]|%[^|]|%f|%[^\n]\n", feedback[feedbackNum].memberID, feedback[feedbackNum].type, &feedback[feedbackNum].rating, feedback[feedbackNum].comment) != EOF) {
+		feedbackNum++;
+	}
+}
+
 int writeMemberFile(FILE** memberFptr) {
 	for (int i = 0; i < numMember; i++) {
 		fwrite(&member[i], sizeof(member[0]), 1, *memberFptr);
+	}
+}
+
+int writeFeedbackFile(FILE** feedbackFptr) {
+	for (int i = 0; i < feedbackNum; i++) {
+		fprintf(*feedbackFptr, "%s|%s|%f|%s\n", feedback[i].memberID, feedback[i].type, feedback[i].rating, feedback[i].comment);
 	}
 }
 
@@ -548,6 +563,7 @@ int memberRegister() {
 		iDUnique = 1;
 		strcpy(memberID, "M");
 		sprintf(numID, "%03d", i+1);
+
 			
 		strncat_s(memberID, MEMBER_ID, numID, MEMBER_ID - strlen(memberID) - 1);
 
@@ -837,7 +853,7 @@ void forgotPass() {
 int memberMainPage(int memberNUM, int now) {
 	char choice[LENGTH_CHOICE];
 	char* menu[] = { "Display Profile", "View Schedule", "Add Booking",
-					"Display Booking History", "Cancel Booking", "Reward Points", "Exit" };
+					"Display Booking History", "Cancel Booking", "Reward Points", "Submit Feedback" ,"Exit"};
 
 	do
 	{
@@ -861,20 +877,23 @@ int memberMainPage(int memberNUM, int now) {
 
 		else if (strcmp(choice, "3") == 0)
 			return atoi(choice);
-		
-		else if (strcmp(choice, "4") == 0) 
+
+		else if (strcmp(choice, "4") == 0)
 			return atoi(choice);
-			/*bookingHistory();*/
-		
-		else if (strcmp(choice, "5") == 0) 
-				return atoi(choice);
+		/*bookingHistory();*/
+
+		else if (strcmp(choice, "5") == 0)
+			return atoi(choice);
 		//	cancelBooking();
-		
+
 
 		else if (strcmp(choice, "6") == 0)
 			rewardPoint(memberNUM);
 
-		else if (strcmp(choice, "7") == 0) {
+		else if (strcmp(choice, "7") == 0)
+			sendFeedback(&memberNUM);
+
+		else if (strcmp(choice, "8") == 0) {
 			title();
 			printf("Logging Out. ");
 
@@ -896,7 +915,7 @@ int memberMainPage(int memberNUM, int now) {
 			printf("Please Try Again. ");
 			waitingScreen();
 		}
-	} while (strcmp(choice, "7") != 0);
+	} while (strcmp(choice, "8") != 0);
 
 	return 1;
 }
@@ -1708,42 +1727,79 @@ void loginHistory() {
 	}
 }
 
-//int feedback(int *memberNUM) {
-//	char* menu[] = { "Customer Service Rating", "Cleanliness Rating", "Punctuality Rating", "Safety and Security Rating"};
-//	char choice;
-//	float rating;
-//	char comment[200];
-//
-//	title();
-//	for(int j = 0; j < sizeof(menu) / sizeof(menu[0]); j++){
-//		printf("-----\n");
-//		printf("| %d | %s\n", j + 1, menu[j]);
-//		printf("-----\n");
-//	}
-//	printf("\nPlease Enter Your Choice: ");
-//	scanf(" %c", &choice);
-//
-//	if (choice == '1') {
-//		do {
-//			title();
-//			printf("---------------------------------------------------------------------------------------------\n");
-//			printf("| Type of Feedback          | Rating (0.0 - 5.0) | Comment (ENTER 0 IF NO COMMENT)          |\n");
-//			printf("---------------------------------------------------------------------------------------------\n");
-//			printf("| %-30s | ", menu[1]);
-//			scanf("%f", &rating);
-//
-//		} while (rating < 0.0 || rating > 5.0);
-//
-//		title();
-//		printf("---------------------------------------------------------------------------------------------\n");
-//		printf("| Type of Feedback          | Rating (0.0 - 5.0) | Comment (ENTER 0 IF NO COMMENT)          |\n");
-//		printf("---------------------------------------------------------------------------------------------\n");
-//		printf("| %-30s | %-15.1f | ", menu[1], rating);
-//		scanf(" %[^\n]", comment);
-//
-//		if(strcmp(comment, "0") != 0){
-//			comment
-//		}
-//
-//	}
-//}
+int sendFeedback(int* memberNUM) {
+	char* menu[] = { "Customer Service Rating", "Cleanliness Rating", "Punctuality Rating", "Safety and Security Rating", "Return Back" };
+	char choice[30];
+	int choiceResult;
+	float rating;
+
+	char* comment = (char*)malloc(50 * sizeof(char));
+
+	do {
+		title();
+		for (int j = 0; j < sizeof(menu) / sizeof(menu[0]); j++) {
+			printf("-----\n");
+			printf("| %d | %s\n", j + 1, menu[j]);
+			printf("-----\n");
+		}
+		printf("\nPlease Enter Your Choice: ");
+		scanf(" %[^\n]", choice);
+
+		choiceResult = atoi(choice);
+
+		if (choiceResult >= 1 && choiceResult < 5) {
+			do {
+				title();
+				printf("-----------------------------------------------------------------------------------------------\n");
+				printf("| Type of Feedback               | Rating(0.0-5.0) | Comment(ENTER 0 IF NO COMMENT)(MAX 500C)  |\n");
+				printf("-----------------------------------------------------------------------------------------------\n");
+				printf("| %-30s | ", menu[choiceResult - 1]);
+				scanf("%f", &rating);
+
+			} while (rating < 0.0 || rating > 5.0);
+
+			title();
+			printf("-----------------------------------------------------------------------------------------------\n");
+			printf("| Type of Feedback               | Rating(0.0-5.0) | Comment(ENTER 0 IF NO COMMENT)(MAX 50C)  |\n");
+			printf("-----------------------------------------------------------------------------------------------\n");
+			printf("| %-30s | %-15.1f | ", menu[choiceResult - 1], rating);
+			rewind(stdin);
+			fgets(comment, 50, stdin);
+			printf("\nSending Feedback. ");
+
+			if (strcmp(comment, "0") != 0) {
+				strcpy(feedback[feedbackNum].comment, comment);
+			}
+			else
+				strcpy(feedback[feedbackNum].comment, "-");
+
+			strcpy(feedback[feedbackNum].memberID, member[*memberNUM].id);
+			strcpy(feedback[feedbackNum].type, menu[choiceResult - 1]);
+			feedback[feedbackNum].rating = rating;
+			feedbackNum++;
+			waitingScreen();
+			free(comment);
+		}
+		if (choiceResult == 5)
+			return 0;
+	} while (choiceResult < 0 || choiceResult > 5);
+}
+
+void displayFeedback() {
+	char* menu[] = { "Customer Service Rating", "Cleanliness Rating", "Punctuality Rating", "Safety and Security Rating", "Return Back" };
+
+	if (feedbackNum > 0) {
+		printf("----------------------------------------------------------------------------------------------------------------------\n");
+		printf("| MEMBER ID  | Type of Feedback               | Rating(0.0-5.0) | Comment                                            |\n");
+		printf("----------------------------------------------------------------------------------------------------------------------\n");
+		for (int j = 0; j < feedbackNum; j++) {
+			printf("| %-10s | %-30s | %-15.1f | %-50s |\n", feedback[j].memberID, feedback[j].type, feedback[j].rating, feedback[j].comment);
+			printf("----------------------------------------------------------------------------------------------------------------------\n");
+		}
+		system("pause");
+	}
+	else {
+		printf("No Feedback Record. ");
+		waitingScreen();
+	}
+}
