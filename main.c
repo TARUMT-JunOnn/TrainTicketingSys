@@ -203,7 +203,9 @@ int subMenu(int input) {
 					}
 					break;
 				case 2:
-					staff_registration();
+					status = staff_registration();
+					if (status == 1)
+						writeFile();
 					status = -1;
 					break;
 				case 0:
@@ -253,6 +255,8 @@ int subMenu(int input) {
 					break;
 				case 2:
 					manager_registration();
+					if (status == 1)
+						writeFile();
 					status = -1;
 					break;
 				}
@@ -301,6 +305,7 @@ int subMenu(int input) {
 				}
 		case 22:
 			memberRegister();
+			writeFile();
 			return 2;
 			break;
 		case 23:

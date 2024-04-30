@@ -382,7 +382,7 @@ int staff_login()
 }
 
 //staff registration menu 
-void staff_registration() {
+int staff_registration() {
     char id[MAX_ID_LENGTH];
     char name[MAX_NAME_LENGTH];
     char password[MAX_PASS_LENGTH];
@@ -433,7 +433,7 @@ void staff_registration() {
     Sleep(600);
 
     staff_count++;
-
+    return 1;
 }
 
 
@@ -997,6 +997,7 @@ void manager_registration()
 
 
     manager_count++;
+    return 1;
 }
 
 
