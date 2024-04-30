@@ -256,6 +256,11 @@ int memberMenu() {
 	} while (strcmp(choice, "4") !=0);
 }
 
+time_t getLoginOutTime() {
+	time_t currentTime = time(NULL);
+	return currentTime;
+}
+
 int memberLogin(int *memberNUM, int *num) {
 	char id[MEMBER_ID], password[MEMBER_PASS];
 	int loginSuccess = 0, again;
@@ -281,7 +286,7 @@ int memberLogin(int *memberNUM, int *num) {
 				
 				*memberNUM = i;
 
-				time_t now = time(NULL);
+				time_t now = getLoginOutTime();
 
 				struct tm* logInTime = localtime(&now);
 
@@ -303,7 +308,6 @@ int memberLogin(int *memberNUM, int *num) {
 	} while (again == 2);
 	return again;
 }
-
 
 void securityQuestion() {
 	title();
@@ -746,7 +750,7 @@ int memberRegister() {
 		member[numMember].rewardPoints = 0;
 		member[numMember].numLoginRecords = 0;
 
-		printf("\nzrmation Added. ");
+		printf("\nInformation Successfully Added. ");
 		waitingScreen();
 
 		numMember++;
@@ -888,7 +892,6 @@ int memberMainPage(int memberNUM, int now) {
 			return atoi(choice);
 		//	cancelBooking();
 
-
 		else if (strcmp(choice, "6") == 0)
 			rewardPoint(memberNUM);
 
@@ -897,9 +900,9 @@ int memberMainPage(int memberNUM, int now) {
 
 		else if (strcmp(choice, "8") == 0) {
 			title();
-			printf("Logging Out. ");
+			printf("Logging Out. ");		
 
-			time_t now2 = time(NULL);
+			time_t now2 = getLoginOutTime();
 
 			struct tm* logOutTime = localtime(&now2);
 
@@ -1611,6 +1614,7 @@ int deleteMember() {
 		do {
 			title();
 			displayMember();
+			printf("\n");
 			printf("Enter An ID to Delete: ");
 			scanf(" %[^\n]", id);
 
@@ -1716,7 +1720,7 @@ void loginHistory() {
 			for (int j = 0; j < member[i].numLoginRecords; j++) {
 
 
-
+				struct tm time;
 				int hours = member[i].logInOutTime[j].diff / 3600;
 
 				int remainingSecs = member[i].logInOutTime[j].diff % 3600;
