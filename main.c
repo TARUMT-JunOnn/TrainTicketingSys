@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<time.h>
 #include<string.h>
+#define USE_STRUCT
 
 #include "booking.c"
 #include "schedules.c"
@@ -78,6 +79,39 @@ int writeFile() {
 	}
 }
 
+int booking(int mem_num) {
+	int dateSeperate[3], status = 0, seats[2], mem_point = 0, trip;
+	char date[11], day[80];
+	float price = 0;
+	Info userChoice[MAX_TRIP][MAX_PAX];
+	for (int i = 0; i < MAX_TRIP; i++) {
+		for (int j = 0; j < MAX_PAX; j++)
+			reset(&userChoice[i][j]);
+	}
+	do {
+		title();
+		trip = chooseTime(&userChoice, &seats);
+		switch (trip) {
+		case 0:
+			return 0;
+			break;
+		case 1:
+		case 2:
+			mem_point = member[mem_num].rewardPoints;
+			status = addBooking(&userChoice, member[mem_num].name, member[mem_num].id, &member[mem_num].rewardPoints, &seats, &price);
+			if (status == 1) {
+				if (mem_point == member[mem_num].rewardPoints && price > 0) {
+					memPointCal(&mem_point, price);
+					addMemPoint(mem_num, mem_point);
+				}
+				writeFile();
+			}
+			break;
+		}
+	} while (status == -1);
+	return status;
+}
+
 int menu(int choice) {
 	int status, identifier;
 	int mem_num;
@@ -113,7 +147,8 @@ int menu(int choice) {
 }
 
 int subMenu(int input) {
-	int status, member_num, now;
+	int status, member_num, now, mem_point;
+	float price;
 	do {
 		switch (input) {
 		case 11:
@@ -213,11 +248,20 @@ int subMenu(int input) {
 							status = 3;
 							break;
 						case 4:
-							bookingHistory(member[member_num].id);
+							do{
+							price = 0;
+							status = bookingHistory(member[member_num].id, &price);
+							if (status == 1 && price > 0) {
+								price *= 100;
+								memPointCal(&mem_point, price);
+								addMemPoint(member_num, mem_point);
+								writeFile();
+							}
+							} while (status == 1);
 							status = 4;
 							break;
 						case 5:
-							searchBooking(member[member_num].id);
+					//		searchBooking(member[member_num].id);
 							status = 5;
 							break;
 						case 0:
@@ -252,39 +296,4 @@ int main(void) {
 		status = menu(status);
 		status = subMenu(status);
 	} while (status == 0 || status == 1 || status == 2);
-}
-
-int booking(int mem_num) {
-	int dateSeperate[3], status, seats[2], mem_point;
-	char date[11], day[80];
-	int rewardPoint;
-	float price;
-	Info userChoice[MAX_TRIP][MAX_PAX];
-	for (int i = 0; i < MAX_TRIP; i++) {
-		for (int j = 0; j < MAX_PAX; j++)
-			reset(&userChoice[i][j]);
-	}
-	do {
-		title();
-		status = chooseTime(&userChoice, seats);
-		switch (status) {
-		case 0:
-			return 0;
-			break;
-		case 1:
-		case 2:
-<<<<<<< Updated upstream
-			status = addBooking(&userChoice, member[mem_num].name, member[mem_num].id, (int)member[mem_num].rewardPoints, seats, &price);
-			memPointCal(&rewardPoint, price);
-			addMemPoint(mem_num, rewardPoint);
-=======
-			status = addBooking(&userChoice, member[mem_num].name, member[mem_num].id, (int)member[mem_num].rewardPoints, seats);
-			if (status == 1) {
-			}
->>>>>>> Stashed changes
-			writeFile();
-			break;
-		}
-	} while (status == -1);
-	return status;
 }

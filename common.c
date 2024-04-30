@@ -30,6 +30,7 @@ void title(void) {
 }
 #endif
 
+#ifdef USE_STRUCT
 struct train {
 	float depart;
 	float arrive;
@@ -57,3 +58,4 @@ struct {
 	char status;
 	Info trainInfo;
 }records[MAX_RECORDS];
+#endif

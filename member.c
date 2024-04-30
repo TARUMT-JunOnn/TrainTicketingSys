@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <time.h>
 #define USE_TITLE
+#define USE_STRUCT
 #include "common.c"
 #pragma warning(disable:4996)
 
@@ -1157,7 +1158,7 @@ int searchMemberID() {
 						title();
 						printf("Enter Member's ID to search: %s\n\n", id);
 						searchMemberTitle();
-						printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+						printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 						printf("----------------------------------------------------------------------------------------------------------------------\n");
 						printf("\n\nClick 0 To Continue.....\n");
 						scanf(" %[^\n]", next);
@@ -1231,7 +1232,7 @@ int searchMemberGender() {
 						searchMemberTitle();
 						for (int i = 0; i < numMember; i++) {
 							if (strcmp(member[i].gender, "M") == 0) {
-								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 								printf("----------------------------------------------------------------------------------------------------------------------\n");
 							}
 						}
@@ -1261,7 +1262,7 @@ int searchMemberGender() {
 
 						for (int i = 0; i < numMember; i++) {
 							if (strcmp(member[i].gender, "F") == 0) {
-								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 								printf("----------------------------------------------------------------------------------------------------------------------\n");
 							}
 						}
@@ -1336,7 +1337,7 @@ int searchMemberAge() {
 						searchMemberTitle();
 						for (int i = 0; i < numMember; i++) {
 							if (member[i].age == age) {
-								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 								printf("----------------------------------------------------------------------------------------------------------------------\n");
 							}
 						}
@@ -1367,7 +1368,7 @@ int searchMemberAge() {
 						searchMemberTitle();
 						for (int i = 0; i < numMember; i++) {
 							if (member[i].age >= age) {
-								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 								printf("----------------------------------------------------------------------------------------------------------------------\n");
 							}
 						}
@@ -1398,7 +1399,7 @@ int searchMemberAge() {
 						searchMemberTitle();
 						for (int i = 0; i < numMember; i++) {
 							if (member[i].age <= age) {
-								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 								printf("----------------------------------------------------------------------------------------------------------------------\n");
 							}
 						}
@@ -1480,7 +1481,7 @@ int searchMemberRewardPoints() {
 					searchMemberTitle();
 					for (int i = 0; i < numMember; i++) {
 						if (member[i].rewardPoints == rewardPoints) {
-							printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+							printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 							printf("----------------------------------------------------------------------------------------------------------------------\n");
 						}
 					}
@@ -1511,7 +1512,7 @@ int searchMemberRewardPoints() {
 					searchMemberTitle();
 					for (int i = 0; i < numMember; i++) {
 						if (member[i].rewardPoints >= rewardPoints) {
-							printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+							printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 							printf("----------------------------------------------------------------------------------------------------------------------\n");
 						}
 					}
@@ -1542,7 +1543,7 @@ int searchMemberRewardPoints() {
 					searchMemberTitle();
 					for (int i = 0; i < numMember; i++) {
 						if (member[i].rewardPoints <= rewardPoints) {
-							printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+							printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 							printf("----------------------------------------------------------------------------------------------------------------------\n");
 						}
 					}
@@ -1592,7 +1593,7 @@ int deleteMember() {
 						again = 0;
 						success = 0;
 						searchMemberTitle();
-						printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-.2f          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+						printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 						printf("----------------------------------------------------------------------------------------------------------------------\n");
 
 						printf("Are You Sure You Want To Delete This Member Account?\n\n");

@@ -7,6 +7,7 @@
 #include<ctype.h>
 #include<time.h>
 #define USE_TITLE
+#define USE_STRUCT
 #include "common.c"
 #pragma warning(disable:4996)
 #define MAX_TRIP 2
@@ -75,6 +76,7 @@ int readBookingFile(FILE** fptr) {
 		fscanf(*fptr, "%f|", &records[i].trainInfo.prefer.time.arrive);
 		fscanf(*fptr, "%[^|]|", records[i].trainInfo.departFrom);
 		fscanf(*fptr, "%[^|]|", records[i].trainInfo.destination);
+		fscanf(*fptr, "%f|", &records[i].trainInfo.price);
 		fscanf(*fptr, "%c\n", &records[i].status);
 		++i;
 	}
@@ -86,7 +88,7 @@ int readBookingFile(FILE** fptr) {
 int writeBookingFile(FILE** fptr) {
 	int i = 0;
 	while (strcmp(records[i].date, "") != 0) {
-		fprintf(*fptr, "%s|%s|%s|%s|%d|%.02f|%.02f|%s|%s|%c\n", records[i].refNum, records[i].ID, records[i].date, records[i].trainInfo.trainId, records[i].amount, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].status);
+		fprintf(*fptr, "%s|%s|%s|%s|%d|%.02f|%.02f|%s|%s|%.02f|%c\n", records[i].refNum, records[i].ID, records[i].date, records[i].trainInfo.trainId, records[i].amount, records[i].trainInfo.prefer.time.depart, records[i].trainInfo.prefer.time.arrive, records[i].trainInfo.departFrom, records[i].trainInfo.destination, records[i].trainInfo.price, records[i].status);
 		++i;
 	}
 }
@@ -689,16 +691,16 @@ int eWallet(float* price, char name[20]) {
 	} while (input != '1' && input != '0');
 }
 
-int payment(float* price, Info* userChoice, char(*date)[11], int *pax, char(*time)[9], char memName[20], char memID[20], int mem_point) {
+int payment(float* price, Info* userChoice, char(*date)[11], int *pax, char(*time)[9], char memName[20], char memID[20], int *mem_point) {
 	char input;
-	int status = 0;
+	int status = 0, needReduced = 0;
 	float redeem, temporary = *price;
-	printf("Member Name : %s\tRemaining Member Points : %d pts\n", memID, mem_point);
-	if (mem_point > 0) {
+	printf("Member Name : %s\tRemaining Member Points : %d pts\n", memID, *mem_point);
+	if (*mem_point > 0) {
 		do {
-			printf("You can redeem up to %d pts points as cashback !\n", mem_point);
-			if ((float)mem_point / 100 < *price)
-				redeem = (float)mem_point / 100;
+			printf("You can redeem up to %d pts points as cashback !\n", *mem_point);
+			if ((float)*mem_point / 100 < *price)
+				redeem = (float)*mem_point / 100;
 			else
 				redeem = *price;
 			printf("Would you like to redeem? \n\n\t1. Yes(-%d pts)\n\t2. No\n\t0. Return\n\n", (int)(redeem * 100));
@@ -707,8 +709,8 @@ int payment(float* price, Info* userChoice, char(*date)[11], int *pax, char(*tim
 			scanf("%c", &input);
 			switch (input) {
 			case '1':
-				mem_point -= (int)(redeem * 100);
 				temporary -= redeem;
+				needReduced = 1;
 				status = 1;
 				break;
 			case '2':
@@ -791,6 +793,8 @@ int payment(float* price, Info* userChoice, char(*date)[11], int *pax, char(*tim
 			strcat((*time), "0");
 		strcat((*time), day);
 		*price = temporary;
+		if(needReduced == 1)
+			*mem_point -= (int)(redeem * 100);
 		Sleep(2000);
 		return status;
 	case 0:
@@ -808,7 +812,7 @@ int payment(float* price, Info* userChoice, char(*date)[11], int *pax, char(*tim
 	}
 }
 
-void showBooking(Info* userChoice, char(*date)[11], int *pax, char name[20], char(*paymentTime)[9], char ID[20]) {
+void showBooking(Info* userChoice, char(*date)[11], int *pax, char name[20], char(*paymentTime)[9], char ID[20], float price) {
 	char random[20];
 	int i;
 	srand(time(NULL));
@@ -852,6 +856,7 @@ void showBooking(Info* userChoice, char(*date)[11], int *pax, char name[20], cha
 			records[recordQty + i + j].amount = (*(pax + i));
 			records[recordQty + i + j].trainInfo.prefer.time.depart = (*(userChoice + (i * MAX_PAX))).prefer.time.depart;
 			records[recordQty + i + j].trainInfo.prefer.time.arrive = (*(userChoice + (i * MAX_PAX))).prefer.time.arrive;
+			records[recordQty + i + j].trainInfo.price = price;
 			strcpy(records[recordQty + i + j].trainInfo.departFrom, (*(userChoice + (i * MAX_PAX))).departFrom);
 			strcpy(records[recordQty + i + j].trainInfo.destination, (*(userChoice + (i * MAX_PAX))).destination);
 			records[recordQty + i + j].status = 'A';
@@ -1429,7 +1434,7 @@ int bookingbyTime(char id[20], char prmt, int(*recordsFound)[MAX_RECORDS]) {
 	}
 }
 
-int cancelBooking(int found[MAX_RECORDS]) {
+int cancelBooking(int found[MAX_RECORDS], float *price) {
 	char input[2];
 	int inputInt;
 	int i, isTrue;
@@ -1442,7 +1447,7 @@ int cancelBooking(int found[MAX_RECORDS]) {
 			printf("-");
 		}
 		printf("\n");
-		printf("%-2s\t %-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\n", "No.", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax");
+		printf("%-2s\t %-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\t %s\n", "No.", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax", "Total Paid");
 		for (int i = 0; i < 115; i++) {
 			printf("-");
 		}
@@ -1465,7 +1470,7 @@ int cancelBooking(int found[MAX_RECORDS]) {
 				}
 			}
 			if (isTrue == 1 && records[found[i]].status != 'C') {
-				printf("%d.\t %-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\n", j, records[found[i]].refNum, records[found[i]].date, records[found[i]].trainInfo.prefer.time.depart, records[found[i]].trainInfo.prefer.time.arrive, records[found[i]].trainInfo.trainId, records[found[i]].trainInfo.departFrom, records[found[i]].trainInfo.destination, records[found[i]].amount);
+				printf("%d.\t %-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d %.02f\n", j, records[found[i]].refNum, records[found[i]].date, records[found[i]].trainInfo.prefer.time.depart, records[found[i]].trainInfo.prefer.time.arrive, records[found[i]].trainInfo.trainId, records[found[i]].trainInfo.departFrom, records[found[i]].trainInfo.destination, records[found[i]].amount, records[found[i]].trainInfo.price);
 				found[j - 1] = found[i];
 				++j;
 			}
@@ -1495,14 +1500,15 @@ int cancelBooking(int found[MAX_RECORDS]) {
 		}
 	} while (inputInt > i || inputInt == 0);
 	records[found[inputInt - 1]].status = 'C';
+	*price = records[found[inputInt - 1]].trainInfo.price;
 	printf("Sucessfully cancel. Amount paid would be return as point.\n");
 	printf("Press any key to return.\n");
 	rewind(stdin);
 	getch();
-	return 0;
+	return 1;
 }
 
-int searchBooking(char id[20]) {
+int searchBooking(char id[20], float *price) {
 	char input;
 	int check = 0;
 	int recordsFound[MAX_RECORDS];
@@ -1554,7 +1560,7 @@ int searchBooking(char id[20]) {
 				scanf("%c", &input);
 				switch (input) {
 				case '1':
-					check = cancelBooking(recordsFound);
+					check = cancelBooking(recordsFound, &(*price));
 					break;
 				case '0':
 					return 0;
@@ -1563,6 +1569,7 @@ int searchBooking(char id[20]) {
 			} while (input != '1' && input != '2' && input != '0');
 		}
 	} while (check == 0);
+	return 1;
 }
 
 void produceList(char id[6], struct date timePrint) {
@@ -1601,7 +1608,7 @@ void produceList(char id[6], struct date timePrint) {
 	fclose(produce);
 }
 
-int bookingHistory(char id[20]) {
+int bookingHistory(char id[20], float *price) {
 	char input;
 	int loop;
 	int recordFound[MAX_RECORDS];
@@ -1630,13 +1637,13 @@ int bookingHistory(char id[20]) {
 			} while (input != '1' && input != '2' && input != '0');
 			switch (input) {
 			case '1':
-				loop = searchBooking(id);
+				loop = searchBooking(id, &(*price));
 				break;
 			case '2':
-				loop = cancelBooking(recordFound);
+				loop = cancelBooking(recordFound, &(*price));
 				break;
 			case '0':
-				return 1;
+				return 0;
 				break;
 			}
 		}
@@ -1644,7 +1651,7 @@ int bookingHistory(char id[20]) {
 	return 1;
 }
 
-int addBooking(Info* userChoice, char memName[20], char memID[20],  int mem_point, int *seats, float *price) {
+int addBooking(Info* userChoice, char memName[20], char memID[20],  int *mem_point, int *seats, float* price) {
 	char dateAdd[MAX_TRIP][11] = {"NULL", "NULL"}, action = '2', paymentTime[9], input;
 	FILE* fptr;
 	int pax[2] = { 0, 0 }, status = 0, j;
@@ -1661,7 +1668,7 @@ int addBooking(Info* userChoice, char memName[20], char memID[20],  int mem_poin
 			if (action == '2') {
 				j = 0;
 				editPax(&(*userChoice), dateAdd, pax);
-				calcPax(&(*userChoice), pax, &(*(seats)));
+				calcPax(&(*userChoice), pax, &(*seats));
 				for (int i = 0; i < 2; ++i) {
 					if (pax[i] == 0) {
 						++j;
@@ -1669,7 +1676,7 @@ int addBooking(Info* userChoice, char memName[20], char memID[20],  int mem_poin
 					else if (pax[i] == -1) {
 						j == 3;
 						if (strcmp(dateAdd[i], "NULL") != 0) {
-							printf("Train towards %s are left %d seats only. Please edit the pax.\n", (*(userChoice + (i * MAX_PAX))).destination, (*(seats + i)), (*(userChoice + (i * MAX_PAX))).prefer.day, (*(userChoice + (i * MAX_PAX))).prefer.month, (*(userChoice + (i * MAX_PAX))).prefer.year);
+							printf("Train towards %s are left %d seats only. Please edit the pax.\n", (*(userChoice + (i * MAX_PAX))).destination, (*(seats + i)));
 							system("pause");
 						}
 					}
@@ -1693,13 +1700,13 @@ int addBooking(Info* userChoice, char memName[20], char memID[20],  int mem_poin
 		case '3':
 			fare = calcFare(&(*userChoice), dateAdd, pax, status);
 			*price = fare;
-			status = payment(&fare, &(*userChoice), dateAdd, pax, &paymentTime, memName, memID, mem_point);
+			status = payment(&(*price), &(*userChoice), dateAdd, pax, &paymentTime, memName, memID, &(*(mem_point)));
 			break;
 		case '0':
 			return 0 ;
 		}
 		if (status == 1) {
-			showBooking(&(*userChoice), dateAdd, pax, memName, &paymentTime, memID);
+			showBooking(&(*userChoice), dateAdd, pax, memName, &paymentTime, memID, *price);
 			system("pause");
 		}
 	} while (status != 1);
