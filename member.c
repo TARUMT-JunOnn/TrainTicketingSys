@@ -1784,7 +1784,8 @@ int sendFeedback(int* memberNUM) {
 		}
 		if (choiceResult == 5)
 			return 0;
-	} while (choiceResult < 0 || choiceResult > 5);
+
+	} while (choiceResult < 1 || choiceResult > 5);
 }
 
 void displayFeedback() {
