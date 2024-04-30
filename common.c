@@ -8,6 +8,7 @@
 #define MAX_RECORDS 5000
 SYSTEMTIME t;
 
+#ifdef USE_TITLE
 void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
 	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
 	strcpy((*dayReturn), day[numOfWeek]);
@@ -27,7 +28,9 @@ void title(void) {
 	}
 	printf("\n\n");
 }
+#endif
 
+#ifdef USE_STRUCT
 struct train {
 	float depart;
 	float arrive;
@@ -55,3 +58,4 @@ struct {
 	char status;
 	Info trainInfo;
 }records[MAX_RECORDS];
+#endif

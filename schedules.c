@@ -6,7 +6,31 @@
 #pragma warning(disable:4996)
 #define STRUCTCOUNT 100
 #define MAX_DAY 14
-#include "common.c"
+#define USE_TITLE
+#define USE_STRUCT
+#include"common.c"
+
+#ifndef USE_TITLE
+void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
+	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
+	strcpy((*dayReturn), day[numOfWeek]);
+}
+
+void title(void) {
+	char day[10];
+	system("cls");
+	printf("%10s %s %s", "Train", "Ticketing", "System");
+	GetLocalTime(&t);
+	dayOfWeek(t.wDayOfWeek, &day);
+	const char month[12][10] = { {"January"}, {"February"}, {"March"}, {"April"}, {"May"}, {"June"}, {"July"}, {"August"}, {"September"}, {"October"}, {"November"}, {"December"} };
+	printf("%104s %02d %s %d %02d:%02d:%02d", day, t.wDay, month[t.wMonth - 1], t.wYear, t.wHour, t.wMinute, t.wSecond);
+	printf("\n");
+	for (int i = 0; i < 155; i++) {
+		printf("%s", "-");
+	}
+	printf("\n\n");
+}
+#endif
 
 typedef struct
 {
@@ -572,7 +596,7 @@ void alert() {
 	{
 		printf("Alert ! The schedule has remaining customised schedule that haven't deleted ! \n");
 	}
-	for (int i = 48; i < STRUCTCOUNT; i++) {
+	for (int i = 48; strcmp(schedule[i].day, "") != 0; i++) {
 		printf("%-20s %s\n", schedule[i].day, schedule[i].destination);
 	}
 }
@@ -1390,7 +1414,6 @@ void DeleteSchedule(void)
 				}
 			}
 			
-			
 				printf("Enter a train ID to delete that schedule(if there is no schedule to delete, XXX to exit): ");
 				rewind(stdin);
 				scanf("%s", deleteTrainID);
@@ -1408,7 +1431,7 @@ void DeleteSchedule(void)
 						checkValid = checkTrainIDValid(deleteTrainID);
 					}
 
-					for (i = 0; i < STRUCTCOUNT; i++)
+					for (i = 48; i < STRUCTCOUNT; i++)
 					{
 						if (strcmp(schedule[i].trainID, deleteTrainID) == 0)
 						{
@@ -1735,11 +1758,11 @@ int typeDate(int* day, int* month, int* year) {
 
 }
 
-int chooseTime(Info* results,  int seatleft[2]) {
+int chooseTime(Info* results, int seatleft[2]) {
 	struct date temporary;
 	char fromto[100][2][20], choice[2], day[2][80];
 	char destination[2][20][20];
-	int userChoice[2], j, k[2] = { 0, 0 }, date[2][3], followingDate[3], records[2][4][STRUCTCOUNT], timeChoice[2], trip;
+	int userChoice[2], j, k[2] = { 0, 0 }, n[2] = {0 , 0}, date[2][3], followingDate[3], records[2][4][STRUCTCOUNT], timeChoice[2], trip;
 	for (int k = 0; k < 2; k++) {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < STRUCTCOUNT; j++) {
@@ -1834,9 +1857,12 @@ int chooseTime(Info* results,  int seatleft[2]) {
 			else
 				parSchedule(2, date[m][0], date[m][1], date[m][2], day[m], &records[m][0]);
 			SearchScheduleII(destination[m][userChoice[m]], &records[m][1]);
+			n[m] = 0;
 			for (int i = 0; i < 14; i++) {
-				if (toMaxWeek[i].day == date[m][0] && toMaxWeek[i].month == date[m][1] && toMaxWeek[i].year == date[m][2])
+				if (toMaxWeek[i].day == date[m][0] && toMaxWeek[i].month == date[m][1] && toMaxWeek[i].year == date[m][2]) {
 					temporary = toMaxWeek[i];
+					n[m] = i;
+				}
 			}
 			title();
 			printf("%-5s %-15s %-15s %-10s %-15s %-15s %s\n", "No.", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
@@ -1851,8 +1877,23 @@ int chooseTime(Info* results,  int seatleft[2]) {
 						seatleft[m] = schedule[records[m][0][k]].seats - seatleft[m];
 						int isTrue = 0;
 						if (temporary.day == t.wDay && temporary.month == t.wMonth && temporary.year == t.wYear) {
-							if ((int)temporary.time.depart > t.wHour || ((int)(temporary.time.depart * 100) % 100 - 30 > t.wMinute && temporary.time.depart == t.wHour))
+							if ((int)temporary.time.depart > t.wHour) {
+								if ((int)(temporary.time.depart * 100) % 100 - 30 > 0)
+									isTrue = 1;
+								else {
+									if ((60 + (int)(temporary.time.depart * 100) % 100 - 30) > t.wMinute)
+										isTrue = 1;
+								}
+							}
+							else if ((int)temporary.time.depart == t.wHour) {
+								if ((int)(temporary.time.depart * 100) % 100 - 30 > t.wMinute)
+									isTrue = 1;
+							}
+						}
+						else if (n[m] == 1 && (int)temporary.time.depart == 0) {
+							if ((int)(temporary.time.depart * 100) % 100 - 30 < 0 && t.wHour == 23 && 60 + (int)(temporary.time.depart * 100) % 100 - 30 > t.wMinute) {
 								isTrue = 1;
+							}
 						}
 						else {
 							isTrue = 1;
@@ -1871,6 +1912,7 @@ int chooseTime(Info* results,  int seatleft[2]) {
 					title();
 					printf("Train towards %s are not available in %0d/%02d/%d. Please choose again.\n", destination[m][userChoice[m]], date[m][0], date[m][1], date[m][2]);
 					system("pause");
+					break;
 			}
 			else {
 				do {
