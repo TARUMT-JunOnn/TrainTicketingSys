@@ -859,7 +859,7 @@ void forgotPass() {
 int memberMainPage(int memberNUM, int now) {
 	char choice[LENGTH_CHOICE];
 	char* menu[] = { "Display Profile", "View Schedule", "Add Booking",
-					"Display Booking History", "Cancel Booking", "Reward Points", "Submit Feedback" ,"Exit"};
+					"Display Booking History & Cancel Booking", "Reward Points", "Submit Feedback" ,"Exit"};
 
 	do
 	{
@@ -889,16 +889,12 @@ int memberMainPage(int memberNUM, int now) {
 		/*bookingHistory();*/
 
 		else if (strcmp(choice, "5") == 0)
-			return atoi(choice);
-		//	cancelBooking();
-
-		else if (strcmp(choice, "6") == 0)
 			rewardPoint(memberNUM);
 
-		else if (strcmp(choice, "7") == 0)
+		else if (strcmp(choice, "6") == 0)
 			sendFeedback(&memberNUM);
 
-		else if (strcmp(choice, "8") == 0) {
+		else if (strcmp(choice, "7") == 0) {
 			title();
 			printf("Logging Out. ");		
 
@@ -920,7 +916,7 @@ int memberMainPage(int memberNUM, int now) {
 			printf("Please Try Again. ");
 			waitingScreen();
 		}
-	} while (strcmp(choice, "8") != 0);
+	} while (strcmp(choice, "7") != 0);
 
 	return 1;
 }

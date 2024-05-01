@@ -289,10 +289,6 @@ int subMenu(int input) {
 							} while (status == 1);
 							status = 4;
 							break;
-						case 5:
-					//		searchBooking(member[member_num].id);
-							status = 5;
-							break;
 						case 0:
 							return 2;
 							break;
