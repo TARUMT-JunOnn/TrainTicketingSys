@@ -398,7 +398,7 @@ int staff_registration() {
     printf("Name: ");
     scanf(" %[^\n]", name);
     printf("Enter your Password: ");
-    scanf(" %[^\n]", password);
+    passwordStore(password);
     printf("Phone No: ");
     scanf(" %[^\n]", phoneNo);
     printf("Email:");

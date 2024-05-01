@@ -256,9 +256,25 @@ int memberMenu() {
 	} while (strcmp(choice, "4") !=0);
 }
 
-time_t getLoginOutTime() {
+void getLoginTime(int** memberNUM, int** now) {
 	time_t currentTime = time(NULL);
-	return currentTime;
+
+	struct tm* logInTime = localtime(&currentTime);
+
+	strftime(member[**memberNUM].logInOutTime[member[**memberNUM].numLoginRecords].loginTimeDate, 100, "%x - %I:%M%p", logInTime);
+
+	**now = currentTime;
+}
+
+void getLogoutTime(int* memberNUM, int* timeExit, int* timeIn) {
+	time_t currentTime = time(NULL);
+	struct tm* logOutTime = localtime(&currentTime);
+
+	strftime(member[*memberNUM].logInOutTime[member[*memberNUM].numLoginRecords].logoutTimeDate, 100, "%x - %I:%M%p", logOutTime);
+
+	*timeExit = currentTime;
+
+	member[*memberNUM].logInOutTime[member[*memberNUM].numLoginRecords].diff = *timeExit - *timeIn;
 }
 
 int memberLogin(int *memberNUM, int *num) {
@@ -286,13 +302,7 @@ int memberLogin(int *memberNUM, int *num) {
 				
 				*memberNUM = i;
 
-				time_t now = getLoginOutTime();
-
-				struct tm* logInTime = localtime(&now);
-
-				strftime(member[*memberNUM].logInOutTime[member[*memberNUM].numLoginRecords].loginTimeDate, 100, "%x - %I:%M%p", logInTime);
-
-				*num = now;
+				getLoginTime(&memberNUM, &num);
 
 				return 1;
 
@@ -856,9 +866,10 @@ void forgotPass() {
 
 }
 
-int memberMainPage(int memberNUM, int now) {
+int memberMainPage(int memberNUM, int timeIn) {
 	char choice[LENGTH_CHOICE];
-	char* menu[] = { "Display Profile", "View Schedule", "Add Booking",
+	int timeExit;
+	char* menu[] = {"Display Profile", "View Schedule", "Add Booking",
 					"Display Booking History & Cancel Booking", "Reward Points", "Submit Feedback" ,"Exit"};
 
 	do
@@ -886,7 +897,7 @@ int memberMainPage(int memberNUM, int now) {
 
 		else if (strcmp(choice, "4") == 0)
 			return atoi(choice);
-		/*bookingHistory();*/
+		
 
 		else if (strcmp(choice, "5") == 0)
 			rewardPoint(memberNUM);
@@ -898,13 +909,7 @@ int memberMainPage(int memberNUM, int now) {
 			title();
 			printf("Logging Out. ");		
 
-			time_t now2 = getLoginOutTime();
-
-			struct tm* logOutTime = localtime(&now2);
-
-			strftime(member[memberNUM].logInOutTime[member[memberNUM].numLoginRecords].logoutTimeDate, 100, "%x - %I:%M%p", logOutTime);
-
-			member[memberNUM].logInOutTime[member[memberNUM].numLoginRecords].diff = now2 - now;
+			getLogoutTime(&memberNUM, &timeExit, &timeIn);
 
 			member[memberNUM].numLoginRecords++;
 
@@ -1744,7 +1749,7 @@ int sendFeedback(int* memberNUM) {
 	int choiceResult;
 	float rating;
 
-	char* comment = (char*)malloc(50 * sizeof(char));
+	char comment[51];
 
 	do {
 		title();
@@ -1774,8 +1779,7 @@ int sendFeedback(int* memberNUM) {
 			printf("| Type of Feedback               | Rating(0.0-5.0) | Comment(ENTER 0 IF NO COMMENT)(MAX 50C)  |\n");
 			printf("-----------------------------------------------------------------------------------------------\n");
 			printf("| %-30s | %-15.1f | ", menu[choiceResult - 1], rating);
-			rewind(stdin);
-			fgets(comment, 50, stdin);
+			scanf(" %[^\n]", comment);
 			printf("\nSending Feedback. ");
 
 			if (strcmp(comment, "0") != 0) {
@@ -1789,7 +1793,6 @@ int sendFeedback(int* memberNUM) {
 			feedback[feedbackNum].rating = rating;
 			feedbackNum++;
 			waitingScreen();
-			free(comment);
 		}
 		if (choiceResult == 5)
 			return 0;
