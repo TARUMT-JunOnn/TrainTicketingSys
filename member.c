@@ -626,9 +626,8 @@ int memberRegister() {
 			if (!resultPass) {
 				printf("Error: Password Does Not Meet The Required Format!\n");
 				printf("Please Try Again. ");
-
 				waitingScreen();
-				again++;
+				again = 2;
 			}
 		}
 
@@ -839,7 +838,7 @@ void forgotPass() {
 							printf("Please Try Again. ");
 
 							waitingScreen();
-							again++;
+							again == 2;
 						}
 						else {
 							strcpy(member[num].pass, newPassword);
