@@ -616,7 +616,7 @@ int memberRegister() {
 		printf("\n\n");
 
 		if (strcmp(password, passConfirm) != 0) {
-			printf("\nNew Password and Confrim Password Are Not Same!\n");
+			printf("\nNew Password and Password Confirm Are Not Same!\n");
 			again = tryAgain(again);
 
 		}
@@ -979,7 +979,7 @@ void viewProfile(int memberNUM) {
 
 					if (again != 2 && again != 1) {
 						if (strcmp(newPassword, passConfirm) != 0) {
-							printf("New Password and Confrim Password Are Not Same\n");
+							printf("New Password and Password Confirm Are Not Same\n");
 							again = tryAgain(again);
 						}
 

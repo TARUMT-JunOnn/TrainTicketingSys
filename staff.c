@@ -310,7 +310,8 @@ int staff_login()
         printf("\nEnter your staff ID: ");
         scanf(" %[^\n]", id);
         printf("Enter your staff password: ");
-        scanf(" %[^\n]", password);
+        passwordStore(password);
+        printf("\n");
         for (int i = 0; i < MAX_STAFF; i++)
         {
             if (strcmp(staff[i].table.id, id) == 0 && strcmp(staff[i].table.password, password) == 0)
@@ -385,24 +386,41 @@ int staff_login()
 int staff_registration() {
     char id[MAX_ID_LENGTH];
     char name[MAX_NAME_LENGTH];
-    char password[MAX_PASS_LENGTH];
+    char password[MAX_PASS_LENGTH], passConfirm[MAX_PASS_LENGTH];
     char position[MAX_POSITION_LENGTH];
     char email[MAX_EMAIL_LENGTH];
     char phoneNo[MAX_PHONE_LENGTH];
 
     title();
-    printf("\nStaff Registration\n");
+    printf("Staff Registration\n");
     printf("--------------------\n");
     printf("Enter your ID: ");
     scanf(" %[^\n]", id);
-    printf("Name: ");
-    scanf(" %[^\n]", name);
-    printf("Enter your Password: ");
-    passwordStore(password);
-    printf("Phone No: ");
-    scanf(" %[^\n]", phoneNo);
-    printf("Email:");
-    scanf(" %[^\n]", email);
+
+    do {
+        title();
+        passwordFormat();
+
+        printf("Password: ");
+        passwordStore(password);
+        printf("\n");
+        printf("Password Confirm: ");
+        passwordStore(passConfirm);
+
+        if (strcmp(password, passConfirm) != 0) {
+            printf("\nPassword and Password Confirm Are Not Same. ");
+            waitingScreen();
+        }
+        else {
+            if (!verify_password(password)) {
+                printf("\nPassword Does Not Meet The Required Format!\n");
+                printf("Please Try Again. ");
+                waitingScreen();
+            }
+        }
+
+
+    } while (!verify_password(password) || strcmp(password, passConfirm) != 0);
 
 
     for (int i = 0; i < staff_count; i++) {
@@ -410,10 +428,43 @@ int staff_registration() {
             title();
             printf("The ID %s already exits.\n", id);
             printf("Please choose a different ID.\n");
-            Sleep(600);
+            Sleep(1000);
             return 0;
         }
     }
+
+    title();
+
+    printf("Name: ");
+    scanf(" %[^\n]", name);
+
+    do {
+        title();
+        printf("Name: %s\n", name);
+        printf("Phone No(011-XXXXXXX): ");
+        scanf(" %[^\n]", phoneNo);
+
+        if (!verify_phone_no(phoneNo)) {
+            printf("\nInvalid Phone Number!\n");
+            printf("PLease Try Again. ");
+            waitingScreen();
+        }
+
+    } while (!verify_phone_no(phoneNo));
+
+    do {
+        title();
+        printf("Name: %s\n", name);
+        printf("Phone No(011-XXXXXXX): %s\n", phoneNo);
+        printf("Email: ");
+        scanf(" %[^\n]", email);
+
+        if (!verify_email(email)) {
+            printf("\nInvalid Email!\n");
+            printf("Please Try Again. ");
+            waitingScreen();
+        }
+    } while (!verify_email(email));
 
     strcpy(staff[staff_count].table.id, id);
     strcpy(staff[staff_count].table.name, name);
@@ -669,6 +720,7 @@ int resetPassword()
     char newPassword[MAX_PASS_LENGTH];
     char comf_newPassword[MAX_PASS_LENGTH];
     char choice;
+    int idExist = 0;
 
     title();
     printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
@@ -683,7 +735,7 @@ int resetPassword()
     {
         if (strcmp(staff[i].table.id, id) == 0)
         {
-
+            
             printf("%-20s%-20s\n", "STAFF NAME", "EMAIL");
             printf("%-20s%-20s\n", staff[i].table.name, staff[i].table.email);
             do {
@@ -719,22 +771,32 @@ int resetPassword()
                                 successfuly = 0;
                                 do {
                                     title();
+                                    passwordFormat();
                                     printf("Enter the new password:");
-                                    scanf(" %[^\n]", newPassword);
+                                    passwordStore(newPassword);
                                     printf("\nEnter again the same password:");
-                                    scanf(" %[^\n]", comf_newPassword);
+                                    passwordStore(comf_newPassword);
 
-                                    if (strcmp(newPassword, comf_newPassword) == 0)
+                                    if (strcmp(newPassword, comf_newPassword) != 0) {
+                                        printf("Failed, Password didn't same with the password you key in!\n\n");
+                                        successfuly = 0;
+                                    }
+                                    else {
+                                        if (!verify_password(newPassword)) {
+                                            printf("\nPassword Does Not Meet The Required Format!\n");
+                                            printf("Please Try Again. ");
+                                            waitingScreen();
+                                            successfuly = 0;
+                                        }
+                                    }
+
+                                    if (strcmp(newPassword, comf_newPassword) == 0 && verify_password(newPassword))
                                     {
                                         printf("Success!\n");
                                         Sleep(600);
                                         strcpy(staff[i].table.password, comf_newPassword);
                                         successfuly++;
                                         return 0;
-                                    }
-                                    else {
-                                        printf("Failed, Password didn't same with the password you key in!\n\n");
-                                        successfuly = 0;
                                     }
                                 } while (successfuly == 0);
 
@@ -798,7 +860,7 @@ int manager_menu()
     do {
         title();
 
-        printf("\n ------ MANAGER MENU ------\n");
+        printf("  ------ MANAGER MENU ------\n");
         printf("-------------------------------\n");
         printf("1. Login\n");
         printf("2. Registration\n");
@@ -856,17 +918,14 @@ void securityQues_display(int questionSelection[MAX_QUESTION_SELECTED], char que
 void security_Ques()
 {
     title();
-    printf("\n------------- Security Question -------------\n");
+    printf("------------- Security Question -----------------\n");
     printf("|  Choose 2 question as your security question  |\n");
-
-    printf("1. What was the first name of your first pet?\n");
-    printf("2. What was your childhood nickname?\n");
-    printf("3. What are the favorite food as a child?\n");
-    printf("4. In what city were you born?\n");
-    printf("5. What is your mother's maiden name?\n");
-
-
-    printf("-----------------------------------------------\n");
+    printf("| 1. What was the first name of your first pet? |\n");
+    printf("| 2. What was your childhood nickname?          |\n");
+    printf("| 3. What are the favorite food as a child?     |\n");
+    printf("| 4. In what city were you born?                |\n");
+    printf("| 5. What is your mother's maiden name?         |\n");
+    printf("-------------------------------------------------\n");
 
 
 }
@@ -876,7 +935,7 @@ void manager_registration()
 {
     char id[MAX_ID_LENGTH];
     char name[MAX_NAME_LENGTH];
-    char password[MAX_PASS_LENGTH];
+    char password[MAX_PASS_LENGTH], passConfirm[MAX_PASS_LENGTH];
     char phone[MAX_PHONE_LENGTH];
     char email[MAX_EMAIL_LENGTH];
 
@@ -888,14 +947,33 @@ void manager_registration()
 
 
     title();
-    printf("\Manager Registration\n");
+    printf("Manager Registration\n");
     printf("--------------------\n");
     printf("Manager ID: ");
     scanf(" %[^\n]", id);
-    printf("Name: ");
-    scanf(" %[^\n]", name);
-    printf("Password: ");
-    scanf(" %[^\n]", password);
+
+    do {
+        title();
+        passwordFormat();
+        printf("Password: ");
+        passwordStore(password);
+        printf("\n");
+        printf("Password Confirm: ");
+        passwordStore(passConfirm);
+        printf("\n");
+
+        if (strcmp(password, passConfirm) != 0) {
+            printf("Password and Password Confrim Are Not Same. ");
+            waitingScreen();
+        }
+        else {
+            if (!verify_password(password)) {
+                printf("\nPassword Does Not Meet The Required Format!\n");
+                printf("Please Try Again. ");
+                waitingScreen();
+            }
+        }
+    } while (!verify_password(password) || strcmp(password, passConfirm) != 0);
 
     for (int i = 0; i < manager_count; i++)
     {
@@ -904,13 +982,12 @@ void manager_registration()
             title();
             printf("The ID %s already exits.\n", id);
             printf("Please choose a different ID.\n");
-            Sleep(600);
+            Sleep(1000);
             return 0;
         }
     }
 
     again = 0;
-    //  ---------------------------------------
     do
     {
 
@@ -977,12 +1054,37 @@ void manager_registration()
     }
     // ----------------------------------------------
 
-    printf("Phone No: ");
-    rewind(stdin);
-    scanf("%[^\n]", phone);
-    printf("Email: ");
-    rewind(stdin);
-    scanf("%[^\n]", email);
+    title();
+    printf("Name: ");
+    scanf(" %[^\n]", name);
+
+    do {
+        title();
+        printf("Name: %s\n", name);
+        printf("Phone No(011-XXXXXXX): ");
+        rewind(stdin);
+        scanf("%[^\n]", phone);
+
+        if (!verify_phone_no(phone)) {
+            printf("\nInvalid Phone Number. ");
+            waitingScreen();
+        }
+
+    } while (!verify_phone_no(phone));
+
+    do {
+        title();
+        printf("Name: %s\n", name);
+        printf("Phone No(011-XXXXXXX): %s\n", phone);
+        printf("Email: ");
+        rewind(stdin);
+        scanf("%[^\n]", email);
+
+        if (!verify_email(email)) {
+            printf("\nInvalid Email. ");
+            waitingScreen();
+        }
+    } while (!verify_email(email));
 
     strcpy(manager[manager_count].table.id, id);
     strcpy(manager[manager_count].table.name, name);
@@ -999,7 +1101,6 @@ void manager_registration()
     manager_count++;
     return 1;
 }
-
 
 //Manager delete/remove staff acc 
 int delete_Acc()
@@ -1303,7 +1404,6 @@ void modifyEmpRestSchedule()
     } while (ans == 1);
 }
 
-
 //Manager update information
 void updateManager_information() {
     char name[MAX_NAME_LENGTH];
@@ -1333,16 +1433,29 @@ void updateManager_information() {
 
         //ask manager to update
         if (confirm == 'Y' || confirm == 'y') {
-            title();
-            printf("--------------------------------------------------\n");
-            printf("================ UPDATE RIGHT NOW ================\n");
-            printf("--------------------------------------------------\n"); //don't know
-            printf("New Name:");
-            scanf(" %[^\n]", name);
-            printf("New Phone Number:");
-            scanf(" %[^\n]", phone);
-            printf("New Email:");
-            scanf(" %[^\n]", email);
+            do {
+                title();
+                printf("--------------------------------------------------\n");
+                printf("================ UPDATE RIGHT NOW ================\n");
+                printf("--------------------------------------------------\n"); //don't know
+                printf("New Name: ");
+                scanf(" %[^\n]", name);
+                printf("New Phone Number(011-XXXXXXX): ");
+                scanf(" %[^\n]", phone);
+                if (!verify_phone_no(phone)) {
+                    printf("\nInvalid Phone. ");
+                    waitingScreen();
+                }
+                else {
+                    printf("New Email: ");
+                    scanf(" %[^\n]", email);
+
+                    if (!verify_email(email)) {
+                        printf("\nInvalid Email. ");
+                        waitingScreen();
+                    }
+                }
+            } while (!verify_phone_no(phone) || !verify_email(email));
 
             strcpy(manager[employeeNum[1]].table.name, name);
             strcpy(manager[employeeNum[1]].table.phone, phone);
@@ -1357,8 +1470,8 @@ void updateManager_information() {
             printf("---------------------------------------------------\n");
             printf("================== After Updated ==================\n");
             printf("---------------------------------------------------\n");
-            printf("%-20s%-20s%-20s\n", "Manager ID", "Name", "Phone No", "Email");
-            printf("%-20s%-20s%-20s\n", manager[employeeNum[1]].table.id, manager[employeeNum[1]].table.name, manager[employeeNum[1]].table.phone, manager[employeeNum[1]].table.email);
+            printf("%-20s%-20s%-20s\n", "Name", "Phone No", "Email");
+            printf("%-20s%-20s%-20s\n", manager[employeeNum[1]].table.name, manager[employeeNum[1]].table.phone, manager[employeeNum[1]].table.email);
             printf("\n--------------------------------------------------\n");
             system("pause");
         }
@@ -1412,6 +1525,7 @@ void manager_reset_pass()
     int again = 0;
     int questionNum[MAX_QUESTION_SELECTED];
     char enterAgain;
+    char password[MAX_PASS_LENGTH];
 
     do {
 
@@ -1463,9 +1577,23 @@ void manager_reset_pass()
 
 
                             if (correctAns == MAX_QUESTION_SELECTED) {
-                                printf("Please enter your new password: ");
-                                scanf(" %[^\n]", manager[i].table.password);
+                                do {
+                                    title();
+                                    passwordFormat();
+                                    printf("Please enter your new password: ");
+                                    passwordStore(password);
+
+                                    if (!verify_password(password)) {
+                                        printf("\nPassword Does Not Meet The Required Format!\n");
+                                        printf("Please Try Again. ");
+                                        waitingScreen();
+                                    }
+
+                                } while (!verify_password(password));
+
+                                strcpy(manager[i].table.password, password);
                                 printf("Password reset successfully.\n");
+                                
                                 return;
                             }
                             else
@@ -1534,7 +1662,7 @@ int manager_login() {
     int count = 0;
 
     title();
-    printf("\n------ MANAGER LOGIN ------\n");
+    printf("------ MANAGER LOGIN ------\n");
 
     do
     {
@@ -1542,7 +1670,8 @@ int manager_login() {
         printf("\nEnter your manager ID: ");
         scanf(" %[^\n]", id);
         printf("Enter your manager password: ");
-        scanf(" %[^\n]", password);
+        passwordStore(password);
+        printf("\n");
         for (int i = 0; i < MAX_MANAGER; i++) {
             if (strcmp(manager[i].table.id, id) == 0 && strcmp(manager[i].table.password, password) == 0) {
                 printf("\nLogin successful...\n");
@@ -1556,9 +1685,6 @@ int manager_login() {
         if (loginSuccess == 0)
         {
             do
-
-
-
             {
                 again = 0;
                 title();
