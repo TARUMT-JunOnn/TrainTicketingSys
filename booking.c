@@ -51,13 +51,6 @@ void createDate(int day, int month, int year, char(*date)[11]) {
 	strcat((*date), takeYear);
 }
 
-void recordsManage() {
-	for (int i = 0; i < MAX_RECORDS; ++i) {
-		if (records[i].trainInfo.prefer.day > 0 && records[i].trainInfo.prefer.month > 0 && records[i].trainInfo.prefer.year > 0)
-			createDate(records[i].trainInfo.prefer.day, records[i].trainInfo.prefer.month, records[i].trainInfo.prefer.year, records[i].date);
-	}
-}
-
 //Same with all module
 int readBookingFile(FILE** fptr) {
 	int i = 0;
@@ -93,49 +86,6 @@ int writeBookingFile(FILE** fptr) {
 	}
 }
 
-//Main Function
-//int bookingMain(Info userChoice[MAX_TRIP][MAX_PAX], const int recordQty) {
-//	char input;
-//	int statAdd;
-//	for (int i = 0; records[i].trainInfo.prefer.day > 0 && records[i].trainInfo.prefer.month > 0 && records[i].trainInfo.prefer.year > 0; ++i)
-//		createDate(records[i].trainInfo.prefer.day, records[i].trainInfo.prefer.month, records[i].trainInfo.prefer.year, records[i].date, 0);
-//	for (int i = 0; i < MAX_TRIP; i++) {
-//		for(int j = 0;j<MAX_PAX;j++)
-//		reset(&userChoice[i][j]);
-//	}
-//	do {
-//		title();
-//		printf("What action you would like to perform ?\n");
-//		printf("\t1. Add booking\n\t2. Booking History\n\t3. Modify Booking\n\t4. Cancel booking\n\t5. Produce List\n\n");
-//		produceList("T1004", (struct date) { 6, 4, 2024, { 5, 8 } });
-//		printf("Enter the number : ");
-//		rewind(stdin);
-//		scanf("%c", &input);
-//		switch (input) {
-//		case '1':
-//			statAdd = addBooking(&userChoice, recordQty);
-//			break;
-//		case '2':
-//			input = bookingHistory("Wong");
-//			break;
-//		case '3':
-//			//modifyBooking();
-//			break;
-//		case '4':
-//			//allBooking();
-//			break;
-//		case '5':
-//			//cancelBooking();
-//			break;
-//		case '6':
-//			//produceList();
-//			break;
-//		case '0':
-//			return 0;
-//		}
-//	} while (!(input == '1' || input == '2' || input == '3' || input == '4' || input == '5' || input == '6'));
-//}
-
 int countVacancy(char id[6], struct date timeCheck, int(*recordsFound)[MAX_RECORDS]) {
 	int j = 0, k = 0;
 	for (int i = 0; i < MAX_RECORDS; ++i) {
@@ -155,8 +105,7 @@ int countVacancy(char id[6], struct date timeCheck, int(*recordsFound)[MAX_RECOR
 	return j;
 }
 
-void calcPax(Info* userChoice, int *pax, int *seats) {
-	int check;
+void calcPax(Info* userChoice, int *pax) {
 	int recordsFound[MAX_RECORDS];
 	for (int j = 0; j < MAX_TRIP; ++j) {
 		(*(pax + j)) = 0;
@@ -164,10 +113,11 @@ void calcPax(Info* userChoice, int *pax, int *seats) {
 			if (strcmp((*(userChoice + (j * MAX_PAX) + i)).destination, "NULL") != 0)
 				++(*(pax + j));
 		}
-		check = (*(seats +j)) - (*(pax + j));
-		if (check < 0)
-			(*(pax + j)) = -1;
 	}
+}
+
+int checkAvailability(int pax, int seats) {
+	return seats - pax;
 }
 
 float calcTax(int count, float sumPrice) {
@@ -240,7 +190,7 @@ float calcFare(Info* userChoice, char(*date)[11], int *pax, int status) {
 	}
 	if (adj < 0) {
 		negative = adj * -1;
-		printf("%102s : -RM%6.02f\n", "Rounding Adjustment", negative);
+		printf("%102s : -RM%5.02f\n", "Rounding Adjustment", negative);
 	}
 	else {
 		printf("%102s : RM%6.02f\n", "Rounding Adjustment", adj);
@@ -1666,24 +1616,28 @@ int addBooking(Info* userChoice, char memName[20], char memID[20],  int *mem_poi
 				}
 			}
 			if (action == '2') {
-				j = 0;
-				editPax(&(*userChoice), dateAdd, pax);
-				calcPax(&(*userChoice), pax, &(*seats));
-				for (int i = 0; i < 2; ++i) {
-					if (pax[i] == 0) {
-						++j;
-					}
-					else if (pax[i] == -1) {
-						j == 3;
-						if (strcmp(dateAdd[i], "NULL") != 0) {
-							printf("Train towards %s are left %d seats only. Please edit the pax.\n", (*(userChoice + (i * MAX_PAX))).destination, (*(seats + i)));
-							system("pause");
+				do {
+					j = 0;
+					editPax(&(*userChoice), dateAdd, pax);
+					calcPax(&(*userChoice), pax, &(*seats));
+					for (int i = 0; i < 2; ++i) {
+						int check;
+						check = checkAvailability(*(pax + i), *(seats + i));
+						if (pax[i] == 0) {
+							++j;
+						}
+						else if (check < 0) {
+							j = 3;
+							if (strcmp(dateAdd[i], "NULL") != 0) {
+								printf("Train towards %s are left %d seats only. Please edit the pax.\n", (*(userChoice + (i * MAX_PAX))).destination, (*(seats + i)));
+								system("pause");
+							}
 						}
 					}
-				}
-				if (j == 2) {
-					return 0;
-				}
+					if (j == 2) {
+						return 0;
+					}
+				} while (j == 3);
 			}
 			do {
 				fare = calcFare(&(*userChoice), dateAdd, pax, status);
