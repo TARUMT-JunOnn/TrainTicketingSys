@@ -1305,8 +1305,8 @@ void SearchSchedule(void)
 			do
 			{
 				printf("Select your route to begin searching.\n");
-				printf("1. | KL Sentral to Kampar\n");
-				printf("2. | Kampar to KL Sentral\n");
+				printf("1. | Kampar to KL Sentral\n");
+				printf("2. | KL Sentral to Kampar\n");
 				printf("3. | Return to last page.\n");
 				printf("Choice > ");
 				rewind(stdin);
@@ -1317,7 +1317,7 @@ void SearchSchedule(void)
 					printf("\n===========================================\n");
 					printf("Showing Schedule From Kampar to KL Sentral.\n");
 					printf("===========================================\n");
-					strcpy(searchDestination, "Kl Sentral");
+					strcpy(searchDestination, "KL Sentral");
 					SearchScheduleII(searchDestination, &records);
 					break;
 				case 2:
@@ -1957,6 +1957,7 @@ int scheduleMain(int identity) {
 			printf("3. | Add Schedule\n");
 			printf("4. | Modify Schedule\n");
 			printf("5. | Delete Schedule\n");
+			printf("6. | Reset Schedule\n");
 		}
 		printf("0. | Return to Main Menu\n");
 		printf("Choose One > ");
@@ -1983,6 +1984,7 @@ int scheduleMain(int identity) {
 				printf("Invalid value.\n");
 				printf("Enter Again.\n\n");
 				Sleep(1000);
+				break;
 			}
 		}
 		if (identity == 1) {
@@ -1997,11 +1999,15 @@ int scheduleMain(int identity) {
 			case '5':
 				DeleteSchedule();
 				break;
+			case '6':
+				ResetSchedule();
+				break;
 			default:
 				system("cls");
 				printf("Invalid value.\n");
 				printf("Enter Again.\n\n");
 				Sleep(1000);
+				break;
 			}
 		}
 

@@ -35,7 +35,7 @@ int memberLogin();
 
 //security question
 void securityQuestion();
-void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]);
+void getQuestionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]);
 
 //registration validation
 void passwordFormat(void);
@@ -47,7 +47,7 @@ int questionSelected(int questionSelection[3]);
 int memberRegister();
 
 //password recovery modules
-void forgotPass();
+void passRecovery();
 
 //memberMenu
 int memberMainPage(int memberNUM, int now);
@@ -142,40 +142,6 @@ int writeFeedbackFile(FILE** feedbackFptr) {
 	for (int i = 0; i < feedbackNum; i++) {
 		fprintf(*feedbackFptr, "%s|%s|%f|%s\n", feedback[i].memberID, feedback[i].type, feedback[i].rating, feedback[i].comment);
 	}
-}
-
-void memberMain(){
-	int choice;
-	//test to display all data
-	for (int i = 0; i < numMember; i++) {
-		printf("%d. %s\n", i + 1, member[i].id);
-	}
-
-	do {
-		printf("test\n");
-		printf("1.member menu\n");
-		printf("2. delete member\n");
-		printf("3. search member\n");
-		printf("Please Enter Your Choice: ");
-		scanf("%d", &choice);
-		switch (choice) {
-		case 1:
-			memberMenu();
-			break;
-		case 2:
-			deleteMember();
-			break;
-		case 3:
-			searchMember();
-			break;
-		case 4:
-			printf("EXITING PROGRAM.....\n");
-			break;
-		default:
-			printf("Invalid Choice!\n");
-			printf("Please Try Again\n");
-		}
-	} while (choice != 4);
 }
 
 int tryAgain(int again) {
@@ -343,7 +309,7 @@ void securityQuestion() {
 		printf("\nPlease Choose 3 Security Questions\n");
 }
 
-void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]) {
+void getQuestionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]) {
 	for (int i = 0; i < 3; i++) {
 
 		if (questionSelection[i] == 1) {
@@ -525,6 +491,7 @@ char passwordStore(char password[]) {
 }
 
 int questionSelected(int questionSelection[3]) {
+	char questionNum[MAX_NUM_QUESTION];
 	int i = 0, success = 0;
 
 	do {
@@ -533,9 +500,9 @@ int questionSelected(int questionSelection[3]) {
 
 		do {
 			printf("%d. ", i + 1);
-			scanf("%d", &questionSelection[i]);
+			scanf(" %c", &questionNum[i]);
 
-			if (questionSelection[i] > 6 || questionSelection[i] < 1) {
+			if ((int)questionNum[i] - 48 > 6 || (int)questionNum[i] - 48 < 1) {
 				printf("\nInvalid Choice!\n");
 				printf("Please Enter Number 1 - 6. ");
 
@@ -551,7 +518,7 @@ int questionSelected(int questionSelection[3]) {
 			if (i > 1 && success == 1) {
 				for (int y = 0; y < i - 1; y++) {
 
-					if (questionSelection[y] == questionSelection[i - 1]) {
+					if ((int)questionNum[y] - 48 == (int)questionNum[i - 1] - 48) {
 						printf("\nThe Selected Security Question Must Be Different From The Previous One.\n");
 						printf("Please Try Again. ");
 
@@ -567,6 +534,11 @@ int questionSelected(int questionSelection[3]) {
 		} while (i < 3 && success == 1);
 
 	} while (i < 3 && success == 0);
+
+	for (int j = 0; j < MAX_NUM_QUESTION; j++) {
+		questionSelection[j] = (int)questionNum[j] - 48;
+	}
+
 
 	return questionSelection;
 }
@@ -652,7 +624,7 @@ int memberRegister() {
 			member[numMember].security[i].questionNum = questionSelection[i];
 		}
 
-		questionTitle(questionSelection, question);
+		getQuestionTitle(questionSelection, question);
 
 		for (int i = 0; i < MAX_NUM_QUESTION; i++) {
 			printf("%s ?\n", question[i]);
@@ -777,7 +749,7 @@ int memberRegister() {
 	return again;
 }
 
-void forgotPass() {
+void passRecovery() {
 	bool resultPass;
 	char id[MEMBER_ID], question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
 	int num, questionSelection[MAX_NUMBER_MEMBER], newPassword[MEMBER_PASS], newPassConfirm[MEMBER_PASS];
@@ -802,7 +774,7 @@ void forgotPass() {
 
 			questionSelected(questionSelection);
 
-			questionTitle(questionSelection, question);
+			getQuestionTitle(questionSelection, question);
 
 			for (int i = 0; i < MAX_NUM_QUESTION; i++) {
 				printf("%s ?\n", question[i]);
