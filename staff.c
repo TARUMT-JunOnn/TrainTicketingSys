@@ -107,105 +107,7 @@ int writeStaffFile(FILE** fstaff) {
     }
 }
 
-//main() {
-//    struct Staff staff[MAX_STAFF];
-//    Table staff2;
-//    struct Manager manager[MAX_MANAGER];
-//
-//
-//
-//    FILE* fstaff;
-//    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "rb");
-//
-//    if (fstaff == NULL) {
-//        printf("Error Opening File\n");
-//        exit(-1);
-//    }
-//
-//    //strcpy(staff[0].table.id, "lgw123");
-//    //strcpy(staff[0].table.password, "321");
-//    //strcpy(staff[0].table.phone, "01231323");
-//    //strcpy(staff[0].table.email, "lee@gmail.com");
-//    //strcpy(staff[0].table.position, "STAFF");
-//
-//    //strcpy(manager[0].table.id, "ALi");
-//    //strcpy(manager[0].table.password, "773");
-//    //strcpy(manager[0].table.phone, "12312");
-//    //strcpy(manager[0].table.email, "ali@ail.com");
-//    //strcpy(manager[0].table.position, "MANAGER");
-//
-//    //fwrite(&staff[0], sizeof(staff), 1, fstaff);
-//    //fwrite(&manager[0], sizeof(manager), 1, fstaff);
-//    fread(&staff2, sizeof(Table), 1, fstaff);
-//
-//    while (!feof(fstaff))
-//    {
-//        if (strcmp(staff2.position, "STAFF") == 0)
-//        {
-//            fseek(fstaff, sizeof(Table) * -1, SEEK_CUR);
-//            fread(&staff[staff_count], sizeof(struct Staff), 1, fstaff);
-//            staff_count++;
-//        }
-//
-//        if (strcmp(staff2.position, "MANAGER") == 0)
-//        {
-//            fseek(fstaff, sizeof(Table) * -1, SEEK_CUR);
-//            fread(&manager[manager_count], sizeof(struct Manager), 1, fstaff);
-//            manager_count++;
-//        }
-//        fread(&staff2, sizeof(Table), 1, fstaff);
-//    }
-//
-//    //write new information to file.
-//    //strcpy(staff[1].table.id, "staff1");
-//    //strcpy(staff[1].table.password, "321");
-//    //strcpy(staff[1].table.phone, "01231323");
-//    //strcpy(staff[1].table.email, "lee@gmail.com");
-//    //strcpy(staff[1].staff[i], "STAFF");
-//    //staff_count++;
-//
-//  //test file read 
-//    for (int i = 0; i < staff_count; i++) {
-//        printf("ID: %s\n", staff[i].table.id);
-//    }
-//
-//    for (int i = 0; i < manager_count; i++) {
-//        printf("ID: %s\n", manager[i].table.id);
-//    }
-//
-//
-//    fclose(fstaff);
-//
-//    menu();
-//
-//    //print all manager and staff account
-//
-//    for (int i = 0; i < staff_count; i++) {
-//        printf("ID: %s\n", staff[i].table.id);
-//    }
-//
-//    for (int i = 0; i < manager_count; i++) {
-//        printf("ID: %s\n", manager[i].table.id);
-//    }
-//    //------------------------------------------------
-//
-//    fstaff = fopen("../TrainTicketingSys/res/staff.bin", "wb");
-//
-//    for (int i = 0; i < manager_count; i++) {
-//        fwrite(&manager[i], sizeof(struct Manager), 1, fstaff);
-//    }
-//
-////    for (int i = 0; i < staff_count; i++) {
-////        fwrite(&staff[i], sizeof(struct Staff), 1, fstaff);
-////    }
-//
-//
-//
-//
-//    fclose(fstaff);
-//    return 0;
-//
-//}
+
 
 // Main menu
 int employeeMenu()
@@ -225,9 +127,9 @@ int employeeMenu()
         title();
         printf(" ------ EMPLOYEE MENU ------\n");
         printf("------------------------------\n");
-        printf("1. Staff\n");
-        printf("2. Manager\n");
-        printf("3. Exit\n");
+        printf("1 > Staff\n");
+        printf("2 > Manager\n");
+        printf("3 > Exit\n");
         scanf(" %c", &choice);
         switch (choice) {
         case '1':
@@ -242,7 +144,6 @@ int employeeMenu()
             return 0;
             break;
         default:
-            //got error when loop
             printf("Invalid Choice!\n");
             printf("Please Select Again...\n");
             Sleep(1000);
@@ -263,9 +164,9 @@ int staffMenu()
         title();
         printf("------ STAFF MENU ------\n");
         printf("-------------------------\n");
-        printf("1. Login\n");
-        printf("2. Registration\n");
-        printf("3. Exit\n");
+        printf("1 > Login\n");
+        printf("2 > Registration\n");
+        printf("3 > Exit\n");
         scanf("%d", &choice);
 
         switch (choice) {
@@ -274,7 +175,7 @@ int staffMenu()
             return choice;
             break;
         case 3:
-            printf("Exiting....\n");
+            printf("\nExiting....\n");
             Sleep(600);
             break;
         default:
@@ -284,7 +185,7 @@ int staffMenu()
             break;
         }
     } while (choice != 1 && choice != 2 && choice != 3);
-    printf("\nYou are Exit Right Now!\n");
+    printf("\nYou are Exit Right Now...\n");
     Sleep(600);
     return 0;
 }
@@ -328,10 +229,11 @@ int staff_login()
         {
             do {
                 again = 0;
+                title();
                 printf("\nInvalid ID or Password\n");
                 printf("\nDo you want to try again?");
-                printf("\n1. Yes\n");
-                printf("2. No\n");
+                printf("\n< 1 > Yes\n");
+                printf("< 2 > No\n");
                 printf("Enter you choice:");
                 scanf("%d", &ans);
                 printf("---------------------------\n");
@@ -351,11 +253,15 @@ int staff_login()
             if (count == 3)
             {
                 printf("\nYou are failed to log in 3 time!\n");
-                Sleep(600);
+                Sleep(800);
+
+                title();
                 do {
+                    title();
                     printf("\n1. RESET PASSWORD\n");
                     printf("2. EXIT\n");
                     printf("Do u want to reset the password ?");
+                    Sleep(800);
                     scanf("%d", &ans);
 
                     if (ans == 1)
@@ -371,15 +277,10 @@ int staff_login()
                         Sleep(600);
                         return 0;
                     }
-                    else
-                    {
-                        printf("Select again.\n");
-                    }
                 } while (ans != 1 && ans != 2);
             }
         }
     } while (again == 1 && loginSuccess == 0);
-    // system("cls");
 }
 
 //staff registration menu 
@@ -524,9 +425,9 @@ void staff_information() {
         title();
 
         // Before edit --change the versio view
-        printf("---------------------------\n");
-        printf("------ Before Update ------\n");
-        printf("---------------------------\n");
+        printf("-----------------------------------------------\n");
+        printf("---------------- Before Update ----------------\n");
+        printf("-----------------------------------------------\n");
         printf("\nName: %s\n", staff[employeeNum[0]].table.name);
         printf("Phone No: %s\n", staff[employeeNum[0]].table.phone);
         printf("Email:%s\n", staff[employeeNum[0]].table.email);
@@ -635,7 +536,7 @@ int staff_logout() {
         printf("STAFF ID:%s\tCHECK IN TIME:%s", staff[employeeNum[0]].table.id, ctime(&staff[employeeNum[0]].check_in_time));
         printf("Check In succeed\n");
         printf("-------------------------------------------------------------------\n");
-        Sleep(1000);
+        system("pause");
 
 
     }
@@ -645,7 +546,7 @@ int staff_logout() {
         title();
         time(&staff[employeeNum[0]].check_out_time);
         printf("----------------------------- CHECK OUT ---------------------------\n");
-        printf("STAFF ID:%s\tCHECK OUT TIME:%s", staff[employeeNum[0]].table.id, ctime(&staff[employeeNum[0]].check_out_time));
+        printf("STAFF ID: %s\tCHECK OUT TIME: %s", staff[employeeNum[0]].table.id, ctime(&staff[employeeNum[0]].check_out_time));
         printf("-------------------------------------------------------------------\n");
 
         elapsedTime = (double)(checkOut - checkIn) / CLOCKS_PER_SEC;
@@ -699,7 +600,10 @@ int staff_logout() {
 void sendValidationCode(char* email, char* code) {
     // Implement sending the validation code to the provided email
     title();
-    printf("Validation code sent to %s is: %s\n", email, code);
+    printf("---------- Email ----------\n");
+    printf("Email: %s\n", email);
+    printf("Validation code is: %s\n", code);
+    printf("---------------------------\n");
 }
 
 char* generateValidationCode() {
@@ -721,130 +625,134 @@ int resetPassword()
     char comf_newPassword[MAX_PASS_LENGTH];
     char choice;
     int idExist = 0;
+    int again = 0;
 
-    title();
-    printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-    printf("| You need to double check the data showe below |\n");
-    printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-    Sleep(600);
+        title();
+        printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        printf("| You need to double check the data showe below |\n");
+        printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 
-    printf("\nEnter ID:");
-    scanf(" %[^\n]", id);
+        printf("\nEnter ID:");
+        scanf(" %[^\n]", id);
+        Sleep(600);
 
-    for (int i = 0; i < staff_count; i++)
-    {
-        if (strcmp(staff[i].table.id, id) == 0)
+        for (int i = 0; i < staff_count; i++)
         {
-            
-            printf("%-20s%-20s\n", "STAFF NAME", "EMAIL");
-            printf("%-20s%-20s\n", staff[i].table.name, staff[i].table.email);
-            do {
-                printf("\nIs you?\n");
-                printf("1. CORRECT, IS ME\n");
-                printf("2. WRONG, NOT ME\n");
-                scanf("%d", &ans);
+            if (strcmp(staff[i].table.id, id) == 0)
+            {
+                idExist++;
+                printf("--------------------------------------------\n");
+                printf("| %-20s | %-20s |\n", "STAFF NAME", "EMAIL");
+                printf("| %-20s | %-20s |\n", staff[i].table.name, staff[i].table.email);
+                printf("--------------------------------------------\n");
+                system("pause");
 
-                if (ans == 1)
-                {
-                    do {
-                        title();
-                        printf("\nPlease enter you phone number to validation\n");
-                        scanf(" %[^\n]", phone);
-                        if (strcmp(staff[i].table.phone, phone) == 0)
-                        {
-                            printf("Sending a validation code to your email\n");
-                            printf("\nWaiting time....\n");
-                            Sleep(800);
-                            //random()
-                            //store(send) the code to email.Then compare the code staff keyin and the code in the email.
-                            char* code = generateValidationCode();
-                            sendValidationCode(staff[i].table.email, code);
-                            printf("\nPlease enter the validation code you receive:");
-                            scanf("%d", &codeReceived);
+                do {
+                    title();
+                    printf("\nIs you?\n");
+                    printf("1. CORRECT, IS ME\n");
+                    printf("2. WRONG, NOT ME\n");
+                    scanf("%d", &ans);
 
-
-                            if (atoi(code) == codeReceived)
+                    if (ans == 1)
+                    {
+                        do {
+                            title();
+                            printf("\nPlease enter you phone number to validation\n");
+                            scanf(" %[^\n]", phone);
+                            if (strcmp(staff[i].table.phone, phone) == 0)
                             {
-                                printf("\nAble to reset the password\n");
-                                Sleep(600);
+                                printf("Sending a validation code to your email\n");
+                                printf("\nWaiting time....\n");
+                                Sleep(800);
+                                //random()
+                                //store(send) the code to email.Then compare the code staff keyin and the code in the email.
+                                char* code = generateValidationCode();
+                                sendValidationCode(staff[i].table.email, code);
+                                printf("\nPlease enter the validation code you receive:");
+                                scanf("%d", &codeReceived);
 
-                                successfuly = 0;
-                                do {
-                                    title();
-                                    passwordFormat();
-                                    printf("Enter the new password:");
-                                    passwordStore(newPassword);
-                                    printf("\nEnter again the same password:");
-                                    passwordStore(comf_newPassword);
 
-                                    if (strcmp(newPassword, comf_newPassword) != 0) {
-                                        printf("Failed, Password didn't same with the password you key in!\n\n");
-                                        successfuly = 0;
-                                    }
-                                    else {
-                                        if (!verify_password(newPassword)) {
-                                            printf("\nPassword Does Not Meet The Required Format!\n");
-                                            printf("Please Try Again. ");
-                                            waitingScreen();
+                                if (atoi(code) == codeReceived)
+                                {
+                                    printf("\nAble to reset the password\n");
+                                    Sleep(600);
+
+                                    successfuly = 0;
+                                    do {
+                                        title();
+                                        passwordFormat();
+                                        printf("Enter the new password:");
+                                        passwordStore(newPassword);
+                                        printf("\nEnter again the same password:");
+                                        passwordStore(comf_newPassword);
+
+                                        if (strcmp(newPassword, comf_newPassword) != 0) {
+                                            printf("Failed, Password didn't same with the password you key in!\n\n");
                                             successfuly = 0;
                                         }
-                                    }
+                                        else {
+                                            if (!verify_password(newPassword)) {
+                                                printf("\nPassword Does Not Meet The Required Format!\n");
+                                                printf("Please Try Again. ");
+                                                waitingScreen();
+                                                successfuly = 0;
+                                            }
+                                        }
 
-                                    if (strcmp(newPassword, comf_newPassword) == 0 && verify_password(newPassword))
-                                    {
-                                        printf("Success!\n");
-                                        Sleep(600);
-                                        strcpy(staff[i].table.password, comf_newPassword);
-                                        successfuly++;
-                                        return 0;
-                                    }
-                                } while (successfuly == 0);
+                                        if (strcmp(newPassword, comf_newPassword) == 0 && verify_password(newPassword))
+                                        {
+                                            printf("Success!\n");
+                                            Sleep(600);
+                                            strcpy(staff[i].table.password, comf_newPassword);
+                                            successfuly++;
+                                            return 0;
+                                        }
+                                    } while (successfuly == 0);
+
+                                }
+                                else
+                                    printf("Validation code incorrect!\n");
+                                Sleep(600);
 
                             }
                             else
-                                printf("Validation code incorrect!\n");
-                            Sleep(600);
+                            {
+                                printf("You phone number is incorrect!\n");
+                                do {
+                                    printf("\nDo you want to try again?(Y/N)");
+                                    scanf(" %c", &choice);
+                                    Sleep(600);
+                                    if (toupper(choice) == 'N') {
+                                        printf("EXIT");
+                                        Sleep(600);
+                                        return 0;
+                                    }
 
-                        }
-                        else
+                                } while (toupper(choice) != 'Y' && toupper(choice) != 'N');
 
-                            printf("You phone number is incorrect!\n");
-                        do {
-                            printf("\nDo you want to try again?(Y/N)");
-                            Sleep(600);
-                            scanf(" %c", &choice);
-                            if (toupper(choice) == 'N') {
-                                printf("EXIT");
-                                Sleep(600);
-                                return 0;
                             }
-                            else if (toupper(choice) != 'Y') {
-                                printf("Invalid select.\n");
-                            }
-                        } while (toupper(choice) != 'Y' && toupper(choice) != 'N');
+                            } while (toupper(choice) == 'Y');
+                        
+                    }
+                    else if(ans==2) {
+                        printf("Staff ID not found.\n"); 
+                        printf("You need to register first !\n\n");
+                        Sleep(600);
+                        return 0;
+                    }
+                    
 
-                    } while (toupper(choice) == 'Y');
+                } while (ans != 1 && ans != 2);
 
-                }
-                else if (ans != 1 && ans != 2)
-                    printf("Invalid select.\n");
-                Sleep(600);
-
-            } while (ans != 1 && ans != 2);
-
+            }
         }
-        else {
-            printf("Authentication failed.\n");
-            printf("You need to register first !\n\n");
-            Sleep(600);
-            return 0;
-        }
-
-    }
-    printf("Staff ID not found.\n");
-    printf("You need to register first !\n\n");
-    Sleep(600);
-    return 0;
+		if (idExist == 0) {
+			printf("\nNo Staff found with the provided ID.\n");
+			printf("You need to register first !\n\n");
+			system("pause");
+			return 0;
+		}
 }
 
 // Manager menu
@@ -862,9 +770,9 @@ int manager_menu()
 
         printf("  ------ MANAGER MENU ------\n");
         printf("-------------------------------\n");
-        printf("1. Login\n");
-        printf("2. Registration\n");
-        printf("3. Exit\n");
+        printf("1 > Login\n");
+        printf("2 > Registration\n");
+        printf("3 > Exit\n");
         scanf("%d", &choice);
 
 
@@ -875,7 +783,7 @@ int manager_menu()
             break;
 
         case 3:
-            printf("\nYou are Exit Right Now!\n");
+            printf("\nYou are Exit Right Now...\n");
             Sleep(600);
             break;
         default:
@@ -1012,7 +920,6 @@ void manager_registration()
                         printf("Please Enter Number 1 - 5!\n");
                         Sleep(600);
                         success = 0;
-                        //break; //got bugg looping bug
                     }
                 } while (questionSelection[i] > 5 || questionSelection[i] < 1);
 
@@ -1363,13 +1270,12 @@ void modifyEmpRestSchedule()
                 printf("|------------------------------|\n\n");
                 printf("Enter you choice:");
                 scanf("%d", &choice);
-                printf("|-----------------------------|\n");
                 Sleep(500);
                 if (choice == 1)
                     ans++;
                 else if (choice == 2)
                 {
-                    printf("\nEXIT\n");
+                    printf("\nEXIT...\n");
                     Sleep(300);
                     return 0;
                 }
@@ -1529,7 +1435,7 @@ void manager_reset_pass()
 
     do {
 
-        again = 0;
+
         title();
         printf("\n--------------- RESET PASSWORD MANAGER---------------\n");
         printf("\n|||||||||||||||||||||||||||||||||||||||||||||||\n");
@@ -1558,7 +1464,7 @@ void manager_reset_pass()
                         for (int j = 0; j < MAX_QUESTION_SELECTED; j++)
                             questionNum[j] = manager[i].security[j].questionNum;
 
-
+                       
                         securityQues_display(questionNum, question);
 
                         do {
@@ -1599,6 +1505,7 @@ void manager_reset_pass()
                             else
                             {
                                 do {
+                                    title();
                                     printf("You failed to answer one or more security questions correctly.\n");
                                     Sleep(600);
                                     printf("Do u want to enter the answers for security password again?(Y/N):\n");
@@ -1619,8 +1526,8 @@ void manager_reset_pass()
                         do {
                             title();
                             printf("Do you want to exit?\n");
-                            printf("1. Yes\n");
-                            printf("2. No\n");
+                            printf("|1| Yes\n");
+                            printf("|2| No\n");
                             printf("Enter your choice: ");
                             scanf("%d", &choice);
 
@@ -1645,7 +1552,7 @@ void manager_reset_pass()
         if (idExist == 0) {
             printf("\nNo manager found with the provided ID.\n");
             printf("You need to register first !\n\n");
-            Sleep(600);
+            system("pause");
             return 0;
         }
     } while (again == 1);
@@ -1690,8 +1597,8 @@ int manager_login() {
                 title();
                 printf("\nInvalid ID or Password\n");
                 printf("Do you want to try again?");
-                printf("\n1. Yes\n");
-                printf("2. No\n");
+                printf("\n< 1 > Yes\n");
+                printf("< 2 > No\n");
                 printf("Enter you choice:");
                 scanf("%d", &ans);
                 printf("---------------------------\n");
@@ -1711,12 +1618,13 @@ int manager_login() {
             {
 
                 printf("\nYou are failed to log in 3 time!\n");
-
-                title();
+                Sleep(800);
+                
                 do {
+                    title();
                     printf("\n1. RESET PASSWORD\n");
                     printf("2. EXIT\n");
-                    printf("Do u want to reset the password ?");
+                    printf("Do you want to reset the password ?");
                     scanf("%d", &ans);
 
                     if (ans == 1)
@@ -1727,13 +1635,11 @@ int manager_login() {
                     }
                     else if (ans == 2)
                     {
-                        printf("\nYou are exit right now\n");
+                        printf("\nYou are exit right now...\n");
                         Sleep(600);
                         return 0;
                     }
-                    else {
-                        printf("Select again.\n");
-                    }
+                    
                 } while (ans != 1 && ans != 2);
             }
 
@@ -1769,14 +1675,17 @@ void manager_view_schedule()
                     printf("%02d:%02d\t\t\t %d\t\t\t  %02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
                     printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule.total_working_hours, staff[i].schedule.remaining_minutes);
                     printf("-------------------------------------------------------------------\n");
-                    system("pause");
+                  
                 }
                 else
                 {
+                    printf("-------------------------------\n");
                     printf("\nSTAFF %s SCHEDULE IS Empty\n\n", staff[i].table.name);
+                    printf("-------------------------------\n");
                     Sleep(600);
                 }
             }
+            system("pause");
         }
         else if (choice == 2)
         {
@@ -1842,14 +1751,14 @@ int staff_main_page() {
     do {
         title();
         printf("\nStaff\n");
-        printf("-------\n");
-        printf("1. Employee working schedule\n");
-        printf("2. Update Information\n");
-        printf("3. Train Schedules\n");
-        printf("4. Search Member Information\n");
-        printf("5. Working Time\n"); //combination of check in and out time!
-        printf("6. Add Booking\n");
-        printf("0. Log Out Staff\n"); //got log out bug
+        printf("===========\n");
+        printf("[ 1 ] Employee working schedule\n");
+        printf("[ 2 ] Update Information\n");
+        printf("[ 3 ] Train Schedules\n");
+        printf("[ 4 ] Search Member Information\n");
+        printf("[ 5 ] Working Time\n"); //combination of check in and out time!
+        printf("[ 6 ] Add Booking\n");
+        printf("< 0 > Log Out Staff\n"); 
         printf("Enter your Choice: ");
         scanf("%d", &choice);
 
@@ -1869,7 +1778,7 @@ int staff_main_page() {
             status = staff_logout();
             break;
         case 0:
-            printf("Exiting...\n");
+            printf("\nExiting...\n");
             Sleep(600);
             return 0;
             break;
@@ -1893,17 +1802,17 @@ int manager_main_page() {
         title();
         alert();
         printf("\nManager\n");
-        printf("------\n");
-        printf("1. Modify staff working schedule\n");
-        printf("2. View staff working schedule\n");
-        printf("3. Remove staff\n");
-        printf("4. Display All staff record\n");
-        printf("5. Update information\n");
-        printf("6. Train Schedules\n");
-        printf("7. Delete Member Account\n");
-        printf("8. Member Login History\n");
-        printf("9. View Feedback\n");
-        printf("0. Log Out\n"); //can't directly log out! 
+        printf("===========\n");
+        printf("[ 1 ] Modify staff working schedule\n");
+        printf("[ 2 ] View staff working schedule\n");
+        printf("[ 3 ] Remove staff\n");
+        printf("[ 4 ] Display All staff record\n");
+        printf("[ 5 ] Update information\n");
+        printf("[ 6 ] Train Schedules\n");
+        printf("[ 7 ] Delete Member Account\n");
+        printf("[ 8 ] Member Login History\n");
+        printf("[ 9 ] View Feedback\n");
+        printf("< 0 > Log Out\n"); //can't directly log out! 
         printf("Enter your Choice: ");
         scanf("%d", &choice);
 
