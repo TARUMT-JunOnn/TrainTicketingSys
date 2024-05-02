@@ -132,6 +132,7 @@ int booking(int mem_num) {
 int menu(int choice) {
 	char* menu[] = { "Employee", "Member", "Exit Program"};
 	int status = 0, identifier;
+	int i;
 	int mem_num;
 	do {
 		status = 0;
@@ -162,7 +163,9 @@ int menu(int choice) {
 				}
 				printf("\nEnter Your Choice: ");
 				rewind(stdin);
-				scanf("%d", &choice);
+				if (scanf("%d", &choice) != 1)
+					choice = 3;
+				
 		}
 
 		switch (choice) {
