@@ -1032,7 +1032,7 @@ int delete_Acc()
         Sleep(600);
         title();
 
-        printf("\nEenter staff id to delete :");
+        printf("\nEnter staff id to delete :");
         Sleep(600);
         rewind(stdin);
         scanf("%[^\n]", deleteID);
