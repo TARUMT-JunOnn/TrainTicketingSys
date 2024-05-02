@@ -35,7 +35,7 @@ int memberLogin();
 
 //security question
 void securityQuestion();
-void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]);
+void getQuestionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]);
 
 //registration validation
 void passwordFormat(void);
@@ -47,7 +47,7 @@ int questionSelected(int questionSelection[3]);
 int memberRegister();
 
 //password recovery modules
-void forgotPass();
+void passRecovery();
 
 //memberMenu
 int memberMainPage(int memberNUM, int now);
@@ -343,7 +343,7 @@ void securityQuestion() {
 		printf("\nPlease Choose 3 Security Questions\n");
 }
 
-void questionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]) {
+void getQuestionTitle(int questionSelection[MAX_NUM_QUESTION], char questionName[MAX_NUM_QUESTION][100]) {
 	for (int i = 0; i < 3; i++) {
 
 		if (questionSelection[i] == 1) {
@@ -658,7 +658,7 @@ int memberRegister() {
 			member[numMember].security[i].questionNum = questionSelection[i];
 		}
 
-		questionTitle(questionSelection, question);
+		getQuestionTitle(questionSelection, question);
 
 		for (int i = 0; i < MAX_NUM_QUESTION; i++) {
 			printf("%s ?\n", question[i]);
@@ -783,7 +783,7 @@ int memberRegister() {
 	return again;
 }
 
-void forgotPass() {
+void passRecovery() {
 	bool resultPass;
 	char id[MEMBER_ID], question[MAX_NUM_QUESTION][100], answer[MAX_NUM_QUESTION][100];
 	int num, questionSelection[MAX_NUMBER_MEMBER], newPassword[MEMBER_PASS], newPassConfirm[MEMBER_PASS];
@@ -808,7 +808,7 @@ void forgotPass() {
 
 			questionSelected(questionSelection);
 
-			questionTitle(questionSelection, question);
+			getQuestionTitle(questionSelection, question);
 
 			for (int i = 0; i < MAX_NUM_QUESTION; i++) {
 				printf("%s ?\n", question[i]);

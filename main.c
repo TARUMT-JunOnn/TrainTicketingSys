@@ -318,7 +318,7 @@ int subMenu(int input) {
 			return 2;
 			break;
 		case 23:
-			forgotPass();
+			passRecovery();
 			return 2;
 			break;
 		}
