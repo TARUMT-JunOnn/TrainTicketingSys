@@ -144,40 +144,6 @@ int writeFeedbackFile(FILE** feedbackFptr) {
 	}
 }
 
-void memberMain(){
-	int choice;
-	//test to display all data
-	for (int i = 0; i < numMember; i++) {
-		printf("%d. %s\n", i + 1, member[i].id);
-	}
-
-	do {
-		printf("test\n");
-		printf("1.member menu\n");
-		printf("2. delete member\n");
-		printf("3. search member\n");
-		printf("Please Enter Your Choice: ");
-		scanf("%d", &choice);
-		switch (choice) {
-		case 1:
-			memberMenu();
-			break;
-		case 2:
-			deleteMember();
-			break;
-		case 3:
-			searchMember();
-			break;
-		case 4:
-			printf("EXITING PROGRAM.....\n");
-			break;
-		default:
-			printf("Invalid Choice!\n");
-			printf("Please Try Again\n");
-		}
-	} while (choice != 4);
-}
-
 int tryAgain(int again) {
 	char choice[LENGTH_CHOICE];
 	int invalidChoice;

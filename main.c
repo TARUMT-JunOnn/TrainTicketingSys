@@ -147,9 +147,15 @@ int menu(int choice) {
 			printf("\n");
 			printf("Menu\n");
 			printf("-----\n");
+
 			for (int i = 0; i < sizeof(menu) / sizeof(menu[0]); i++) {
 				printf("-----\n");
-				printf("| %d | %s\n", i + 1, menu[i]);
+				if (i == 2) 
+					printf("| %d | %s\n", 0, menu[i]);
+				
+				else 
+					printf("| %d | %s\n", i + 1, menu[i]);
+				
 				printf("-----\n");
 			}
 			printf("\nEnter Your Choice: ");
