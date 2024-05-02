@@ -1213,8 +1213,6 @@ int searchMemberID() {
 		printf("\nThere is no member. ");
 		waitingScreen();
 		return 0;
-
-		//return something(maybe not return 0)
 	}
 
 	//return something back to menu
