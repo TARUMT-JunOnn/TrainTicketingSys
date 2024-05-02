@@ -1324,7 +1324,9 @@ int searchMemberAge() {
 					printf("-----\n");
 				}
 				printf("\nPlease Enter Your Choice: ");
-				scanf("%d", &choice);
+				rewind(stdin);
+				if (scanf("%d", &choice) != 1)
+					choice = 0;
 
 				if (choice == 1) {
 					do {
@@ -1422,7 +1424,7 @@ int searchMemberAge() {
 					} while (again == 1);
 				}
 				else {
-					printf("Invalid Choice");
+					printf("Invalid Choice!\n");
 					again = tryAgain(again);
 					
 				}
@@ -1470,7 +1472,9 @@ int searchMemberRewardPoints() {
 				printf("-----\n");
 			}
 			printf("\nPlease Enter Your Choice: ");
-			scanf("%d", &choice);
+			rewind(stdin);
+			if (scanf("%d", &choice) != 1)
+				choice = 0;
 
 			if (choice == 1) {
 				do {
@@ -1566,7 +1570,7 @@ int searchMemberRewardPoints() {
 				} while (again == 1);
 			}
 			else {
-				printf("Invalid Choice");
+				printf("Invalid Choice!\n");
 				again = tryAgain(again);
 			}
 
