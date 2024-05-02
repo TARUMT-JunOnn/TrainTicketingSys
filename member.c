@@ -525,6 +525,7 @@ char passwordStore(char password[]) {
 }
 
 int questionSelected(int questionSelection[3]) {
+	char questionNum[MAX_NUM_QUESTION];
 	int i = 0, success = 0;
 
 	do {
@@ -533,9 +534,9 @@ int questionSelected(int questionSelection[3]) {
 
 		do {
 			printf("%d. ", i + 1);
-			scanf("%d", &questionSelection[i]);
+			scanf(" %c", &questionNum[i]);
 
-			if (questionSelection[i] > 6 || questionSelection[i] < 1) {
+			if ((int)questionNum[i] - 48 > 6 || (int)questionNum[i] - 48 < 1) {
 				printf("\nInvalid Choice!\n");
 				printf("Please Enter Number 1 - 6. ");
 
@@ -551,7 +552,7 @@ int questionSelected(int questionSelection[3]) {
 			if (i > 1 && success == 1) {
 				for (int y = 0; y < i - 1; y++) {
 
-					if (questionSelection[y] == questionSelection[i - 1]) {
+					if ((int)questionNum[y] - 48 == (int)questionNum[i - 1] - 48) {
 						printf("\nThe Selected Security Question Must Be Different From The Previous One.\n");
 						printf("Please Try Again. ");
 
@@ -567,6 +568,11 @@ int questionSelected(int questionSelection[3]) {
 		} while (i < 3 && success == 1);
 
 	} while (i < 3 && success == 0);
+
+	for (int j = 0; j < MAX_NUM_QUESTION; j++) {
+		questionSelection[j] = (int)questionNum[j] - 48;
+	}
+
 
 	return questionSelection;
 }
