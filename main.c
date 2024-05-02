@@ -132,12 +132,10 @@ int booking(int mem_num) {
 int menu(int choice) {
 	char* menu[] = { "Employee", "Member", "Exit Program"};
 	int status = 0, identifier;
-	int i;
 	int mem_num;
 	do {
 		status = 0;
 		if (choice == 0) {
-			
 				title();
 				printf("\t\t----------------------------------------------------------------------------------------------------------------------------\n");
 				printf("\t\t|  _____              _          _____  _        _          _    _                  ____              _                    |\n");
