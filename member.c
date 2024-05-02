@@ -215,15 +215,24 @@ void waitingScreen(void) {
 	}
 }
 
+void memberMenuLogo(void) {
+	printf("\t\t\t\t      ___  __ ______ ___  __ _____  ______ _____    ___  __ ______ __  ______ ___ \n");
+	printf("\t\t\t\t      |  \\/  || ____||  \\/  || __ ) | ____||  _ \\   |  \\/  || ____|| \\ | || | | |\n");
+	printf("\t\t\t\t      | |\\/| ||  _|  | |\\/| ||  _ \\ |  _|  | |_) |  | |\\/| ||  _|  |  \\| || | | |\n");
+	printf("\t\t\t\t      | |  | || |___ | |  | || |_) || |___ |  _ <   | |  | || |___ | |\\  || |_| |\n");
+	printf("\t\t\t\t      |_|  |_||_____||_|  |_||____/ |_____||_| \\_\\  |_|  |_||_____||_| \\_| \\___/ \n");
+	printf("\t\t\t\t      ----------------------------------------------------------------------------\n");
+}
+
 int memberMenu() {
-	char *menu[] = {"Login", "Registration", "Forgot Password", "Exit",};
+	char *menu[] = {"Login", "Registration", "Forgot Password", "Exit"};
 	char choice[LENGTH_CHOICE];
 
 	do {
 
 	title();
-	printf("Member Menu\n");
-	printf("-----------\n");
+	memberMenuLogo();
+	printf("\n");
 	for (int i = 0; i < sizeof(menu)/sizeof(menu[0]); i++) {
 		printf("-----\n");
 		printf("| %d | %s\n", i + 1, menu[i]);
@@ -874,8 +883,8 @@ int memberMainPage(int memberNUM, int timeIn) {
 	do
 	{
 		title();
-		printf("Member Menu\n");
-		printf("-----------\n");
+		memberMenuLogo();
+		printf("\n");
 		for (int i = 0; i < sizeof(menu) / sizeof(menu[0]); i++) {
 			printf("-----\n");
 			printf("| %d | %s\n", i + 1, menu[i]);
