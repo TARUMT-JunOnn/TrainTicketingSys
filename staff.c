@@ -1742,8 +1742,8 @@ void dispalyAll()
 {
     int counter = 0;
     title();
-    printf("\n----------- RECORD OF ALL STAFF ----------------------------------\n");
-    printf("\n|  %-20s  |  %-20s  |  %-20s  |\n", "Staff Name", "Phone No", "Email");
+    printf("\n--------------------------- RECORD OF ALL STAFF ----------------------------------\n");
+    printf("\n|  %-20s  |  %-20s  |  %-20s   |\n", "Staff Name", "Phone No", "Email");
 
     for (int i = 0; i < staff_count; i++)
     {
@@ -1752,7 +1752,7 @@ void dispalyAll()
 
     }
     printf("\nTOTAL STAFF RECORD FOUNDED --- %d ", counter);
-    printf("\n------------------------------------------------------------------\n");
+    printf("\n-----------------------------------------------------------------------------------\n");
     system("pause");
 }
 
