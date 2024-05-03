@@ -133,8 +133,6 @@ int employeeMenu()
         printf("\t\t\t\t----------------------------------------------------------------------------------------\n");
         printf("\n");
 
-        //printf(" ------ EMPLOYEE MENU ------\n");
-        //printf("------------------------------\n");
         printf("1 > Staff\n");
         printf("2 > Manager\n");
         printf("3 > Exit\n");
@@ -176,9 +174,6 @@ int staffMenu()
         printf("\\__ \\  )(  /(__)\\  )__)  )__)    )    (  )__)  )  (  )(__)( \n");
         printf("(___/ (__) (__)(__)(__)  (__)    (_/\\_\\)(____)(_\\_)(______) \n\n");
 
-
-        printf("------ STAFF MENU ------\n");
-        printf("-------------------------\n");
         printf("1 > Login\n");
         printf("2 > Registration\n");
         printf("3 > Exit\n");
@@ -770,6 +765,7 @@ int resetPassword()
 		}
 }
 
+
 // Manager menu
 int manager_menu()
 {
@@ -788,9 +784,6 @@ int manager_menu()
         printf(" )    (  /(__)\\  )  (  /(__)\\( (_-. )__)  )   /   )    (  )__)  )  (  )(__)( \n");
         printf("(_/\\/\\_)(__)(__)()\\_)\\/(____)(____/( ___) (_)\\_) (_/\\/\\_)(____)(_)(_)(______)\n\n");
 
-
-        printf("  ------ MANAGER MENU ------\n");
-        printf("-------------------------------\n");
         printf("1 > Login\n");
         printf("2 > Registration\n");
         printf("3 > Exit\n");
@@ -1580,7 +1573,7 @@ void manager_reset_pass()
 }
 
 
-// Manager Login menu --need to do let manager reset password!***
+// Manager Login menu --need to do let manager reset password
 int manager_login() {
     char id[MAX_ID_LENGTH];
     char password[MAX_PASS_LENGTH];
@@ -1668,7 +1661,6 @@ int manager_login() {
     } while (again == 1 && loginSuccess == 0);
 
 }
-
 
 
 // Manager view staff schedule
