@@ -131,11 +131,11 @@ int booking(int mem_num) {
 
 int menu(int choice) {
 	char* menu[] = { "Employee", "Member", "Exit Program"};
-	int status, identifier;
+	int status = 0, identifier;
 	int mem_num;
 	do {
+		status = 0;
 		if (choice == 0) {
-			do {
 				title();
 				printf("\t\t----------------------------------------------------------------------------------------------------------------------------\n");
 				printf("\t\t|  _____              _          _____  _        _          _    _                  ____              _                    |\n");
@@ -160,8 +160,10 @@ int menu(int choice) {
 					printf("-----\n");
 				}
 				printf("\nEnter Your Choice: ");
-				scanf("%d", &choice);
-			} while (choice < 0 || choice > 2);
+				rewind(stdin);
+				if (scanf("%d", &choice) != 1)
+					choice = 3;
+				
 		}
 
 		switch (choice) {
@@ -178,6 +180,10 @@ int menu(int choice) {
 		case 0:
 			writeFile();
 			exit(-1);
+			break;
+		default: 
+			status = 0;
+			choice = 0;
 			break;
 		}
 	} while (status == 0);
