@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<windows.h>
 #include<string.h>
+#include <stdbool.h>
 #pragma warning(disable:4996)
 #pragma once
 #define MAX_PAX 10
@@ -58,4 +59,151 @@ struct {
 	char status;
 	Info trainInfo;
 }records[MAX_RECORDS];
+#endif
+
+#ifdef USE_GW_FUNCTION
+char passwordStore(char password[]) {
+	int i = 0;
+	char ch;
+	while (1) {
+		ch = _getch();
+		if (ch == 13)
+			break;
+		else if (ch == 8) {
+			if (i > 0) {
+				i--;
+				password[i] = '\0';
+				printf("\b \b");
+			}
+		}
+		else {
+			password[i] = ch;
+			i++;
+			printf("*");
+		}
+	}
+	password[i] = '\0';
+
+	return password;
+}
+
+bool verify_password(char* pass) {
+	int length = strlen(pass);
+	bool hasUpper = false;
+	bool hasLower = false;
+	bool hasDigit = false;
+	bool hasSymbol = false;
+
+	if (length < 8)
+		return false;
+
+	for (int i = 0; i < length; i++) {
+		if (isupper(pass[i]))
+			hasUpper = true;
+		if (islower(pass[i]))
+			hasLower = true;
+		if (isdigit(pass[i]))
+			hasDigit = true;
+		if (ispunct(pass[i]))
+			hasSymbol = true;
+	}
+
+	if (!hasUpper) return false;
+	if (!hasLower) return false;
+	if (!hasDigit) return false;
+	if (!hasSymbol) return false;
+
+	return true;
+
+}
+
+bool verify_email(char* email) {
+	int count = 0;
+
+	for (int i = 0; i < strlen(email); i++) {
+		if (email[i] == '@')
+			count++;
+
+
+		if (email[i] == ' ' || email[i] == '/' || email[i] == ':' || email[i] == ';'
+			|| email[i] == '[' || email[i] == ']' || email[i] == '<' || email[i] == '>'
+			|| email[i] == ',')
+			return false;
+	}
+
+	if (count == 1) {
+		if (email[0] != '@') {
+			char* dot = strchr(email, '.');
+
+			if (dot != NULL && dot > strchr(email, '@'))
+				return true;
+
+		}
+	}
+
+	return false;
+}
+
+bool verify_phone_no(char* phoneNo) {
+	int length = strlen(phoneNo);
+
+	if (length != 11 && length != 12)
+		return false;
+
+	if (phoneNo[0] != '0' || phoneNo[1] != '1')
+		return false;
+
+	for (int i = 0; i < 3; i++) {
+
+		if (!isdigit(phoneNo[i]))
+			return false;
+	}
+
+	for (int i = 4; i < length; i++) {
+		if (!isdigit(phoneNo[i]))
+			return false;
+	}
+
+	if (phoneNo[3] != '-')
+		return false;
+
+	return true;
+
+}
+
+bool verify_IC(char* gender, char* ic) {
+	if (strlen(ic) != 14)
+		return false;
+
+	if (ic[6] != '-' || ic[9] != '-')
+		return false;
+
+	if (strcmp(gender, "M") == 0) {
+		if (ic[13] != '1' && ic[13] != '3' && ic[13] != '5' && ic[13] != '7' && ic[13] != '9')
+			return false;
+	}
+	else if (strcmp(gender, "F") == 0) {
+		if (ic[13] != '0' && ic[13] != '2' && ic[13] != '4' && ic[13] != '6' && ic[13] != '8')
+			return false;
+	}
+	else
+		return false;
+
+	for (int i = 0; i < 6; i++) {
+		if (!isdigit(ic[i]))
+			return false;
+	}
+
+	for (int i = 7; i < 9; i++) {
+		if (!isdigit(ic[i]))
+			return false;
+	}
+
+	for (int i = 10; i < 14; i++) {
+		if (!isdigit(ic[i]))
+			return false;
+	}
+
+	return true;
+}
 #endif
