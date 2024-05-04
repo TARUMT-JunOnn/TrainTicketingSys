@@ -1,3 +1,10 @@
-M001|Cleanliness Rating|3.400000|ABCD
-M005|Cleanliness Rating|0.500000|-
-M005|Cleanliness Rating|0.522222|-
+M001|Customer Service Rating|4.500000|Really Good Service!
+M002|Punctuality Rating|5.000000|-
+M003|Safety and Security Rating|5.000000|I'm impressed by the safety and security!
+M004|Customer Service Rating|4.000000|-
+M005|Cleanliness Rating|4.500000|Very clean!
+M006|Cleanliness Rating|4.000000|Clean.
+M007|Cleanliness Rating|4.000000|Makes me feel comfortable!
+M008|Punctuality Rating|4.000000|Train Arrive On Time!
+M009|Customer Service Rating|5.000000|Good Service, Worker very nice.
+M010|Safety and Security Rating|4.500000|-
