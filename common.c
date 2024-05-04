@@ -1,15 +1,21 @@
 #include<stdio.h>
-#include<stdlib.h>
-#include<windows.h>
 #include<string.h>
-#include <stdbool.h>
-#pragma warning(disable:4996)
+#pragma warning (disable:4996)
+#define _CRT_SECURE_NO_WARNINGS
 #pragma once
-#define MAX_PAX 10
-#define MAX_RECORDS 5000
-SYSTEMTIME t;
+
+/*Common used function and structure that used in Train Ticketing System
+If you want to disable this file, undefine all defined constants as shown below to ensure that the module works properly in the module file
+USE_TITLE
+USE_STRUCT
+USE_GW_FUNCTION
+*/
+
 
 #ifdef USE_TITLE
+#include<Windows.h>
+#include<string.h>
+extern SYSTEMTIME t;
 void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
 	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
 	strcpy((*dayReturn), day[numOfWeek]);
@@ -32,6 +38,8 @@ void title(void) {
 #endif
 
 #ifdef USE_STRUCT
+#define MAX_PAX 10
+#define MAX_RECORDS 5000
 struct train {
 	float depart;
 	float arrive;
@@ -62,6 +70,9 @@ struct {
 #endif
 
 #ifdef USE_GW_FUNCTION
+#include <stdbool.h>
+#include <conio.h>
+#include <string.h>
 char passwordStore(char password[]) {
 	int i = 0;
 	char ch;
@@ -206,5 +217,51 @@ bool verify_IC(char* gender, char* ic) {
 	}
 
 	return true;
+}
+#endif
+
+#ifdef USE_DATE_FUNCTION
+#include<time.h>
+int month_day(int year, int yearday, int* pmonth, int* pday)
+{
+	int i;
+	int leap = 0;
+	int month[2][12] = { { 31,28,31,30,31,30,31,31,30,31,30,31 }, { 31,28,31,30,31,30,31,31,30,31,30,31 } };
+	if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
+		leap = 1;
+	}
+	for (i = 0; yearday > month[leap][i]; ++i) {
+		if (i >= 12)
+			return leap;
+		yearday -= month[leap][i];
+	}
+	*pmonth = i + 1;
+	*pday = yearday;
+	return 2;
+}
+void countDate(int followingNum, int* day, int* month, int* year, char(*dayOW)[80]) {
+	time_t timer;
+	struct tm* now;
+	int status;
+	time(&timer);
+	now = localtime(&timer);
+	int thisyear = now->tm_year + 1900;
+	do {
+		status = month_day(thisyear, now->tm_yday + followingNum, &(*month), &(*day));
+		if (status == 0) {
+			followingNum -= 365;
+			thisyear++;
+		}
+		else if (status == 1) {
+			followingNum -= 366;
+			thisyear++;
+		}
+	} while (status != 2);
+	*year = thisyear;
+	now->tm_mday = *day;
+	now->tm_mon = *month - 1;
+	now->tm_year = thisyear - 1900;
+	mktime(now);
+	strftime((*dayOW), 80, "%A", now);
 }
 #endif

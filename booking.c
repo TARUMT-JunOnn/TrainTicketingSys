@@ -1,22 +1,260 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include<math.h>
-#include<windows.h>
-#include<conio.h>
-#include<ctype.h>
-#include<time.h>
-#define USE_TITLE
-#define USE_STRUCT
-#define USE_GW_FUNCTION
-#include "common.c"
+#define USE_TITLE //in common.c
+#define USE_STRUCT //in common.c
+#define USE_GW_FUNCTION //in common.c
+#define USE_DATE_FUNCTION //in common.c
+#include"common.c"
 #pragma warning(disable:4996)
 #define MAX_TRIP 2
 
 //Global Structure Declaration
+#ifndef USE_TITLE
+#include<Windows.h>
+#include<string.h>
+SYSTEMTIME t;
+void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
+	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
+	strcpy((*dayReturn), day[numOfWeek]);
+}
+
+void title(void) {
+	char day[10];
+	system("cls");
+	printf("%10s %s %s", "Train", "Ticketing", "System");
+	GetLocalTime(&t);
+	dayOfWeek(t.wDayOfWeek, &day);
+	const char month[12][10] = { {"January"}, {"February"}, {"March"}, {"April"}, {"May"}, {"June"}, {"July"}, {"August"}, {"September"}, {"October"}, {"November"}, {"December"} };
+	printf("%104s %02d %s %d %02d:%02d:%02d", day, t.wDay, month[t.wMonth - 1], t.wYear, t.wHour, t.wMinute, t.wSecond);
+	printf("\n");
+	for (int i = 0; i < 155; i++) {
+		printf("%s", "-");
+	}
+	printf("\n\n");
+}
+#endif
+
+#ifndef USE_STRUCT
+#define MAX_PAX 10
+#define MAX_RECORDS 5000
+struct train {
+	float depart;
+	float arrive;
+};
+
+struct date {
+	int day, month, year;
+	char weekday[20];
+	struct train time;
+};
+
+typedef struct {
+	char trainId[6];
+	char departFrom[20];
+	char destination[20];
+	float price;
+	struct date prefer;
+}Info;
+#endif
+
+#ifndef USE_GW_FUNCTION
+#include <stdbool.h>
+#include <conio.h>
+#include <string.h>
+char passwordStore(char password[]) {
+	int i = 0;
+	char ch;
+	while (1) {
+		ch = _getch();
+		if (ch == 13)
+			break;
+		else if (ch == 8) {
+			if (i > 0) {
+				i--;
+				password[i] = '\0';
+				printf("\b \b");
+			}
+		}
+		else {
+			password[i] = ch;
+			i++;
+			printf("*");
+		}
+	}
+	password[i] = '\0';
+
+	return password;
+}
+
+bool verify_password(char* pass) {
+	int length = strlen(pass);
+	bool hasUpper = false;
+	bool hasLower = false;
+	bool hasDigit = false;
+	bool hasSymbol = false;
+
+	if (length < 8)
+		return false;
+
+	for (int i = 0; i < length; i++) {
+		if (isupper(pass[i]))
+			hasUpper = true;
+		if (islower(pass[i]))
+			hasLower = true;
+		if (isdigit(pass[i]))
+			hasDigit = true;
+		if (ispunct(pass[i]))
+			hasSymbol = true;
+	}
+
+	if (!hasUpper) return false;
+	if (!hasLower) return false;
+	if (!hasDigit) return false;
+	if (!hasSymbol) return false;
+
+	return true;
+
+}
+
+bool verify_email(char* email) {
+	int count = 0;
+
+	for (int i = 0; i < strlen(email); i++) {
+		if (email[i] == '@')
+			count++;
+
+
+		if (email[i] == ' ' || email[i] == '/' || email[i] == ':' || email[i] == ';'
+			|| email[i] == '[' || email[i] == ']' || email[i] == '<' || email[i] == '>'
+			|| email[i] == ',')
+			return false;
+	}
+
+	if (count == 1) {
+		if (email[0] != '@') {
+			char* dot = strchr(email, '.');
+
+			if (dot != NULL && dot > strchr(email, '@'))
+				return true;
+
+		}
+	}
+
+	return false;
+}
+
+bool verify_phone_no(char* phoneNo) {
+	int length = strlen(phoneNo);
+
+	if (length != 11 && length != 12)
+		return false;
+
+	if (phoneNo[0] != '0' || phoneNo[1] != '1')
+		return false;
+
+	for (int i = 0; i < 3; i++) {
+
+		if (!isdigit(phoneNo[i]))
+			return false;
+	}
+
+	for (int i = 4; i < length; i++) {
+		if (!isdigit(phoneNo[i]))
+			return false;
+	}
+
+	if (phoneNo[3] != '-')
+		return false;
+
+	return true;
+
+}
+
+bool verify_IC(char* gender, char* ic) {
+	if (strlen(ic) != 14)
+		return false;
+
+	if (ic[6] != '-' || ic[9] != '-')
+		return false;
+
+	if (strcmp(gender, "M") == 0) {
+		if (ic[13] != '1' && ic[13] != '3' && ic[13] != '5' && ic[13] != '7' && ic[13] != '9')
+			return false;
+	}
+	else if (strcmp(gender, "F") == 0) {
+		if (ic[13] != '0' && ic[13] != '2' && ic[13] != '4' && ic[13] != '6' && ic[13] != '8')
+			return false;
+	}
+	else
+		return false;
+
+	for (int i = 0; i < 6; i++) {
+		if (!isdigit(ic[i]))
+			return false;
+	}
+
+	for (int i = 7; i < 9; i++) {
+		if (!isdigit(ic[i]))
+			return false;
+	}
+
+	for (int i = 10; i < 14; i++) {
+		if (!isdigit(ic[i]))
+			return false;
+	}
+
+	return true;
+}
+#endif
+
+#ifndef USE_DATE_FUNCTION
+#include<time.h>
+int month_day(int year, int yearday, int* pmonth, int* pday)
+{
+	int i;
+	int leap = 0;
+	int month[2][12] = { { 31,28,31,30,31,30,31,31,30,31,30,31 }, { 31,28,31,30,31,30,31,31,30,31,30,31 } };
+	if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
+		leap = 1;
+	}
+	for (i = 0; yearday > month[leap][i]; ++i) {
+		if (i >= 12)
+			return leap;
+		yearday -= month[leap][i];
+	}
+	*pmonth = i + 1;
+	*pday = yearday;
+	return 2;
+}
+void countDate(int followingNum, int* day, int* month, int* year, char(*dayOW)[80]) {
+	time_t timer;
+	struct tm* now;
+	int status;
+	time(&timer);
+	now = localtime(&timer);
+	int thisyear = now->tm_year + 1900;
+	do {
+		status = month_day(thisyear, now->tm_yday + followingNum, &(*month), &(*day));
+		if (status == 0) {
+			followingNum -= 365;
+			thisyear++;
+		}
+		else if (status == 1) {
+			followingNum -= 366;
+			thisyear++;
+		}
+	} while (status != 2);
+	*year = thisyear;
+	now->tm_mday = *day;
+	now->tm_mon = *month - 1;
+	now->tm_year = thisyear - 1900;
+	mktime(now);
+	strftime((*dayOW), 80, "%A", now);
+}
+#endif
 
 //Global Variable
-SYSTEMTIME t;
 int recordQty;
 
 //Reset all userChoice
@@ -52,7 +290,7 @@ void createDate(int day, int month, int year, char(*date)[11]) {
 	strcat((*date), takeYear);
 }
 
-//Same with all module
+//Train Booking Module Functions
 int readBookingFile(FILE** fptr) {
 	int i = 0;
 	*fptr = fopen("../TrainTicketingSys/res/booking.txt", "r");
@@ -1530,6 +1768,8 @@ int searchBooking(char id[20], float *price) {
 
 void produceList(char id[6], struct date timePrint) {
 	int recordsFound[MAX_RECORDS];
+	const int format = -28;
+	char weekDay[20];
 	for (int i = 0; i < MAX_RECORDS; ++i)
 		recordsFound[i] = -1;
 	countVacancy(id, timePrint, &recordsFound);
@@ -1539,29 +1779,167 @@ void produceList(char id[6], struct date timePrint) {
 		printf("Unable to produce file.\n");
 		return;
 	}
+	dayOfWeek(t.wDayOfWeek, &weekDay);
+	fprintf(produce,"\t\tTrain Ticketing System\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tGenerated in : %s %02d/%02d/%d %02d:%02d:%02d\n",weekDay, t.wDay, t.wMonth, t.wYear, t.wHour, t.wMinute, t.wSecond);
+	for (int i = 0; i < 115; i++) {
+		fprintf(produce, "-");
+	}
+	fprintf(produce, "\n\n");
+	fprintf(produce, "Date : %d/%d/%d\t%s\n", timePrint.day, timePrint.month, timePrint.year, timePrint.weekday);
+	fprintf(produce, "Train ID : %s\n", id);
+	fprintf(produce, "Estimated Departure Time : %.02f\n", timePrint.time.depart);
+	fprintf(produce, "Estimated Arrival Time : %.02f\n", timePrint.time.arrive);
+	fprintf(produce,"\n");
 	for (int i = 0; i < 115; i++) {
 		fprintf(produce, "-");
 	}
 	fprintf(produce, "\n");
-	fprintf(produce, "%-20s\t %-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\n", "Member ID", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination");
+	fprintf(produce, "%*s%*s%*s%*s\n", format, "Member ID", format, "Reference No", format, "Departure", format, "Destination");
 	for (int i = 0; i < 115; i++) {
 		fprintf(produce, "-");
 	}
 	fprintf(produce, "\n");
 	for (int i = 0; recordsFound[i] != -1; ++i) {
 		if (records[recordsFound[i]].amount > 1) {
-			for (int j = records[recordsFound[i]].amount; j > 0; --j) {
-				fprintf(produce, "%-20s\t %-13s\t %-5s\t %.2f\t %.2f\t %-5s\t %-10s %-10s\n", records[recordsFound[i]].ID, records[recordsFound[i]].refNum, records[recordsFound[i]].date, records[recordsFound[i]].trainInfo.prefer.time.depart, records[recordsFound[i]].trainInfo.prefer.time.arrive, records[recordsFound[i]].trainInfo.trainId, records[recordsFound[i]].trainInfo.departFrom, records[recordsFound[i]].trainInfo.destination);
-			}
+			for (int j = records[recordsFound[i]].amount; j > 0; --j)
+				fprintf(produce, "%*s%*s%*s%*s\n", format - 5, records[recordsFound[i]].ID, format - 1, records[recordsFound[i]].refNum, format, records[recordsFound[i]].trainInfo.departFrom, format, records[recordsFound[i]].trainInfo.destination);
 		}
 		else
-			fprintf(produce, "%-20s\t %-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s\n", records[recordsFound[i]].ID, records[recordsFound[i]].refNum, records[recordsFound[i]].date, records[recordsFound[i]].trainInfo.prefer.time.depart, records[recordsFound[i]].trainInfo.prefer.time.arrive, records[recordsFound[i]].trainInfo.trainId, records[recordsFound[i]].trainInfo.departFrom, records[recordsFound[i]].trainInfo.destination);
+			fprintf(produce, "%*s%*s%*s%*s\n", format - 5, records[recordsFound[i]].ID, format - 1, records[recordsFound[i]].refNum, format, records[recordsFound[i]].trainInfo.departFrom, format, records[recordsFound[i]].trainInfo.destination);
 	}
 	for (int i = 0; i < 115; i++) {
 		fprintf(produce, "-");
 	}
 	fprintf(produce, "\n\n\n");
 	fclose(produce);
+}
+
+void printList(char id[6], struct date timePrint) {
+	int recordsFound[MAX_RECORDS];
+	for (int i = 0; i < MAX_RECORDS; ++i)
+		recordsFound[i] = -1;
+	countVacancy(id, timePrint, &recordsFound);
+		printf("Date : %d/%d/%d\t%s\n", timePrint.day, timePrint.month, timePrint.year, timePrint.weekday);
+		printf("Train ID : %s\n", id);
+		printf("Estimated Departure Time : %.02f\n", timePrint.time.depart);
+		printf("Estimated Arrival Time : %.02f\n", timePrint.time.arrive);
+		printf("\n");
+		for (int i = 0; i < 115; i++) {
+			printf("-");
+		}
+		printf("\n");
+		printf("%-20s\t %-13s\t %-10s\t %-10s\n", "Member ID", "Reference No", "Departure", "Destination");
+		for (int i = 0; i < 115; i++) {
+			printf("-");
+		}
+		printf("\n");
+		for (int i = 0; recordsFound[i] != -1; ++i) {
+			if (records[recordsFound[i]].amount > 1) {
+				for (int j = records[recordsFound[i]].amount; j > 0; --j) {
+					printf("%-20s\t %-13s\t %-10s\t %-10s\n", records[recordsFound[i]].ID, records[recordsFound[i]].refNum,  records[recordsFound[i]].trainInfo.departFrom, records[recordsFound[i]].trainInfo.destination);
+				}
+			}
+			else
+				printf("%-20s\t %-13s\t %-10s\t %-10s\n", records[recordsFound[i]].ID, records[recordsFound[i]].refNum, records[recordsFound[i]].trainInfo.departFrom, records[recordsFound[i]].trainInfo.destination);
+		}
+		for (int i = 0; i < 115; i++) {
+			printf("-");
+		}
+	printf("\n\n");
+}
+
+void chooseList(Info *trainInfo, int qty){
+	char date[10][11], input[3];
+	int inputInt;
+	do {
+		title();
+		printf("Train Passenger List are able to print : \n\n");
+		for (int i = 0; i < 115; i++) {
+			printf("-");
+		}
+		printf("\n");
+		printf("%-2s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\n", "No.", "Date", "From", "To", "TrainID", "Departure", "Destination");
+		for (int i = 0; i < 115; i++) {
+			printf("-");
+		}
+		printf("\n");
+		for (int i = 0; i < qty; ++i) {
+			createDate((*(trainInfo + i)).prefer.day, (*(trainInfo + i)).prefer.month, (*(trainInfo + i)).prefer.year, &date[i]);
+			printf("%d.\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s\n", i + 1, date[i], (*(trainInfo + i)).prefer.time.depart, (*(trainInfo + i)).prefer.time.arrive, (*(trainInfo + i)).trainId, (*(trainInfo + i)).departFrom, (*(trainInfo + i)).destination);
+		}
+		for (int i = 0; i < 115; i++) {
+			printf("-");
+		}
+		printf("\n");
+		do {
+			printf("Press 0 to return.\n");
+			printf("Enter the number : ");
+			rewind(stdin);
+			scanf("%s", input);
+			if (strcmp(input, "0") == 0)
+				return;
+			inputInt = atoi(input);
+		} while (inputInt <= 0 || inputInt > qty);
+		--inputInt;
+		do {
+			title();
+			printList((*(trainInfo + inputInt)).trainId, (*(trainInfo + inputInt)).prefer);
+			printf("Do you want to save ? \n\n");
+			printf("\t1. Yes\n\t0. Return\n\n");
+			printf("Enter the number : ");
+			scanf("%s", input);
+			if (strcmp(input, "1") == 0) {
+				produceList((*(trainInfo + inputInt)).trainId, (*(trainInfo + inputInt)).prefer);
+				printf("Train Passanger List saved in list.txt file . . .\n");
+				system("pause");
+			}
+		} while (strcmp(input, "1") != 0 && strcmp(input, "0") != 0);
+	} while (!(strcmp(input, "1") != 0 && strcmp(input, "0") != 0));
+}
+
+int checkTime(Info *eligibleTrain) {
+	struct date tomorrow;
+	int isTrue = 0, j=0, recordsFound[5000];
+	countDate(1, &tomorrow.day, &tomorrow.month, &tomorrow.year, &tomorrow.weekday);
+	for (int i = 0; strcmp(records[i].date, "") != 0; ++i) {
+		isTrue = 1;
+		if (records[i].trainInfo.prefer.day == t.wDay && records[i].trainInfo.prefer.month == t.wMonth && records[i].trainInfo.prefer.year == t.wYear) {
+			if ((int)records[i].trainInfo.prefer.time.depart > t.wHour) {
+				if ((int)(records[i].trainInfo.prefer.time.depart * 100) % 100 - 30 > 0)
+					isTrue = 0;
+				else if ((int)records[i].trainInfo.prefer.time.depart == t.wHour + 1) {
+					if ((60 + (int)(records[i].trainInfo.prefer.time.depart * 100) % 100 - 30) > t.wMinute)
+						isTrue = 0;
+				}
+				else
+					isTrue = 0;
+			}
+			else if ((int)records[i].trainInfo.prefer.time.depart == t.wHour) {
+				if ((int)(records[i].trainInfo.prefer.time.depart * 100) % 100 - 30 > t.wMinute)
+					isTrue = 0;
+			}
+		}
+		else if (records[i].trainInfo.prefer.day == tomorrow.day && records[i].trainInfo.prefer.month == tomorrow.month && records[i].trainInfo.prefer.year == tomorrow.year && (int)records[i].trainInfo.prefer.time.depart == 0) {
+			if ((int)(records[i].trainInfo.prefer.time.depart * 100) % 100 - 30 < 0 && t.wHour == 23 && 60 + (int)(records[i].trainInfo.prefer.time.depart * 100) % 100 - 30 > t.wMinute) {
+				isTrue = 0;
+			}
+		}
+		else {
+			isTrue = 0;
+		}
+		if (isTrue == 1) {
+			if (records[i].trainInfo.prefer.day == tomorrow.day && records[i].trainInfo.prefer.month == tomorrow.month && records[i].trainInfo.prefer.year == tomorrow.year)
+				strcpy(records[i].trainInfo.prefer.weekday, tomorrow.weekday);
+			else {
+				countDate(0, &records[i].trainInfo.prefer.day, &records[i].trainInfo.prefer.month, &records[i].trainInfo.prefer.year, &records[i].trainInfo.prefer.weekday);
+			}
+			if (countVacancy(records[i].trainInfo.trainId, records[i].trainInfo.prefer, &recordsFound) > 0) {
+				(*(eligibleTrain + j)) = records[i].trainInfo;
+				++j;
+			}
+		}
+	}
+	return j;
 }
 
 int bookingHistory(char id[20], float *price) {

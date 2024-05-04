@@ -3,12 +3,62 @@
 #include<time.h>
 #include<string.h>
 #define USE_STRUCT
+#define USE_TITLE
 
 #include "booking.c"
 #include "schedules.c"
 #include "member.c"
 #include "staff.c"
+#include"common.c"
 #pragma warning(disable:4996);
+
+#ifndef USE_STRUCT
+#define MAX_PAX 10
+#define MAX_RECORDS 5000
+struct train {
+	float depart;
+	float arrive;
+};
+
+struct date {
+	int day, month, year;
+	char weekday[20];
+	struct train time;
+};
+
+typedef struct {
+	char trainId[6];
+	char departFrom[20];
+	char destination[20];
+	float price;
+	struct date prefer;
+}Info;
+#endif
+
+#ifndef USE_TITLE
+#include<Windows.h>
+#include<string.h>
+SYSTEMTIME t;
+void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
+	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
+	strcpy((*dayReturn), day[numOfWeek]);
+}
+
+void title(void) {
+	char day[10];
+	system("cls");
+	printf("%10s %s %s", "Train", "Ticketing", "System");
+	GetLocalTime(&t);
+	dayOfWeek(t.wDayOfWeek, &day);
+	const char month[12][10] = { {"January"}, {"February"}, {"March"}, {"April"}, {"May"}, {"June"}, {"July"}, {"August"}, {"September"}, {"October"}, {"November"}, {"December"} };
+	printf("%104s %02d %s %d %02d:%02d:%02d", day, t.wDay, month[t.wMonth - 1], t.wYear, t.wHour, t.wMinute, t.wSecond);
+	printf("\n");
+	for (int i = 0; i < 155; i++) {
+		printf("%s", "-");
+	}
+	printf("\n\n");
+}
+#endif
 
 SYSTEMTIME t;
 int mem_point;
@@ -193,6 +243,7 @@ int menu(int choice) {
 int subMenu(int input) {
 	int status, member_num, now, mem_point;
 	float price;
+	Info trainList[10];
 	do {
 		switch (input) {
 		case 11:
@@ -205,7 +256,8 @@ int subMenu(int input) {
 					case 1:
 						do {
 							status = -1;
-							switch (staff_main_page()) {
+							int check = checkTime(&trainList);
+							switch (staff_main_page(check)) {
 							case 3:
 								scheduleMain(0);
 								status = 3;
@@ -217,6 +269,10 @@ int subMenu(int input) {
 							case 6:
 								status = booking(-1);
 								status = 6;
+								break;
+							case 7:
+								chooseList(&trainList, check);
+								status = 7;
 								break;
 							case 0:
 								status = -1;
