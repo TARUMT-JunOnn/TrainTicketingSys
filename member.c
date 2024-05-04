@@ -1652,7 +1652,7 @@ int deleteMember() {
 			title();
 			displayMember();
 			printf("\n");
-			printf("Enter An ID to Delete: ");
+			printf("\t\tEnter An ID to Delete: ");
 			scanf(" %[^\n]", id);
 
 			for (int i = 0; i < numMember; i++) {
@@ -1742,7 +1742,7 @@ void loginHistory() {
 	for (int i = 0; i < numMember; i++) {
 		for (int j = 0; j < member[i].numLoginRecords; j++) {
 			if (member[i].logInOutTime[j].diff != 0) {
-				recordsExist++;
+				recordsExist++;	
 			}
 
 		}
