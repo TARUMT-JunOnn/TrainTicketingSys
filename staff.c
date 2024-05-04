@@ -172,7 +172,7 @@ int staffMenu()
         printf(" ___  ____   __    ____  ____    __  __  ____  _  _  __  __ \n");
         printf("/ __)(_  _) /__\\  ( ___)( ___)  (  \\/  )( ___)( \\( )(  )(  )\n");
         printf("\\__ \\  )(  /(__)\\  )__)  )__)    )    (  )__)  )  (  )(__)( \n");
-        printf("(___/ (__) (__)(__)(__)  (__)    (_/\\_\\)(____)(_\\_)(______) \n\n");
+        printf("(___/ (__)(__)(__) (__)  (__)   (_/\\/\\_)(____)(_\\__)(______) \n\n");
 
         printf("1 > Login\n");
         printf("2 > Registration\n");
@@ -782,7 +782,7 @@ int manager_menu()
         printf(" __  __    __    _  _    __    ___  ____  ____    __  __  ____  _  _  __  __ \n");
         printf("(  \\/  )  /__\\  ( \\( )  /__\\  / __)( ___)(  _ \\  (  \\/  )( ___)( \\( )(  )(  )\n");
         printf(" )    (  /(__)\\  )  (  /(__)\\( (_-. )__)  )   /   )    (  )__)  )  (  )(__)( \n");
-        printf("(_/\\/\\_)(__)(__)()\\_)\\/(____)(____/( ___) (_)\\_) (_/\\/\\_)(____)(_)(_)(______)\n\n");
+        printf("(_/\\/\\_)(__)(__)()\\_)\\/(____)(____/( ___)(_)\\_)  (_/\\/\\_)(____)(_)(_)(______)\n\n");
 
         printf("1 > Login\n");
         printf("2 > Registration\n");
@@ -1671,7 +1671,7 @@ void manager_view_schedule()
     char id[MAX_ID_LENGTH];
     int success = 0;
     int choice;
-    char try;
+    char try = 'n';
 
     title();
     do {
@@ -1704,7 +1704,10 @@ void manager_view_schedule()
         }
         else if (choice == 2)
         {
+            do {
+                try = 'n';
                 printf("\nEnter staff ID to view the particular staff schedule:");
+                rewind(stdin);
                 scanf(" %[^\n]", id);
 
                 for (int i = 0; i < staff_count; i++)
@@ -1733,10 +1736,18 @@ void manager_view_schedule()
 
                 if (success == 0)
                 {
-                    printf("Wrong Staff ID.\n");
-                    Sleep(1000);
+                    
+                        printf("Wrong Staff ID.\n");
 
+                     do {
+
+                        printf("try Again ?[ Y/N ] \n");
+                        rewind(stdin);
+                        scanf("%c", &try);
+
+                    } while (!(try == 'Y' || try == 'y' || try == 'N' || try == 'n'));
                 }
+            } while (try == 'Y' || try == 'y');
         }
 
     } while (choice != 1 && choice != 2);
