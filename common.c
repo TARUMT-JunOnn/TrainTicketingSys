@@ -65,11 +65,10 @@ struct {
 char passwordStore(char password[]) {
 	int i = 0;
 	char ch;
-	while (1) {
+	do{
 		ch = _getch();
-		if (ch == 13)
-			break;
-		else if (ch == 8) {
+
+		if (ch == 8) {
 			if (i > 0) {
 				i--;
 				password[i] = '\0';
@@ -77,11 +76,13 @@ char passwordStore(char password[]) {
 			}
 		}
 		else {
-			password[i] = ch;
-			i++;
-			printf("*");
+			if (ch != 13) {
+				password[i] = ch;
+				i++;
+				printf("*");
+			}
 		}
-	}
+	} while (ch != 13);
 	password[i] = '\0';
 
 	return password;
