@@ -150,9 +150,6 @@ int employeeMenu()
             return 0;
             break;
         default:
-            printf("Invalid Choice!\n");
-            printf("Please Select Again...\n");
-            Sleep(1000);
             break;
             //only can validate numeric answer
             //if enter character or string, it will be error
@@ -189,8 +186,7 @@ int staffMenu()
             Sleep(600);
             break;
         default:
-            printf("Invalid Choice!\n");
-            printf("Please Select Again\n");
+            printf("\nSelect [ 1-3 ] only\n");
             Sleep(600);
             break;
         }
@@ -293,7 +289,7 @@ int staff_login()
     } while (again == 1 && loginSuccess == 0);
 }
 
-//staff registration menu 
+//staff registration menu - Add staff
 int staff_registration() {
     char id[MAX_ID_LENGTH];
     char name[MAX_NAME_LENGTH];
@@ -408,7 +404,7 @@ void staff_schedule()
         printf("BEGIN TIME\t\tREST TIME\t\tEND TIME\n");
         printf("%02d:%02d\t\t\t %d\t\t\t  %02d:%02d\t\n", staff[employeeNum[0]].schedule.begin_hour, staff[employeeNum[0]].schedule.begin_minute, staff[employeeNum[0]].schedule.rest_time, staff[employeeNum[0]].schedule.end_hour, staff[employeeNum[0]].schedule.end_minute);
         printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[employeeNum[0]].schedule.total_working_hours, staff[employeeNum[0]].schedule.remaining_minutes);
-        printf("-------------------------------------------------------------------\n");
+        printf("-----------------------------------------------------------------------------\n");
         system("pause");
     }
     else
@@ -418,7 +414,7 @@ void staff_schedule()
 }
 
 
-//staff update information 
+//staff update information - Modify staff
 void staff_information() {
     char name[MAX_NAME_LENGTH];
     char email[MAX_EMAIL_LENGTH];
@@ -801,8 +797,7 @@ int manager_menu()
             Sleep(600);
             break;
         default:
-            printf("\nInvalid Choice!\n");
-            printf("Please Select Again\n");
+            printf("\nSelect [ 1-3 ] only\n");
             Sleep(600);
             //only can validate numeric answer
             //if enter character or string, it will be error
@@ -1062,6 +1057,7 @@ int delete_Acc()
                 printf("\n------------------------------------------\n");
 
                 do {
+                    title();
                     done = 1;
                     printf("\nConfirm To delete?\n");
                     printf("\n1. Yes\n");
@@ -1173,7 +1169,8 @@ void modifyEmpRestSchedule()
             if (strcmp(staff[i].table.id, id) == 0)
             {
 
-                do { ///
+                do { 
+                    title();
                     reenter = 0;
                     printf("\n----------- EDIT STAFF WORKING TIME ------------\n");
                     printf("--------------------------------------------------\n");
@@ -1182,7 +1179,7 @@ void modifyEmpRestSchedule()
 
                     if (scanf("%d:%d", &staff[i].schedule.begin_hour, &staff[i].schedule.begin_minute) != 2)
                     {
-                        printf("Invalid input format. Please enter time in hh:mm - 24H format.\n");
+                        printf("\n== Invalid input format. Please enter time in hh:mm - 24H format. ==\n");
                         reenter++;
                         Sleep(600);
                     }
@@ -1198,6 +1195,8 @@ void modifyEmpRestSchedule()
                             {
                                 printf("Invalid input format. Please enter time in hh:mm - 24H format.\n");
                                 reenter++;
+
+                               
                             }
 
                             total_begin_minutes = staff[i].schedule.begin_hour * 60 + staff[i].schedule.begin_minute;
@@ -1210,7 +1209,6 @@ void modifyEmpRestSchedule()
                             total_working_minutes = total_end_minutes - total_begin_minutes - staff[i].schedule.rest_time;
 
                         } while (total_working_minutes < 480);
-
 
                     }
 
@@ -1245,7 +1243,7 @@ void modifyEmpRestSchedule()
                     printf("BEGIN TIME\t\tREST TIME\t\tEND TIME\n");
                     printf("%02d:%02d\t\t\t  %d\t\t\t  %02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
                     printf("TOTAL WORKING TIME : %d hours %d minutes (exclude rest time)\n", total_working_hours, remaining_minutes);
-                    printf("-------------------------------------------------------------------\n");
+                    printf("-----------------------------------------------------------------------------\n");
                     system("pause");
 
                     staff[i].schedule.total_working_hours = total_working_hours;
@@ -1689,7 +1687,7 @@ void manager_view_schedule()
                     printf("BEGIN TIME\t\tREST TIME\t\tEND TIME\n");
                     printf("%02d:%02d\t\t\t %d\t\t\t  %02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
                     printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule.total_working_hours, staff[i].schedule.remaining_minutes);
-                    printf("-------------------------------------------------------------------\n");
+                    printf("-----------------------------------------------------------------------------\n");
                   
                 }
                 else
@@ -1720,7 +1718,7 @@ void manager_view_schedule()
                             printf("BEGIN TIME\t\tREST TIME\t\tEND TIME\n");
                             printf("%02d:%02d\t\t\t %d\t\t\t  %02d:%02d\n", staff[i].schedule.begin_hour, staff[i].schedule.begin_minute, staff[i].schedule.rest_time, staff[i].schedule.end_hour, staff[i].schedule.end_minute);
                             printf("TOTAL WORKING TIME : %d hours %d minutes (except rest time)\n", staff[i].schedule.total_working_hours, staff[i].schedule.remaining_minutes);
-                            printf("-------------------------------------------------------------------\n");
+                            printf("-----------------------------------------------------------------------------\n");
                             system("pause");
                         }
                         else
@@ -1740,8 +1738,8 @@ void manager_view_schedule()
                         printf("Wrong Staff ID.\n");
 
                      do {
-
-                        printf("try Again ?[ Y/N ] \n");
+                         title();
+                        printf("try Again? [ Y/N ] \n");
                         rewind(stdin);
                         scanf("%c", &try);
 
