@@ -6,6 +6,7 @@
 #include <ctype.h>
 #include <Windows.h>
 #define USE_TITLE
+#define USE_GW_FUNCTION
 #include "common.c"
 #pragma warning (disable : 4996);
 

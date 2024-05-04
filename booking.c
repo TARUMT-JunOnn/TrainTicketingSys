@@ -8,6 +8,7 @@
 #include<time.h>
 #define USE_TITLE
 #define USE_STRUCT
+#define USE_GW_FUNCTION
 #include "common.c"
 #pragma warning(disable:4996)
 #define MAX_TRIP 2
@@ -548,11 +549,8 @@ int bank(float* price) {
 		} while (strcmp(name, "0") == 0);
 		printf("Type your password : ");
 		int j = 0;
-		do {
-			++j;
-			pin[j] = getch();
-		} while (pin[j] != '\r');
-	} while (pin[1] == '0' && pin[2] == '\r');
+		passwordStore(pin);
+	} while (strcmp(pin, "0") == 0);
 	title();
 	printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
 	printf("%s\n", bank[num].name);
@@ -602,12 +600,20 @@ int eWallet(float* price, char name[20]) {
 		} while (strlen(phone) < 9 || strlen(phone) > 11);
 		printf("Type your 6 Number PIN : ");
 		for (i = 0; i < 6; ++i) {
-			pin[i] = getch();
-			if ((int)pin[i] >= 48 && (int)pin[i] <= 57)
+			pin[i] = _getch();
+			if ((int)pin[i] >= 48 && (int)pin[i] <= 57) 
 				printf("%c", 250);
 			else if (pin[1] == '\r' && pin[0] == '0') {
 				loop = 1;
 				break;
+			}
+			else if (pin[i] == 8) {
+				pin[i] = '\0';
+				if (i  > 0) {
+					--i;
+					printf("\b \b");
+				}
+				--i;
 			}
 			else {
 				--i;

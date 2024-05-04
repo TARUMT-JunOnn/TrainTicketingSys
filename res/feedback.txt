@@ -1,1 +1,3 @@
 M001|Cleanliness Rating|3.400000|ABCD
+M005|Cleanliness Rating|0.500000|-
+M005|Cleanliness Rating|0.522222|-
