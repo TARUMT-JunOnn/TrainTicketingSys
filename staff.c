@@ -4,8 +4,8 @@
 #include <time.h>
 #include<string.h>
 #include <ctype.h>
-#include <Windows.h>
-#define USE_TITLE
+#define USE_TITLE //in common.c
+#define USE_GW_FUNCTION //in common.c
 #include "common.c"
 #pragma warning (disable : 4996);
 
@@ -19,8 +19,178 @@
 #define MAX_POSITION_LENGTH 50
 #define MAX_QUESTION_SELECTED 2
 
+#ifndef USE_TITLE
+#include<Windows.h>
+#include<string.h>
+SYSTEMTIME t;
+void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
+    const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
+    strcpy((*dayReturn), day[numOfWeek]);
+}
+
+void title(void) {
+    char day[10];
+    system("cls");
+    printf("%10s %s %s", "Train", "Ticketing", "System");
+    GetLocalTime(&t);
+    dayOfWeek(t.wDayOfWeek, &day);
+    const char month[12][10] = { {"January"}, {"February"}, {"March"}, {"April"}, {"May"}, {"June"}, {"July"}, {"August"}, {"September"}, {"October"}, {"November"}, {"December"} };
+    printf("%104s %02d %s %d %02d:%02d:%02d", day, t.wDay, month[t.wMonth - 1], t.wYear, t.wHour, t.wMinute, t.wSecond);
+    printf("\n");
+    for (int i = 0; i < 155; i++) {
+        printf("%s", "-");
+    }
+    printf("\n\n");
+}
+#endif
+
+#ifndef USE_GW_FUNCTION
+#include <stdbool.h>
+char passwordStore(char password[]) {
+    int i = 0;
+    char ch;
+    while (1) {
+        ch = _getch();
+        if (ch == 13)
+            break;
+        else if (ch == 8) {
+            if (i > 0) {
+                i--;
+                password[i] = '\0';
+                printf("\b \b");
+            }
+        }
+        else {
+            password[i] = ch;
+            i++;
+            printf("*");
+        }
+    }
+    password[i] = '\0';
+
+    return password;
+}
+
+bool verify_password(char* pass) {
+    int length = strlen(pass);
+    bool hasUpper = false;
+    bool hasLower = false;
+    bool hasDigit = false;
+    bool hasSymbol = false;
+
+    if (length < 8)
+        return false;
+
+    for (int i = 0; i < length; i++) {
+        if (isupper(pass[i]))
+            hasUpper = true;
+        if (islower(pass[i]))
+            hasLower = true;
+        if (isdigit(pass[i]))
+            hasDigit = true;
+        if (ispunct(pass[i]))
+            hasSymbol = true;
+    }
+
+    if (!hasUpper) return false;
+    if (!hasLower) return false;
+    if (!hasDigit) return false;
+    if (!hasSymbol) return false;
+
+    return true;
+
+}
+
+bool verify_email(char* email) {
+    int count = 0;
+
+    for (int i = 0; i < strlen(email); i++) {
+        if (email[i] == '@')
+            count++;
 
 
+        if (email[i] == ' ' || email[i] == '/' || email[i] == ':' || email[i] == ';'
+            || email[i] == '[' || email[i] == ']' || email[i] == '<' || email[i] == '>'
+            || email[i] == ',')
+            return false;
+    }
+
+    if (count == 1) {
+        if (email[0] != '@') {
+            char* dot = strchr(email, '.');
+
+            if (dot != NULL && dot > strchr(email, '@'))
+                return true;
+
+        }
+    }
+
+    return false;
+}
+
+bool verify_phone_no(char* phoneNo) {
+    int length = strlen(phoneNo);
+
+    if (length != 11 && length != 12)
+        return false;
+
+    if (phoneNo[0] != '0' || phoneNo[1] != '1')
+        return false;
+
+    for (int i = 0; i < 3; i++) {
+
+        if (!isdigit(phoneNo[i]))
+            return false;
+    }
+
+    for (int i = 4; i < length; i++) {
+        if (!isdigit(phoneNo[i]))
+            return false;
+    }
+
+    if (phoneNo[3] != '-')
+        return false;
+
+    return true;
+
+}
+
+bool verify_IC(char* gender, char* ic) {
+    if (strlen(ic) != 14)
+        return false;
+
+    if (ic[6] != '-' || ic[9] != '-')
+        return false;
+
+    if (strcmp(gender, "M") == 0) {
+        if (ic[13] != '1' && ic[13] != '3' && ic[13] != '5' && ic[13] != '7' && ic[13] != '9')
+            return false;
+    }
+    else if (strcmp(gender, "F") == 0) {
+        if (ic[13] != '0' && ic[13] != '2' && ic[13] != '4' && ic[13] != '6' && ic[13] != '8')
+            return false;
+    }
+    else
+        return false;
+
+    for (int i = 0; i < 6; i++) {
+        if (!isdigit(ic[i]))
+            return false;
+    }
+
+    for (int i = 7; i < 9; i++) {
+        if (!isdigit(ic[i]))
+            return false;
+    }
+
+    for (int i = 10; i < 14; i++) {
+        if (!isdigit(ic[i]))
+            return false;
+    }
+
+    return true;
+}
+#endif
 
 //structure for checkin in & out time
 struct ScheduleStaff {
@@ -1774,8 +1944,8 @@ void dispalyAll()
 }
 
 // Staff Choice menu 
-int staff_main_page() {
-    int choice;
+int staff_main_page(int check) {
+    char choice;
     int status = 0;
 
     do {
@@ -1788,26 +1958,31 @@ int staff_main_page() {
         printf("[ 4 ] Search Member Information\n");
         printf("[ 5 ] Working Time\n"); //combination of check in and out time!
         printf("[ 6 ] Add Booking\n");
+        if (check > 0)
+            printf("[ 7 ] Print List\n");
         printf("< 0 > Log Out Staff\n"); 
         printf("Enter your Choice: ");
-        scanf("%d", &choice);
+        rewind(stdin);
+        scanf("%c", &choice);
+        if (check > 0 && choice == '7')
+            return 7;
 
         switch (choice) {
-        case 1:
+        case '1':
             staff_schedule();
             break;
-        case 2:
+        case '2':
             staff_information();
             break;
-        case 3:
-        case 4:
-        case 6:
+        case '3':
+        case '4':
+        case '6':
             return choice;
             break;
-        case 5:
+        case '5':
             status = staff_logout();
             break;
-        case 0:
+        case '0':
             printf("\nExiting...\n");
             Sleep(600);
             return 0;

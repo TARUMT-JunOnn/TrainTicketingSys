@@ -6,11 +6,15 @@
 #pragma warning(disable:4996)
 #define STRUCTCOUNT 100
 #define MAX_DAY 14
-#define USE_TITLE
-#define USE_STRUCT
+#define USE_TITLE //in common.c
+#define USE_STRUCT //in common.c
+#define USE_DATE_FUNCTION //in common.c
 #include"common.c"
 
 #ifndef USE_TITLE
+#include<Windows.h>
+#include<string.h>
+SYSTEMTIME t;
 void dayOfWeek(int numOfWeek, char(*dayReturn)[10]) {
 	const char day[7][10] = { {"Sunday"} , {"Monday"} ,{"Tuesday"} ,{"Wednesday"} ,{"Thursday"} ,{"Friday"} ,{"Saturday"} };
 	strcpy((*dayReturn), day[numOfWeek]);
@@ -29,6 +33,74 @@ void title(void) {
 		printf("%s", "-");
 	}
 	printf("\n\n");
+}
+#endif
+
+#ifndef USE_STRUCT
+struct train {
+	float depart;
+	float arrive;
+};
+
+struct date {
+	int day, month, year;
+	char weekday[20];
+	struct train time;
+};
+
+struct {
+	char refNum[10];
+	char ID[20];
+	char date[11];
+	int amount;
+	char status;
+	Info trainInfo;
+}records[MAX_RECORDS];
+#endif
+
+#ifndef USE_DATE_FUNCTION
+#include<time.h>
+int month_day(int year, int yearday, int* pmonth, int* pday)
+{
+	int i;
+	int leap = 0;
+	int month[2][12] = { { 31,28,31,30,31,30,31,31,30,31,30,31 }, { 31,28,31,30,31,30,31,31,30,31,30,31 } };
+	if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
+		leap = 1;
+	}
+	for (i = 0; yearday > month[leap][i]; ++i) {
+		if (i >= 12)
+			return leap;
+		yearday -= month[leap][i];
+	}
+	*pmonth = i + 1;
+	*pday = yearday;
+	return 2;
+}
+void countDate(int followingNum, int* day, int* month, int* year, char(*dayOW)[80]) {
+	time_t timer;
+	struct tm* now;
+	int status;
+	time(&timer);
+	now = localtime(&timer);
+	int thisyear = now->tm_year + 1900;
+	do {
+		status = month_day(thisyear, now->tm_yday + followingNum, &(*month), &(*day));
+		if (status == 0) {
+			followingNum -= 365;
+			thisyear++;
+		}
+		else if (status == 1) {
+			followingNum -= 366;
+			thisyear++;
+		}
+	} while (status != 2);
+	*year = thisyear;
+	now->tm_mday = *day;
+	now->tm_mon = *month - 1;
+	now->tm_year = thisyear - 1900;
+	mktime(now);
+	strftime((*dayOW), 80, "%A", now);
 }
 #endif
 
@@ -531,31 +603,7 @@ void ResetScheduleIIWeekend(char resetDayII[15])
 	Sleep(1500);
 }
 
-void countDate(int followingNum, int* day, int* month, int* year, char(*dayOW)[80]) {
-	time_t timer;
-	struct tm* now;
-	int status;
-	time(&timer);
-	now = localtime(&timer);
-	int thisyear = now->tm_year + 1900;
-	do {
-		status = month_day(thisyear, now->tm_yday + followingNum, &(*month), &(*day));
-		if (status == 0) {
-			followingNum -= 365;
-			thisyear++;
-		}
-		else if (status == 1) {
-			followingNum -= 366;
-			thisyear++;
-		}
-	} while (status != 2);
-	*year = thisyear;
-	now->tm_mday = *day;
-	now->tm_mon = *month - 1;
-	now->tm_year = thisyear - 1900;
-	mktime(now);
-	strftime((*dayOW), 80, "%A", now);
-}
+
 
 
 int readScheduleFile(FILE** fp) {
@@ -857,25 +905,6 @@ int DisplaySchedule()
 			printf("Invalid value. Enter again! \n\n");
 		}
 	} while (choice != 8);
-}
-
-// Convert date to day
-int month_day(int year, int yearday, int* pmonth, int* pday)
-{
-	int i;
-	int leap = 0;
-	int month[2][12] = { { 31,28,31,30,31,30,31,31,30,31,30,31 }, { 31,28,31,30,31,30,31,31,30,31,30,31 } };
-	if (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
-		leap = 1;
-	}
-	for (i = 0; yearday > month[leap][i]; ++i) {
-		if (i >= 12)
-			return leap;
-		yearday -= month[leap][i];
-	}
-	*pmonth = i + 1;
-	*pday = yearday;
-	return 2;
 }
 
 // Add schedule module
