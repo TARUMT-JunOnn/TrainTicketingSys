@@ -1630,18 +1630,20 @@ int bookingbyTime(char id[20], char prmt, int(*recordsFound)[MAX_RECORDS]) {
 
 int cancelBooking(int found[MAX_RECORDS], float *price) {
 	char input[2];
-	int inputInt;
+	int inputInt, qualify[MAX_RECORDS];
 	int i, isTrue;
 	int j = 1;
+	for (int i = 0; i < MAX_RECORDS; ++i)
+		qualify[i] = -1;
 	GetLocalTime(&t);
 	do {
-		printf("You are able to cancel upcoming train\n");
+		printf("You are able to cancel upcoming train\nReminder : Booking will be cancelled based on the Reference Number and full amount paid will be return as reward points.\n");
 		printf("What booking you would like to cancel ?\n");
 		for (int i = 0; i < 115; i++) {
 			printf("-");
 		}
 		printf("\n");
-		printf("%-2s\t %-13s\t %-11s\t %-5s\t %-5s\t %-5s\t \%-10s\t %-10s\t %-2s\t %s\n", "No.", "Reference No", "Date", "From", "To", "TrainID", "Departure", "Destination", "Pax", "Total Paid");
+		printf("%-2s\t %-13s\t %s\n", "No.", "Reference No", "Total Paid");
 		for (int i = 0; i < 115; i++) {
 			printf("-");
 		}
@@ -1663,10 +1665,20 @@ int cancelBooking(int found[MAX_RECORDS], float *price) {
 					}
 				}
 			}
+			int k = 0;
+			if (j != 1) {
+				do {
+					if (qualify[k] == found[i])
+						++k;
+					for (k = 0; strcmp(records[qualify[k]].refNum, records[found[i]].refNum) != 0 && k < j; ++k);
+				} while (qualify[k] == found[i]);
+			}
+			if (k < j  && j != 1)
+				isTrue = 0;
 			if (isTrue == 1 && records[found[i]].status != 'C') {
-				printf("%d.\t %-13s\t %s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d %.02f\n", j, records[found[i]].refNum, records[found[i]].date, records[found[i]].trainInfo.prefer.time.depart, records[found[i]].trainInfo.prefer.time.arrive, records[found[i]].trainInfo.trainId, records[found[i]].trainInfo.departFrom, records[found[i]].trainInfo.destination, records[found[i]].amount, records[found[i]].trainInfo.price);
-				found[j - 1] = found[i];
-				++j;
+					printf("%d.\t %-13s\t MYR%.02f\n", j, records[found[i]].refNum, records[found[i]].trainInfo.price);
+					qualify[j - 1] = found[i];
+					++j;
 			}
 			else {
 				found[i] = -1;
@@ -1693,8 +1705,11 @@ int cancelBooking(int found[MAX_RECORDS], float *price) {
 			return 0;
 		}
 	} while (inputInt > i || inputInt == 0);
-	records[found[inputInt - 1]].status = 'C';
-	*price = records[found[inputInt - 1]].trainInfo.price;
+	for (int i = 0; i < MAX_RECORDS; ++i) {
+		if (strcmp(records[i].refNum, records[qualify[inputInt - 1]].refNum) == 0)
+			records[i].status = 'C';
+	}
+	*price = records[qualify[inputInt - 1]].trainInfo.price;
 	printf("Sucessfully cancel. Amount paid would be return as point.\n");
 	printf("Press any key to return.\n");
 	rewind(stdin);
