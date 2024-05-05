@@ -1647,7 +1647,7 @@ int deleteMember() {
 			title();
 			displayMember();
 			printf("\n");
-			printf("\t\tEnter An ID to Delete: ");
+			printf("Enter An ID to Delete: ");
 			scanf(" %[^\n]", id);
 
 			for (int i = 0; i < numMember; i++) {
