@@ -363,13 +363,13 @@ float calcTax(int count, float sumPrice) {
 	if (count == 0) {
 		float sst;
 		sst = sumPrice * 0.1;
-		printf("%102s : RM%6.02f\n", "Service Tax 10%", sst);
+		printf("%102s : MYR%5.02f\n", "Service Tax 10%", sst);
 		return sst;
 	}
 	else if (count == 1) {
 		float gst;
 		gst = sumPrice * 0.06;
-		printf("%102s : RM%6.02f\n", "GST 6%", gst);
+		printf("%102s : MYR%5.02f\n", "GST 6%", gst);
 		return gst;
 	}
 }
@@ -391,7 +391,7 @@ float calcFare(Info* userChoice, char(*date)[11], int *pax, int status) {
 	for (int i = 0; i < MAX_TRIP; ++i) {
 		if ((*(pax + i)) != 0 && (*(date + i))[2] == '/') {
 			totalPrice[0] = (*(userChoice + (i * MAX_PAX))).price * (float)(*(pax + i));
-			printf("%s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\t RM %-10.02f\t RM %.02f\n", (*(date + i)), (*(userChoice + (i * MAX_PAX))).prefer.time.depart, (*(userChoice + (i * MAX_PAX))).prefer.time.arrive, (*(userChoice + (i * MAX_PAX))).trainId, (*(userChoice + (i * MAX_PAX))).departFrom, (*(userChoice + (i * MAX_PAX))).destination, (*(pax + i)), (*(userChoice + (i * MAX_PAX))).price, totalPrice[0]);
+			printf("%s\t %.2f\t %.2f\t %-7s\t %-15s %-15s %d\t MYR %-9.02f\t MYR %.02f\n", (*(date + i)), (*(userChoice + (i * MAX_PAX))).prefer.time.depart, (*(userChoice + (i * MAX_PAX))).prefer.time.arrive, (*(userChoice + (i * MAX_PAX))).trainId, (*(userChoice + (i * MAX_PAX))).departFrom, (*(userChoice + (i * MAX_PAX))).destination, (*(pax + i)), (*(userChoice + (i * MAX_PAX))).price, totalPrice[0]);
 			sumPrice += totalPrice[0];
 		}
 	}
@@ -399,7 +399,7 @@ float calcFare(Info* userChoice, char(*date)[11], int *pax, int status) {
 		printf("-");
 	}
 	printf("\n");
-	printf("%102s : RM%6.02f\n", "Total", sumPrice);
+	printf("%102s : MYR%5.02f\n", "Total", sumPrice);
 	int count = 0;
 	float sst = calcTax(count, sumPrice);
 	++count;
@@ -429,16 +429,16 @@ float calcFare(Info* userChoice, char(*date)[11], int *pax, int status) {
 	}
 	if (adj < 0) {
 		negative = adj * -1;
-		printf("%102s : -RM%5.02f\n", "Rounding Adjustment", negative);
+		printf("%102s : -MYR%4.02f\n", "Rounding Adjustment", negative);
 	}
 	else {
-		printf("%102s : RM%6.02f\n", "Rounding Adjustment", adj);
+		printf("%102s : MYR%5.02f\n", "Rounding Adjustment", adj);
 	}
 	sumPrice += adj;
 	if (status == 1)
-		printf("%102s : RM%6.02f\n", "Total Price should payment before", sumPrice);
+		printf("%102s : MYR%5.02f\n", "Total Price should payment before", sumPrice);
 	else if (status == 0)
-		printf("%102s : RM%6.02f\n", "Total Price should payment", sumPrice);
+		printf("%102s : MYR%5.02f\n", "Total Price should payment", sumPrice);
 	printf("\n\n");
 	return sumPrice;
 }
@@ -652,7 +652,7 @@ int card(float* price, char name[20]) {
 	} while (bigLoop == 3);
 	do {
 		title();
-		printf("%51s : RM%6.02f\n\n", "Total Price should payment", *price);
+		printf("%51s : MYR%3.02f\n\n", "Total Price should payment", *price);
 		printf("%51s : %s\n", "Card Holder", name);
 		printf("%51s : ", "Card Number");
 		int i;
@@ -669,7 +669,7 @@ int card(float* price, char name[20]) {
 		printf("%51s : %s\n", "Card Issuer", issuer);
 		printf("\n");
 		printf("Do you want to make payment with this card ?\n");
-		printf("\t1. Yes, make payment with this card. (-RM%6.02f)\n\t0. No, Return to main page\n\n", *price);
+		printf("\t1. Yes, make payment with this card. (-MYR%5.02f)\n\t0. No, Return to main page\n\n", *price);
 		printf("Enter the number : ");
 		rewind(stdin);
 		scanf("%c", &input);
@@ -677,7 +677,7 @@ int card(float* price, char name[20]) {
 		case '1':
 			for (int j = 3; j >= 0; --j) {
 				title();
-				printf("Amount of RM%6.02f has been deducted from the card ", *price);
+				printf("Amount of MYR%5.02f has been deducted from the card ", *price);
 				int i;
 				for (i = 17; num[i] != '\0'; --i);
 				for (int j = 0; j < i; ++j) {
@@ -742,7 +742,7 @@ int bank(float* price) {
 		do {
 			do {
 				title();
-				printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
+				printf("%29s : MYR%5.02f\n\n", "Total Price should payment", *price);
 				printf("Type 0 to return\n");
 				printf("Please choose the bank you prefered :\n\n");
 				printf("Page (1/2)\n");
@@ -755,7 +755,7 @@ int bank(float* price) {
 				if ((int)input[0] < 48 || (int)input[0] >57 || (int)input[1] < 48 && input[1] != '\0' || (int)input[1] >57) {
 					if (scanf("%[^\n]", input) == 0) {
 						title();
-						printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
+						printf("%29s : MYR%5.02f\n\n", "Total Price should payment", *price);
 						printf("Please choose the bank you prefered :\n\n");
 						printf("Page (2/2)\n");
 						for (int i = 17; i < 33; ++i) {
@@ -790,16 +790,16 @@ int bank(float* price) {
 		passwordStore(pin);
 	} while (strcmp(pin, "0") == 0);
 	title();
-	printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
+	printf("%29s : MYR%5.02f\n\n", "Total Price should payment", *price);
 	printf("%s\n", bank[num].name);
 	srand(time(NULL));
 	printf("Username : %s\n", name);
 	int acc = rand() % (9999999999 - 1000000000 + 1) + 1000000000;
 	printf("Account Number : %d\n", acc);
 	float balance = ((100000 - 1000) * ((float)rand() / RAND_MAX)) + 1000;
-	printf("Remaining Balance : RM%.02f\n\n", balance);
+	printf("Remaining Balance : MYR%.02f\n\n", balance);
 	printf("Do you want to make payment with this account number ?\n");
-	printf("\t1. Yes, make payment with this account number. (-RM%6.02f)\n\t0. No, Return to main page\n\n", *price);
+	printf("\t1. Yes, make payment with this account number. (-MYR%5.02f)\n\t0. No, Return to main page\n\n", *price);
 	printf("Enter the number : ");
 	rewind(stdin);
 	scanf("%c", &input1);
@@ -807,7 +807,7 @@ int bank(float* price) {
 	case '1':
 		for (int j = 3; j >= 0; --j) {
 			title();
-			printf("Amount of RM%6.02f has been deducted from the account ", *price);
+			printf("Amount of MYR%5.02f has been deducted from the account ", *price);
 			int i;
 			printf("\n\nYou will be redirected to the merchant page in %d second(s)", j);
 			Sleep(1000);
@@ -862,9 +862,9 @@ int eWallet(float* price, char name[20]) {
 		title();
 		printf("Touch N Go E Wallet\n\n");
 		printf("Account username : %s\n", name);
-		printf("%29s : RM%6.02f\n\n", "Total Price should payment", *price);
+		printf("%29s : MYR%5.02f\n\n", "Total Price should payment", *price);
 		printf("Do you want to pay ?\n");
-		printf("\t1. Yes, make payment with this e-Wallet account. (-RM%6.02f)\n\t0. No, Return to main page\n\n", *price);
+		printf("\t1. Yes, make payment with this e-Wallet account. (-MYR%5.02f)\n\t0. No, Return to main page\n\n", *price);
 		printf("Enter the number : ");
 		rewind(stdin);
 		scanf("%c", &input);
@@ -872,7 +872,7 @@ int eWallet(float* price, char name[20]) {
 		case '1':
 			for (int j = 3; j >= 0; --j) {
 				title();
-				printf("Amount of RM%6.02f has been deducted from the TnG E-Wallet account ", *price);
+				printf("Amount of MYR%5.02f has been deducted from the TnG E-Wallet account ", *price);
 				printf("\n\nYou will be redirected to the merchant page in %d second(s)", j);
 				Sleep(1000);
 			}
@@ -919,8 +919,8 @@ int payment(float* price, Info* userChoice, char(*date)[11], int *pax, char(*tim
 	}
 	calcFare(&(*userChoice), &(*date), &(*pax), status);
 	if (status == 1) {
-		printf("%102s :-RM%6.02f\n", "Point Redeemed", redeem);
-		printf("%102s : RM%6.02f\n", "Total Price should payment", temporary);
+		printf("%102s :-MYR%5.02f\n", "Point Redeemed", redeem);
+		printf("%102s : MYR%5.02f\n", "Total Price should payment", temporary);
 	}
 	if (temporary != 0) {
 		printf("Payments method :\n\t1. Credit/Debit Card\n\t2. Online Banking\n\t3. E-Wallet\n\t0. Cancel Payment (Return)\n\n");
@@ -929,7 +929,7 @@ int payment(float* price, Info* userChoice, char(*date)[11], int *pax, char(*tim
 		scanf("%c", &input);
 	}
 	else {
-		printf("Would you like to proceed to payment ? (RM 0.00)\n\t1. Yes\n\t0. No, Return\n\n");
+		printf("Would you like to proceed to payment ? (MYR 0.00)\n\t1. Yes\n\t0. No, Return\n\n");
 		printf("Enter the number : ");
 		rewind(stdin);
 		scanf("%c", &input);
