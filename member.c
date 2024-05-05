@@ -1249,8 +1249,6 @@ int searchMemberID() {
 		waitingScreen();
 		return 0;
 	}
-
-	//return something back to menu
 }
 
 int searchMemberGender() {
@@ -1352,10 +1350,7 @@ int searchMemberGender() {
 		waitingScreen();
 		return 0;
 
-		//return something(maybe not return 0)
 	}
-
-	//return something back to menu
 }
 
 int searchMemberAge() {
@@ -1749,16 +1744,16 @@ void loginHistory() {
 	}
 
 	if (recordsExist != 0) {
-		printf(" _       ___    ____  ___  _   _    _   _  ___  ____  _____  ___   ____ __   __\n");
-		printf("| |     / _ \\  / ___||_ _|| \\ | |  | | | ||_ _|/ ___||_   _|/ _ \\ |  _ \\\\ \\ / /\n");
-		printf("| |    | | | || |  _  | | |  \\| |  | |_| | | | \\___ \\  | | | | | || |_) \\\\ V / \n");
-		printf("| |___ | |_| || |_| | | | | |\\  |  |  _  | | |  ___) | | | | |_| ||  _ <  | |  \n");
-		printf("|_____| \\___/  \\____||___||_| \\_|  |_| |_||___||____/  |_|  \\___/ |_| \\_\\ |_|  \n");
-		printf("-------------------------------------------------------------------------------\n");
+		printf("\t\t\t\t      _       ___    ____  ___  _   _    _   _  ___  ____  _____  ___   ____ __   __\n");
+		printf("\t\t\t\t     | |     / _ \\  / ___||_ _|| \\ | |  | | | ||_ _|/ ___||_   _|/ _ \\ |  _ \\\\ \\ / /\n");
+		printf("\t\t\t\t     | |    | | | || |  _  | | |  \\| |  | |_| | | | \\___ \\  | | | | | || |_) \\\\ V / \n");
+		printf("\t\t\t\t     | |___ | |_| || |_| | | | | |\\  |  |  _  | | |  ___) | | | | |_| ||  _ <  | |  \n");
+		printf("\t\t\t\t     |_____| \\___/  \\____||___||_| \\_|  |_| |_||___||____/  |_|  \\___/ |_| \\_\\ |_|  \n");
+		printf("\t\t\t\t     -------------------------------------------------------------------------------\n");
 
-		printf("--------------------------------------------------------------------------------------------------------------------------\n");
-		printf("| ID         | NAME                 | Log In Date Time          | Log Out Date Time         | Duratoion                  |\n");
-		printf("--------------------------------------------------------------------------------------------------------------------------\n");
+		printf("\t\t--------------------------------------------------------------------------------------------------------------------------\n");
+		printf("\t\t| ID         | NAME                 | Log In Date Time          | Log Out Date Time         | Duratoion                  |\n");
+		printf("\t\t--------------------------------------------------------------------------------------------------------------------------\n");
 
 		for (int i = 0; i < numMember; i++) {
 			for (int j = 0; j < member[i].numLoginRecords; j++) {
@@ -1773,10 +1768,11 @@ void loginHistory() {
 
 				int seconds = remainingSecs % 60;
 
-				printf("| %-10s | %-20s | %-25s | %-25s | %02d Hours %02d Mins %02d Sec    |\n", member[i].id, member[i].name, member[i].logInOutTime[j].loginTimeDate, member[i].logInOutTime[j].logoutTimeDate, hours, minutes, seconds);
-				printf("--------------------------------------------------------------------------------------------------------------------------\n");
+				printf("\t\t| %-10s | %-20s | %-25s | %-25s | %02d Hours %02d Mins %02d Sec    |\n", member[i].id, member[i].name, member[i].logInOutTime[j].loginTimeDate, member[i].logInOutTime[j].logoutTimeDate, hours, minutes, seconds);
+				printf("\t\t--------------------------------------------------------------------------------------------------------------------------\n");
 			}
 		}
+		printf("\t\t");
 		system("pause");
 	}
 	else {
