@@ -1791,7 +1791,7 @@ int chooseTime(Info* results, int seatleft[2]) {
 	struct date temporary;
 	char fromto[100][2][20], choice[2], day[2][80];
 	char destination[2][20][20];
-	int userChoice[2], j, k[2] = { 0, 0 }, n[2] = {0 , 0}, date[2][3], followingDate[3], records[2][4][STRUCTCOUNT], timeChoice[2], trip;
+	int userChoice[2], j[3] = {0, 0, 0}, k[2] = { 0, 0 }, n[2] = { 0 , 0 }, date[2][3], followingDate[3], records[2][4][STRUCTCOUNT], timeChoice[2], trip;
 	for (int k = 0; k < 2; k++) {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < STRUCTCOUNT; j++) {
@@ -1828,7 +1828,7 @@ int chooseTime(Info* results, int seatleft[2]) {
 			return 0;
 		userChoice[0] = atoi(choice) - 1;
 		do {
-			printf("Select departion : \n\n");
+			printf("Select depart from : \n\n");
 			k[1] = 0;
 			for (int i = 0; strcmp(fromto[i][0], "NULL") != 0; i++) {
 				for (int j = 0; strcmp(destination[1][j], fromto[i][0]) != 0; j++) {
@@ -1871,17 +1871,22 @@ int chooseTime(Info* results, int seatleft[2]) {
 					}
 				printf("============================\n\n");
 				typeDate(&date[m][0], &date[m][1], &date[m][2]);
-				for (j = 0; j < 14; j++) {
-					countDate(j, &followingDate[0], &followingDate[1], &followingDate[2], &day[m]);
+				for (j[m] = 0; j[m] < 14; j[m]++) {
+					countDate(j[m], &followingDate[0], &followingDate[1], &followingDate[2], &day[m]);
 					if (followingDate[0] == date[m][0] && followingDate[1] == date[m][1] && followingDate[2] == date[m][2])
 						break;
 				}
-				if (j == 14) {
+				if (j[m] == 14) {
 					printf("Sorry. System are only able to show up to two weeks schedules from now.\n");
 					system("pause");
 				}
-			} while (j == 14);
-			if (j < 7)
+				else if (m == 1 && j[m] < j[m - 1]) {
+					printf("You are not able to booking return train before depart.\n");
+					j[m] = 14;
+					system("pause");
+				}
+			} while (j[m] == 14);
+			if (j[m] < 7)
 				parSchedule(1, date[m][0], date[m][1], date[m][2], day[m], &records[m][0]);
 			else
 				parSchedule(2, date[m][0], date[m][1], date[m][2], day[m], &records[m][0]);
@@ -1894,9 +1899,9 @@ int chooseTime(Info* results, int seatleft[2]) {
 				}
 			}
 			title();
-			printf("%-5s %-15s %-15s %-10s %-15s %-15s %s\n", "No.", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Seats Left");
-			printf("%-5s %-15s %-15s %-10s %-15s %-15s %s\n", "===", "==============", "============", "========", "===========", "===========", "==========");
-			j = 1;
+			printf("%-5s %-15s %-15s %-10s %-15s %-15s %-14s %s\n", "No.", "Departure Time", "Arrival Time", "Train ID", "Depart From", "Destination", "Price per pax", "Seats Left");
+			printf("%-5s %-15s %-15s %-10s %-15s %-15s %-14s %s\n", "===", "==============", "============", "========", "===========", "===========", "==============", "==========");
+			j[2] = 1;
 			for (int k = 0; schedule[records[m][0][k]].deptArr.time.depart > 0; k++) {
 				for (int l = 0; schedule[records[m][1][l]].deptArr.time.depart > 0; l++) {
 					if (records[m][0][k] == records[m][1][l]) {
@@ -1930,17 +1935,19 @@ int chooseTime(Info* results, int seatleft[2]) {
 						else {
 							isTrue = 1;
 						}
+						if (m == 1 && temporary.time.depart <= (*(results + (m - 1) * MAX_PAX)).prefer.time.depart && date[m][0] == (*(results + (m - 1) * MAX_PAX)).prefer.day && date[m][1] == (*(results + (m - 1) * MAX_PAX)).prefer.month && date[m][2] == (*(results + (m - 1) * MAX_PAX)).prefer.year)
+							isTrue = 0;
 						if (seatleft[m] > 0 && isTrue == 1) {
-							printf("%-5d %-15.2f %-15.2f %-10s %-15s %-15s ", j, schedule[records[m][0][k]].deptArr.time.depart, schedule[records[m][0][k]].deptArr.time.arrive, schedule[records[m][0][k]].trainID, schedule[records[m][0][k]].departureFrom, schedule[records[m][0][k]].destination);
+							printf("%-5d %-15.2f %-15.2f %-10s %-15s %-15s MYR%-11.02f", j[2], schedule[records[m][0][k]].deptArr.time.depart, schedule[records[m][0][k]].deptArr.time.arrive, schedule[records[m][0][k]].trainID, schedule[records[m][0][k]].departureFrom, schedule[records[m][0][k]].destination, schedule[records[m][0][k]].price);
 							printf("%d\n", seatleft[m]);
-							records[m][3][j - 1] = records[m][0][k];
-							j++;
+							records[m][3][j[2] - 1] = records[m][0][k];
+							j[2]++;
 						}
 					}
 				}
 			}
 			printf("\n\n");
-			if (j == 1) {
+			if (j[2] == 1) {
 					title();
 					printf("Train towards %s are not available in %0d/%02d/%d. Please choose again.\n", destination[m][userChoice[m]], date[m][0], date[m][1], date[m][2]);
 					system("pause");
@@ -1951,7 +1958,7 @@ int chooseTime(Info* results, int seatleft[2]) {
 					printf("Which time you are prefered ? \n");
 					printf("Your Choice > ");
 					scanf("%s", choice);
-				} while (atoi(choice) >= j || atoi(choice) == 0);
+				} while (atoi(choice) >= j[2] || atoi(choice) == 0);
 				timeChoice[m] = atoi(choice) - 1;
 				strcpy((*(results + m * MAX_PAX)).departFrom, schedule[records[m][3][timeChoice[m]]].departureFrom);
 				strcpy((*(results + m * MAX_PAX)).destination, schedule[records[m][3][timeChoice[m]]].destination);
@@ -1965,7 +1972,7 @@ int chooseTime(Info* results, int seatleft[2]) {
 				(*(results + m * MAX_PAX)).prefer.time.arrive = schedule[records[m][3][timeChoice[m]]].deptArr.time.arrive;
 			}
 		}
-		} while (j == 1);
+		} while (j[2] == 1);
 		return trip;
 }
 
