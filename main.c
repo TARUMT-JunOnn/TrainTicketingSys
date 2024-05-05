@@ -168,11 +168,11 @@ int booking(int mem_num) {
 						memPointCal(&mem_point, price);
 						addMemPoint(mem_num, mem_point);
 					}
-					break;
 				}
-				if (status == 1)
-					writeFile();
+				break;
 			}
+			if (status == 1)
+				writeFile();
 			break;
 		}
 	} while (status == -1);

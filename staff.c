@@ -1952,7 +1952,7 @@ void dispalyAll()
 
 // Staff Choice menu 
 int staff_main_page(int check) {
-    char choice;
+    char choice[2];
     int status = 0;
 
     do {
@@ -1970,11 +1970,11 @@ int staff_main_page(int check) {
         printf("< 0 > Log Out Staff\n"); 
         printf("Enter your Choice: ");
         rewind(stdin);
-        scanf("%c", &choice);
-        if (check > 0 && choice == '7')
+        scanf("%s", choice);
+        if (check > 0 && choice[0] == '7')
             return 7;
 
-        switch (choice) {
+        switch (choice[0]) {
         case '1':
             staff_schedule();
             break;
@@ -1984,7 +1984,7 @@ int staff_main_page(int check) {
         case '3':
         case '4':
         case '6':
-            return choice;
+            return atoi(choice);
             break;
         case '5':
             status = staff_logout();
@@ -2002,7 +2002,7 @@ int staff_main_page(int check) {
         if (status == 1) {
             return 0;
         }
-    } while (choice != '0');
+    } while (choice[0] != '0');
 }
 
 //Manager Choice menu 
