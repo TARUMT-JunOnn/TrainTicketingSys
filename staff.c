@@ -1852,6 +1852,7 @@ void manager_view_schedule()
         {
             for (int i = 0; i < staff_count; i++)
             {
+
                 if (staff[i].schedule.total_working_hours != 0) {
                     printf("\n----------------- WORKING TIME SCHEDULE -----------------|- %s -|\n", staff[i].table.name);
                     printf("BEGIN TIME\t\tREST TIME\t\tEND TIME\n");
