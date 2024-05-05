@@ -260,6 +260,7 @@ int subMenu(int input) {
 							switch (staff_main_page(check)) {
 							case 3:
 								scheduleMain(0);
+								writeFile();
 								status = 3;
 								break;
 							case 4:
@@ -311,6 +312,7 @@ int subMenu(int input) {
 								switch (manager_main_page()) {
 								case 6:
 									scheduleMain(1);
+									writeFile();
 									status = 6;
 									break;
 								case 7:
