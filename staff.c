@@ -1039,6 +1039,18 @@ void manager_registration()
     printf("Manager ID: ");
     scanf(" %[^\n]", id);
 
+    for (int i = 0; i < manager_count; i++)
+    {
+        if (strcmp(manager[i].table.id, id) == 0)
+        {
+            title();
+            printf("The ID %s already exits.\n", id);
+            printf("Please choose a different ID.\n");
+            Sleep(1000);
+            return 0;
+        }
+    }
+
     do {
         title();
         passwordFormat();
@@ -1060,19 +1072,9 @@ void manager_registration()
                 waitingScreen();
             }
         }
-    } while (!verify_password(password) || strcmp(password, passConfirm) != 0);
+    } while (!verify_password(password) || strcmp(password, passConfirm) != 0); 
 
-    for (int i = 0; i < manager_count; i++)
-    {
-        if (strcmp(manager[i].table.id, id) == 0)
-        {
-            title();
-            printf("The ID %s already exits.\n", id);
-            printf("Please choose a different ID.\n");
-            Sleep(1000);
-            return 0;
-        }
-    }
+
 
     again = 0;
     do
@@ -1225,6 +1227,7 @@ int delete_Acc()
                 printf("\nStaff Name\tPhone No\tEmail\n");
                 printf("%s\t%s\t%s", staff[i].table.name, staff[i].table.phone, staff[i].table.email);
                 printf("\n------------------------------------------\n");
+                system("pause");
 
                 do {
                     title();
@@ -1680,8 +1683,9 @@ void manager_reset_pass()
                                 } while (!verify_password(password));
 
                                 strcpy(manager[i].table.password, password);
-                                printf("Password reset successfully.\n");
-                                
+                                printf("\nPassword reset successfully.\n");
+                                Sleep(1200);
+
                                 return;
                             }
                             else
@@ -1694,7 +1698,8 @@ void manager_reset_pass()
                                     scanf(" %c", &enterAgain);
                                     if (toupper(enterAgain) != 'N' && toupper(enterAgain) != 'Y')
                                     {
-                                        printf("\nInvalid selection - Answers in Y/N only\n\n");
+                                        printf("\nAnswers in Y/N only\n\n");
+                                        Sleep(1000);
                                     }
 
                                 } while (toupper(enterAgain) != 'N' && toupper(enterAgain) != 'Y');
@@ -1843,6 +1848,7 @@ void manager_view_schedule()
 
     title();
     do {
+        title();
         printf("\n\n1. View all staff working schedules\n");
         printf("2. View particular staff working schedule\n");
         printf("Enter you choice:");
