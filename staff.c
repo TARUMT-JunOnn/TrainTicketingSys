@@ -1635,10 +1635,11 @@ void manager_reset_pass()
         {
             if (strcmp(manager[i].table.id, id) == 0)
             {
+                title();
                 printf("\nName: %s\n", manager[i].table.name);
                 printf("Email:%s\n", manager[i].table.email);
                 do {
-                    title();
+
                     printf("\nIs you?\n");
                     printf("1. CORRECT, IS ME\n");
                     printf("2. WRONG, NOT ME\n");
