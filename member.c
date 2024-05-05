@@ -1657,7 +1657,7 @@ int deleteMember() {
 						again = 0;
 						success = 0;
 						searchMemberTitle();
-						printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %d          |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+						printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
 						printf("----------------------------------------------------------------------------------------------------------------------\n");
 
 						printf("Are You Sure You Want To Delete This Member Account?\n\n");
