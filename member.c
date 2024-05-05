@@ -1706,7 +1706,8 @@ int deleteMember() {
 									title();
 									printf("Cancelling. ");
 									waitingScreen();
-									return 0;
+									again = 0;
+									success = 1;
 								}
 								else
 									again++;
