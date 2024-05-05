@@ -9,6 +9,13 @@
 #pragma warning(disable:4996)
 #define MAX_TRIP 2
 
+/*
+	Train Ticketing System - Train Booking Module
+	TARUMT AACS1084 Programming Concepts and Design - Assignment
+	202407 Intake - Diploma in Computer Science Year 1 Sem 3 
+	Written by Mr. Marco Wong (Wong Jun Onn)
+*/
+
 //Global Structure Declaration
 #ifndef USE_TITLE
 #include<Windows.h>
@@ -2065,3 +2072,40 @@ int addBooking(Info* userChoice, char memName[20], char memID[20],  int *mem_poi
 	} while (status != 1);
 	return 1;
 }
+
+//For individual run, have many bugs but not important
+//int main(void) {
+//	Info userChoice[MAX_TRIP][MAX_PAX];
+//	userChoice[0][0] = (Info){ "T1001", "KL Sentral",  "Kampar", 50, { 5, 4, 2024,{ 9, 13} } };
+//	userChoice[1][0] = (Info){ "T1004", "Kampar", "KL Sentral", 25, { 6, 4, 2024,{ 5, 8} } };
+//	int point = 88888, seats = 50;
+//	float price;
+//	char input;
+//	int statAdd;
+//	FILE* fptr;
+//	fptr = fopen("../TrainTicketingSys/res/booking.txt", "r");
+//	readBookingFile(&fptr);
+//	fclose(fptr);
+//	reset(userChoice);
+//	do {
+//		title();
+//		printf("What action you would like to perform ?\n");
+//		printf("\t1. Add booking\n\t2. Booking History\n\t3. Modify Booking\n\t4. Cancel booking\n\t5. Produce List\n\n");
+//		printf("Enter the number : ");
+//		rewind(stdin);
+//		scanf("%c", &input);
+//		switch (input) {
+//		case '1':
+//			statAdd = addBooking(userChoice, "Marco", "M888", &point, &seats, &price);
+//			break;
+//		case '2':
+//			input = bookingHistory("Wong", &price);
+//		case '3':
+//			produceList("M888", userChoice[0][0].prefer);
+//			break;
+//		}
+//	} while (!(input == '1' || input == '2' || input == '3'));
+//	fptr = fopen("../TrainTicketingSys/res/booking.txt", "w");
+//	writeBookingFile(&fptr);
+//	fclose(fptr);
+//}
