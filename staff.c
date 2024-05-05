@@ -1606,10 +1606,10 @@ void manager_reset_pass()
 {
 
     char id[MAX_ID_LENGTH];
-    int i, j;
+    int i;
     int ans;
     int correctAns = 0;
-    char answer[50][2];
+    char answer[2][50];
     char question[MAX_QUESTION_SELECTED][50];
     int idExist = 0;
     int choice;
@@ -1644,7 +1644,6 @@ void manager_reset_pass()
                     idExist++;
                     if (ans == 1)
                     {
-                        correctAns = 0;
 
                         for (int j = 0; j < MAX_QUESTION_SELECTED; j++)
                             questionNum[j] = manager[i].security[j].questionNum;
@@ -1653,6 +1652,8 @@ void manager_reset_pass()
                         securityQues_display(questionNum, question);
 
                         do {
+
+                            correctAns = 0;
 
                             for (int j = 0; j < MAX_QUESTION_SELECTED; j++) {
                                 printf("\n%s:", question[j]);
