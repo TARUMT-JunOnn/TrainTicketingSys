@@ -535,7 +535,7 @@ void passwordFormat(void) {
 }
 
 int questionSelected(int questionSelection[3]) {
-	char questionNum[MAX_NUM_QUESTION];
+	char questionNum[MAX_NUM_QUESTION][5];
 	int i = 0, success = 0;
 
 	do {
@@ -544,9 +544,9 @@ int questionSelected(int questionSelection[3]) {
 
 		do {
 			printf("%d. ", i + 1);
-			scanf(" %c", &questionNum[i]);
+			scanf(" %[^\n]", &questionNum[i]);
 
-			if ((int)questionNum[i] - 48 > 6 || (int)questionNum[i] - 48 < 1) {
+			if (atoi(questionNum[i]) > 6 || atoi(questionNum[i]) < 1) {
 				printf("\nInvalid Choice!\n");
 				printf("Please Enter Number 1 - 6. ");
 
@@ -562,7 +562,7 @@ int questionSelected(int questionSelection[3]) {
 			if (i > 1 && success == 1) {
 				for (int y = 0; y < i - 1; y++) {
 
-					if ((int)questionNum[y] - 48 == (int)questionNum[i - 1] - 48) {
+					if (atoi(questionNum[y]) == atoi(questionNum[i - 1])) {
 						printf("\nThe Selected Security Question Must Be Different From The Previous One.\n");
 						printf("Please Try Again. ");
 
@@ -580,7 +580,7 @@ int questionSelected(int questionSelection[3]) {
 	} while (i < 3 && success == 0);
 
 	for (int j = 0; j < MAX_NUM_QUESTION; j++) {
-		questionSelection[j] = (int)questionNum[j] - 48;
+		questionSelection[j] = atoi(questionNum[j]);
 	}
 
 
@@ -1641,78 +1641,93 @@ int deleteMember() {
 	char* confirmationMenu[] = { "Confirm", "Cancel" };
 	char id[MEMBER_ID];
 	int confirmation, again = 0, success = 0;
+	char deleteFunct[5];
 
 	if (numMember > 0) {
 		do {
 			title();
 			displayMember();
-			printf("\n");
-			printf("Enter An ID to Delete: ");
-			scanf(" %[^\n]", id);
+			printf("Enter 1 to Delete Member Account(0 Exit)\n");
+			scanf(" %[^\n]", deleteFunct);
+			if (strcmp(deleteFunct, "1") == 0) {
+				do {
+					success = 0;
+					title();
+					displayMember();
+					printf("\n");
+					printf("Enter An ID to Delete: ");
+					scanf(" %[^\n]", id);
 
-			for (int i = 0; i < numMember; i++) {
-				if (strcmp(member[i].id, id) == 0) {
-					do {
-						title();
-						again = 0;
-						success = 0;
-						searchMemberTitle();
-						printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
-						printf("----------------------------------------------------------------------------------------------------------------------\n");
+					for (int i = 0; i < numMember; i++) {
+						if (strcmp(member[i].id, id) == 0) {
+							do {
+								title();
+								again = 0;
+								success = 0;
+								searchMemberTitle();
+								printf("| %-10s | %-20s | %-3d | %-6s | %-14s | %-30s | %-13d |\n", member[i].id, member[i].name, member[i].age, member[i].gender, member[i].phoneNo, member[i].email, member[i].rewardPoints);
+								printf("----------------------------------------------------------------------------------------------------------------------\n");
 
-						printf("Are You Sure You Want To Delete This Member Account?\n\n");
-						for (int i = 0; i < sizeof(confirmationMenu) / sizeof(confirmationMenu[0]); i++) {
-							printf("-----\n");
-							printf("| %d | %s\n", i + 1, confirmationMenu[i]);
-							printf("-----\n");
-						}
-						printf("\nEnter Your Choice: ");
-						scanf("%d", &confirmation);
-
-						if (confirmation == 1) {
-							for (i; i < numMember; i++) {
-								strcpy(member[i].id, member[i + 1].id);
-								strcpy(member[i].pass, member[i + 1].pass);
-								member[i].age = member[i + 1].age;
-								strcpy(member[i].gender, member[i + 1].gender);
-								strcpy(member[i].ic, member[i + 1].ic);
-								strcpy(member[i].phoneNo, member[i + 1].phoneNo);
-								strcpy(member[i].email, member[i + 1].email);
-								member[i].rewardPoints = member[i + 1].rewardPoints;
-
-								for (int x = 0; x < 3; x++) {
-									member[i].security[x].questionNum = member[i + 1].security[x].questionNum;
-									strcpy(member[i].security[x].answer, member[i + 1].security[x].answer);
+								printf("Are You Sure You Want To Delete This Member Account?\n\n");
+								for (int i = 0; i < sizeof(confirmationMenu) / sizeof(confirmationMenu[0]); i++) {
+									printf("-----\n");
+									printf("| %d | %s\n", i + 1, confirmationMenu[i]);
+									printf("-----\n");
 								}
-							}
-							numMember--;
-							title();
-							printf("Deleting. ");
-							waitingScreen();
+								printf("\nEnter Your Choice: ");
+								scanf("%d", &confirmation);
 
-							printf("\n\nThe Member Account(%s) Has Been Successfully Deleted. ", id);
-							waitingScreen();
-							success++;
-						}
-						else if (confirmation == 2) {
-							title();
-							printf("Cancelling. ");
-							waitingScreen();
-							return 0;
-						}
-						else
-							again++;
+								if (confirmation == 1) {
+									for (i; i < numMember; i++) {
+										strcpy(member[i].id, member[i + 1].id);
+										strcpy(member[i].pass, member[i + 1].pass);
+										member[i].age = member[i + 1].age;
+										strcpy(member[i].gender, member[i + 1].gender);
+										strcpy(member[i].ic, member[i + 1].ic);
+										strcpy(member[i].phoneNo, member[i + 1].phoneNo);
+										strcpy(member[i].email, member[i + 1].email);
+										member[i].rewardPoints = member[i + 1].rewardPoints;
 
-					} while (again == 1);
+										for (int x = 0; x < 3; x++) {
+											member[i].security[x].questionNum = member[i + 1].security[x].questionNum;
+											strcpy(member[i].security[x].answer, member[i + 1].security[x].answer);
+										}
+									}
+									numMember--;
+									title();
+									printf("Deleting. ");
+									waitingScreen();
+
+									printf("\n\nThe Member Account(%s) Has Been Successfully Deleted. ", id);
+									waitingScreen();
+									success++;
+								}
+								else if (confirmation == 2) {
+									title();
+									printf("Cancelling. ");
+									waitingScreen();
+									return 0;
+								}
+								else
+									again++;
+
+							} while (again == 1);
+						}
+					}
+
+
+					if (success == 0) {
+						again = 0;
+						printf("Invalid ID\n");
+						again = tryAgain(again);
+					}
+				} while (again == 2);
+				if (again == 1) {
+					return 0;
 				}
 			}
-
-			if (success == 0) {
-				again = 0;
-				printf("Invalid ID\n");
-				again = tryAgain(again);
-			}
-		} while (again == 2);
+		} while (strcmp(deleteFunct, "0")!=0);
+		
 	}
 	else {
 		title();
@@ -1722,6 +1737,7 @@ int deleteMember() {
 
 		//return something(maybe not return 0)
 	}
+	return 0;
 
 	//return something back to menu
 }
