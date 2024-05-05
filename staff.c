@@ -336,10 +336,10 @@ int staffMenu()
         status = 1;
         title();
 
-        printf(" ___  ____   __    ____  ____    __  __  ____  _  _  __  __ \n");
-        printf("/ __)(_  _) /__\\  ( ___)( ___)  (  \\/  )( ___)( \\( )(  )(  )\n");
-        printf("\\__ \\  )(  /(__)\\  )__)  )__)    )    (  )__)  )  (  )(__)( \n");
-        printf("(___/ (__)(__)(__) (__)  (__)   (_/\\/\\_)(____)(_\\__)(______) \n\n");
+        printf(" ___  ____   __    ____  ____    __  __  ____  _  _    ___   __ \n");
+        printf("/ __)(_  _) /__\\  ( ___)( ___)  (  \\/  )( ___) |\\   |(  )(  )\n");
+        printf("\\__ \\  )(  /(__)\\  )__)  )__)    )    (  )__) |  \\ | )(__)( \n");
+        printf("(___/ (__)(__)(__) (__)  (__)   (_/\\/\\_)(____) |\\__\\(______) \n\n");
 
         printf("1 > Login\n");
         printf("2 > Registration\n");
@@ -1638,6 +1638,7 @@ void manager_reset_pass()
                 printf("\nName: %s\n", manager[i].table.name);
                 printf("Email:%s\n", manager[i].table.email);
                 do {
+                    title();
                     printf("\nIs you?\n");
                     printf("1. CORRECT, IS ME\n");
                     printf("2. WRONG, NOT ME\n");
