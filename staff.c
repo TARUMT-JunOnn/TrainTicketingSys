@@ -878,8 +878,8 @@ int resetPassword()
 
                                         if (strcmp(newPassword, comf_newPassword) == 0 && verify_password(newPassword))
                                         {
-                                            printf("Success!\n");
-                                            Sleep(600);
+                                            printf("\n\nSuccess!\n");
+                                            Sleep(1000);
                                             strcpy(staff[i].table.password, comf_newPassword);
                                             successfuly++;
                                             return 0;
@@ -894,8 +894,9 @@ int resetPassword()
                             }
                             else
                             {
-                                printf("You phone number is incorrect!\n");
+                                printf("Your phone number is incorrect!\n");
                                 do {
+                                    title();
                                     printf("\nDo you want to try again?(Y/N)");
                                     scanf(" %c", &choice);
                                     Sleep(600);
