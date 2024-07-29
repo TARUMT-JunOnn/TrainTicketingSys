@@ -1823,7 +1823,7 @@ int chooseTime(Info* results, int seatleft[2]) {
 			printf("Your Choice > ");
 			rewind(stdin);
 			scanf("%s", choice);
-		} while ((choice[0] != '0' && atoi(choice) == 0) || atoi(choice) > k[0] + 1);
+		} while ((choice[0] != '0' && atoi(choice) == 0) || atoi(choice) > k[0]);
 		if (choice[0] == '0')
 			return 0;
 		userChoice[0] = atoi(choice) - 1;
@@ -1846,7 +1846,7 @@ int chooseTime(Info* results, int seatleft[2]) {
 			printf("Your Choice > ");
 			rewind(stdin);
 			scanf("%s", choice);
-		} while ((choice[0] != '0' && atoi(choice) == 0) || atoi(choice) > k[1] + 1);
+		} while ((choice[0] != '0' && atoi(choice) == 0) || atoi(choice) > k[1]);
 		if (choice[0] == '0')
 			return 0;
 		userChoice[1] = atoi(choice) - 1;

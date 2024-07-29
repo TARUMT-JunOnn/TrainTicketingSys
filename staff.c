@@ -887,8 +887,10 @@ int resetPassword()
                                     } while (successfuly == 0);
 
                                 }
-                                else
+                                else {
                                     printf("Validation code incorrect!\n");
+                                    choice = 'Y';
+                                }
                                 Sleep(600);
 
                             }
@@ -1393,10 +1395,10 @@ void modifyEmpRestSchedule()
 
 
                 if (total_end_minutes < total_begin_minutes) {
-                    total_working_minutes = (24 * 60 - total_begin_minutes) + total_end_minutes;
+                    total_working_minutes = (24 * 60 - total_begin_minutes) + total_end_minutes - staff[i].schedule.rest_time;
                 }
                 else {
-                    total_working_minutes = total_end_minutes - total_begin_minutes;
+                    total_working_minutes = total_end_minutes - total_begin_minutes - staff[i].schedule.rest_time;
                 }
 
                 if (total_working_minutes >= 8 * 60) {
@@ -1476,7 +1478,7 @@ void modifyEmpRestSchedule()
         {
             do {
                 title();
-                printf("Enter 1 to 'Countinue' modify staff schedules Or Enter 2 to 'Exit' the staff schedules\n");
+                printf("Enter 1 to 'Continue' modify staff schedules Or Enter 2 to 'Exit' the staff schedules\n");
                 printf("Enter you choice:");
                 scanf("%d", &choice);
 
@@ -2025,7 +2027,7 @@ int manager_main_page() {
         printf("[ 4 ] Display All staff record\n");
         printf("[ 5 ] Update information\n");
         printf("[ 6 ] Train Schedules\n");
-        printf("[ 7 ] Delete Member Account\n");
+        printf("[ 7 ] Display & Delete Member Account\n");
         printf("[ 8 ] Member Login History\n");
         printf("[ 9 ] View Feedback\n");
         printf("< 0 > Log Out\n"); //can't directly log out! 

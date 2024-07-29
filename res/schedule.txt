@@ -1,7 +1,7 @@
-Monday 9.00 13.00 T1001|KL Sentral|Kampar|100|35.00
-Monday 16.00 20.00 T1003|KL Sentral|Kampar|100|43.00
+Monday 2.00 6.00 T1001|KL Sentral|Kampar|100|35.00
+Monday 16.00 20.00 T1003|KL Sentral|Kampar|30|43.00
 Monday 9.00 13.00 T1002|Kampar|KL Sentral|100|35.00
-Monday 16.00 20.00 T1004|Kampar|KL Sentral|100|35.00
+Monday 16.00 20.00 T1004|Kampar|KL Sentral|30|35.00
 Tuesday 9.00 13.00 T1001|KL Sentral|Kampar|100|35.00
 Tuesday 16.00 20.00 T1003|KL Sentral|Kampar|100|43.00
 Tuesday 9.00 13.00 T1002|Kampar|KL Sentral|100|35.00
@@ -46,3 +46,4 @@ NextSaturday 15.00 19.00 T1001|KL Sentral|Kampar|100|35.00
 NextSaturday 15.00 19.00 T1002|Kampar|KL Sentral|100|43.00
 NextSunday 15.00 19.00 T1001|KL Sentral|Kampar|100|35.00
 NextSunday 15.00 19.00 T1002|Kampar|KL Sentral|100|35.00
+Monday 5.00 10.00 T1005|Kampar|KL Sentral|50|0.00
