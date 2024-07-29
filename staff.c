@@ -776,10 +776,10 @@ int staff_logout() {
 void sendValidationCode(char* email, char* code) {
     // Implement sending the validation code to the provided email
     title();
-    printf("---------- Email ----------\n");
+    printf("--------------- Email ---------------\n");
     printf("Email: %s\n", email);
     printf("Validation code is: %s\n", code);
-    printf("---------------------------\n");
+    printf("-------------------------------------\n");
 }
 
 char* generateValidationCode() {
@@ -833,6 +833,7 @@ int resetPassword()
                     if (ans == 1)
                     {
                         do {
+                            choice = 0;
                             title();
                             printf("\nPlease enter you phone number to validation\n");
                             scanf(" %[^\n]", phone);
@@ -1639,7 +1640,7 @@ void manager_reset_pass()
             {
                 printf("\nName: %s\n", manager[i].table.name);
                 printf("Email:%s\n", manager[i].table.email);
-                Sleep(1200);
+                system("pause");
                 do {
                     title();
                     printf("\nIs you?\n");
